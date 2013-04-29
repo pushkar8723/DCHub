@@ -203,7 +203,7 @@
                     </div>
                     <label class="checkbox" for="checkbox1">
                         <input type="checkbox" value="" id="terms">
-                        I agree to <a href='#'>Terms and Condition</a>
+                        I agree to <a href='terms'>Terms and Condition</a>
                     </label>
                 </div>
             </form>

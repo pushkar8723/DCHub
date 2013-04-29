@@ -54,7 +54,7 @@ function footer() {
         Administrators : DeathEater · Red_Devil · sdh
     </div>
     <div class="pull-right">
-        <a href="#">About</a> | <a href="#">Terms and Conditions</a>
+        <a href="#">About</a> · <a href="terms">Terms and Conditions</a>
     </div>
     <br/><br/>    
 <?php }
