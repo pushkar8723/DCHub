@@ -1,4 +1,7 @@
 $(document).ready(function(){
+    $('#form').submit(function (){
+        return false;
+    });
     $('#next').click(function(){
         
         // ------------------ STEP 1 Verification --------------------//
