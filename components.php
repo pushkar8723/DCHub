@@ -6,16 +6,16 @@ function head() { ?>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>DC Hub</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="css/bootstrap.css" rel="stylesheet">
-    <link href="css/flat-ui.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
-    <script type="text/javascript" src="js/jquery.js"></script>
-    <script type="text/javascript" src="js/bootstrap.js"></script>
-    <script type="text/javascript" src="js/plugin.js"></script>
-    <script type="text/javascript" src="js/scripts.js"></script>
-    <script src="js/jquery.tagsinput.js"></script>
-    <script src="js/jquery.placeholder.js"></script>
-    <script src="js/application.js"></script>
+    <link href="<?php echo CSS_URL; ?>/bootstrap.css" rel="stylesheet">
+    <link href="<?php echo CSS_URL; ?>/flat-ui.css" rel="stylesheet">
+    <link href="<?php echo CSS_URL; ?>/style.css" rel="stylesheet">
+    <script type="text/javascript" src="<?php echo JS_URL; ?>/jquery.js"></script>
+    <script type="text/javascript" src="<?php echo JS_URL; ?>/bootstrap.js"></script>
+    <script type="text/javascript" src="<?php echo JS_URL; ?>/plugin.js"></script>
+    <script type="text/javascript" src="<?php echo JS_URL; ?>/scripts.js"></script>
+    <script src="<?php echo JS_URL; ?>/jquery.tagsinput.js"></script>
+    <script src="<?php echo JS_URL; ?>/jquery.placeholder.js"></script>
+    <script src="<?php echo JS_URL; ?>/application.js"></script>
     <?php
 }
 

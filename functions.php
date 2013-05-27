@@ -403,15 +403,15 @@ class DB {
       return false;
     }
     $createTable = "CREATE TABLE IF NOT EXISTS `activity_log` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `activity` text NOT NULL,
-  `message` text NOT NULL,
-  `result` text NOT NULL,
-  `session` text NOT NULL,
-  `createdOn` datetime NOT NULL,
-  `updatedOn` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+                    `id` int(11) NOT NULL AUTO_INCREMENT,
+                    `activity` text NOT NULL,
+                    `message` text NOT NULL,
+                    `result` text NOT NULL,
+                    `session` text NOT NULL,
+                    `createdOn` datetime NOT NULL,
+                    `updatedOn` datetime NOT NULL,
+                    PRIMARY KEY (`id`)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
     self::query($createTable);
     $data = array("activity" => $activity, "message" => $message, "result" => $result);
     $table = "activity_log";

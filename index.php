@@ -15,7 +15,7 @@
                         </div>
                         <ul style="height: 300px; overflow-y: auto;">
                             <?php
-                                $query = "SELECT * FROM wi_content LIMIT 0 , 10";
+                                $query = "SELECT * FROM dchub_users LIMIT 0 , 10";
                                 $result = DB::findAllFromQuery($query);
                                 foreach ($result as $row){ ?>
                             <li>
@@ -26,7 +26,7 @@
                                     </h4>
                                     by <strong>
                                         <?php 
-                                            $query = "SELECT nickname FROM wi_users where uid = ".$row['uid'];
+                                            $query = "SELECT nickname FROM dchub_users where uid = ".$row['uid'];
                                             $user = DB::findOneFromQuery($query);
                                             echo $user['nickname'];
                                         ?>
