@@ -1,24 +1,18 @@
-[2013-04-28 10:43:21]
-DB Connection failed:\nSQLSTATE[28000] [1045] Access denied for user 'verlihub'@'localhost' (using password: YES)
-======================================================================
-[2013-05-09 10:48:19]
-DB Connection failed:\nSQLSTATE[HY000] [1045] Access denied for user 'verlihub'@'localhost' (using password: YES)
-======================================================================
-[2013-05-15 11:04:27]
+[2013-06-21 01:34:39]
 Query error:
-SELECT * FROM wi_content LIMIT 0 , 10
-Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'verlihub2.wi_content' doesn't exist
-/home/lfiles/www/DCHub/functions.php
+INSERT INTO dchub_content (title, magnetlink, tags, uid, timestamp, createdOn, updatedOn) VALUES ('IronMan3.mkv', '', 'Movie', '9', '1371758679', '2013-06-21 01:34:39', '2013-06-21 01:34:39')
+Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'tags' in 'field list'
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
 ======================================================================
-[2013-05-15 11:06:00]
+[2013-06-21 01:35:12]
 Query error:
-SELECT * FROM wi_content LIMIT 0 , 10
-Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'verlihub2.wi_content' doesn't exist
-/home/lfiles/www/DCHub/functions.php
+INSERT INTO dchub_content (title, magnetlink, tags, uid, timestamp, createdOn, updatedOn) VALUES ('IronMan3.mkv', '', 'Movie', '9', '1371758712', '2013-06-21 01:35:12', '2013-06-21 01:35:12')
+Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'tags' in 'field list'
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
 ======================================================================
-[2013-05-15 11:06:33]
+[2013-06-21 01:58:30]
 Query error:
-SELECT * FROM wi_content LIMIT 0 , 10
-Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'verlihub2.wi_content' doesn't exist
-/home/lfiles/www/DCHub/functions.php
+selec * from dchub_content where deleted = 0 and uid = 9 order by timestamp desc LIMIT 0,
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'selec * from dchub_content where deleted = 0 and uid = 9 order by timestamp desc' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
 ======================================================================
