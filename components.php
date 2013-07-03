@@ -30,15 +30,16 @@ function navbar() {
                 <b class="brand">DC Hub</b>
                 <ul class="nav">
                     <li><a href="<?php echo SITE_URL; ?>">Home</a></li>
-                    <li><a href="#">Latest Contents</a></li>
+                    <li><a href="<?php echo SITE_URL; ?>/latest">Latest Contents</a></li>
+                    <li><a href="<?php echo SITE_URL; ?>/groups">Groups</a></li>
                     <li>
                         <a href="#">
                             Pages
                         </a>
                         <ul>
-                            <li><a href="hot">HOT Page</a></li>
-                            <li><a href="request">Request Page</a></li>
-                            <li><a href="hof">Hall of Fame</a></li>
+                            <li><a href="<?php echo SITE_URL; ?>/hot">HOT Page</a></li>
+                            <li><a href="<?php echo SITE_URL; ?>/request">Request Page</a></li>
+                            <li><a href="<?php echo SITE_URL; ?>/hof">Hall of Fame</a></li>
                         </ul>
                     </li>
                     <li><a href="#">FAQ</a></li>
@@ -47,11 +48,20 @@ function navbar() {
                 if (isset($_SESSION['loggedin'])) {
                     $query = "select * from dchub_users where authenticated = 0 and (friend = '" . $_SESSION['user']['nick'] . "' " . ((isset($_SESSION['user']['nick2'])) ? ("OR friend = '" . $_SESSION['user']['nick2'] . "'") : ('')) . ")";
                     $res = DB::findAllFromQuery($query);
+                    $query = "select distinct(fromid) as fromid from dchub_message where id > '" . $_SESSION['user']['msgid'] . "' and toid = " . $_SESSION['user']['id'] . "
+            union
+            select distinct(toid) as fromid from dchub_message where id > '" . $_SESSION['user']['msgid'] . "' and fromid = " . $_SESSION['user']['id'];
+                    $resmsg = DB::findAllFromQuery($query);
+                    $usrgrp = "'".implode("','", $_SESSION['user']['groups'])."'";
+                    $query = "select id from dchub_post where deleted=0 and approvedby!=0 and id > '" . $_SESSION['user']['notificationid'] . "' and gid in 
+(select id from dchub_groups where name in ($usrgrp))    
+order by timestamp desc";
+                    $resnot = DB::findAllFromQuery($query);
                     ?>
                     <ul class="nav pull-right">
-                        <li <?php if (count($res) > 0) echo "class='active'"; ?>><a href="#"><span class="fui-man-24"></span><?php if (count($res) > 0) echo '<span class="navbar-unread">' . count($res) . '</span>'; ?></a></li>
-                        <li><a href="#"><span class="fui-bubble-24"></span></a></li>
-                        <li><a href="#"><span class="fui-menu-24"></span></a></li>
+                        <li id='friendnav' <?php if (count($res) > 0) echo "class='active'"; ?>><a href="<?php echo SITE_URL; ?>/friends"><span class="fui-man-24"></span><?php if (count($res) > 0) echo '<span class="navbar-unread">' . count($res) . '</span>'; ?></a></li>
+                        <li id='msgnav' <?php if (count($resmsg) > 0) echo "class='active'"; ?>><a href="<?php echo SITE_URL; ?>/messages"><span class="fui-bubble-24"></span><?php if (count($resmsg) > 0) echo '<span class="navbar-unread">' . count($resmsg) . '</span>'; ?></a></li>
+                        <li id='notnav' <?php if (count($resnot) > 0) echo "class='active'"; ?>><a href="<?php echo SITE_URL; ?>/notifications"><span class="fui-menu-24"></span><?php if (count($resnot) > 0) echo '<span class="navbar-unread">' . count($resnot) . '</span>'; ?></a></li>
                         <li>
                             <a href="#">Account</a>
                             <ul style='left: -120px;'>
@@ -61,7 +71,7 @@ function navbar() {
                         </li>
                     </ul>
                 <?php } else { ?>
-                    <a class="btn btn-large btn-danger pull-right" href="register">Create Account</a>
+                    <a class="btn btn-large btn-danger pull-right" href="<?php echo SITE_URL; ?>/register">Create Account</a>
                 <?php } ?>
             </div>
         </div>
@@ -73,10 +83,10 @@ function footer() {
     ?>
     <hr>
     <div class="pull-left">
-        Administrators : DeathEater · Red_Devil · sdh
+        Administrators : <a href="<?php echo SITE_URL; ?>/users/DeathEater">DeathEater</a> · <a href="<?php echo SITE_URL; ?>/users/Red_Devil">Red_Devil</a> · <a href="<?php echo SITE_URL; ?>/users/sdh">sdh</a>
     </div>
     <div class="pull-right">
-        <a href="#">About</a> · <a href="terms">Terms and Conditions</a>
+        <a href="#">About</a> · <a href="<?php echo SITE_URL; ?>/privacy">Privacy Policy</a> · <a href="<?php echo SITE_URL; ?>/terms">Terms and Conditions</a>
     </div>
     <br/><br/>    
     <?php
@@ -107,7 +117,7 @@ function pagination($noofpages, $url, $page, $maxcontent) {
                 if ($page < $noofpages) {
                     ?>
                     <li class="next"><a href="<?php echo $url . "&page=" . ($page + 1); ?>"><img src="<?php echo IMAGE_URL; ?>/pager/next.png" /></a></li>
-                <?php } ?>
+                        <?php } ?>
             </ul>
         </div>
         <?php

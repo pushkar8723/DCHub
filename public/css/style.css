@@ -1,6 +1,50 @@
 body{
     padding-top: 50px;
 }
+#sesmsg{
+    margin: 10px;
+    text-align: center;
+}
+.nav a{
+    text-decoration: none;
+}
+.grp a{
+    color: #fff;
+}
+.grp a:hover{
+    color: #555;
+}
+.desc{
+    margin: 10px 0;
+    border-radius: 5px; 
+    box-shadow: 0 0 5px #aaa;
+}
+.postdate{
+    color: #aaa;
+}
+textarea{
+    width: 450px;
+    height: 100px;
+}
+.tdcenter{
+    text-align: center;
+}
+th{
+    background: #f7f7f7;
+}
+.bold{
+    font-weight: bold;
+}
+.newondc{
+    padding: 15px;
+}
+.newondc:hover{
+    background: rgba(0,0,0,0.3);
+}
+.head{
+    font-size: 18px;
+    font-weight: bold;
+}
 ::-webkit-scrollbar {
     width: 10px;
 }

@@ -40,7 +40,8 @@ define("MAIL_PATH", "Mail.php");
 define("ERROR_LOG", dirname(__FILE__) . "/errors.txt");
 
 date_default_timezone_set("Asia/Kolkata");
-
+$class = array('Novice', 'Experienced', 'Famous', 'Moderator', 'Pseudo-admin', 'GD Admin', 'Operator', 'Master', 'Cheef', 'Admin');
+$defaultGroup = array('2010' => '2k10', '2011' => '2k11', '2012' => '2k12', '2013' => '2k13');
 require_once 'functions.php';
 require_once 'components.php';
 ?>

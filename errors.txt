@@ -1,18 +1,117 @@
-[2013-06-21 01:34:39]
+[2013-06-28 13:52:35]
 Query error:
-INSERT INTO dchub_content (title, magnetlink, tags, uid, timestamp, createdOn, updatedOn) VALUES ('IronMan3.mkv', '', 'Movie', '9', '1371758679', '2013-06-21 01:34:39', '2013-06-21 01:34:39')
-Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'tags' in 'field list'
+select * from dchub_messages where createdOn > '2013-06-28 00:00:00' and (fromid = s and toid = 9) or (fromid = 9 and toid = s)
+Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'verlihub.dchub_messages' doesn't exist
 /host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
 ======================================================================
-[2013-06-21 01:35:12]
+[2013-06-28 13:52:57]
 Query error:
-INSERT INTO dchub_content (title, magnetlink, tags, uid, timestamp, createdOn, updatedOn) VALUES ('IronMan3.mkv', '', 'Movie', '9', '1371758712', '2013-06-21 01:35:12', '2013-06-21 01:35:12')
-Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'tags' in 'field list'
+select * from dchub_message where createdOn > '2013-06-28 00:00:00' and (fromid = s and toid = 9) or (fromid = 9 and toid = s)
+Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 's' in 'where clause'
 /host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
 ======================================================================
-[2013-06-21 01:58:30]
+[2013-06-28 15:34:41]
 Query error:
-selec * from dchub_content where deleted = 0 and uid = 9 order by timestamp desc LIMIT 0,
-Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'selec * from dchub_content where deleted = 0 and uid = 9 order by timestamp desc' at line 1
+select * from dchub_message where createdOn > '2013-06-28 00:00:00' and (fromid =  and toid = 9) or (fromid = 9 and toid = )
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'and toid = 9) or (fromid = 9 and toid = )' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-06-28 15:36:58]
+Query error:
+select * from dchub_message where createdOn > '2013-06-28 00:00:00' and (fromid =  and toid = 9) or (fromid = 9 and toid = )
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'and toid = 9) or (fromid = 9 and toid = )' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-06-28 19:14:17]
+Query error:
+select id from dchub_post where deleted=0 and approvedby!=0 and createdOn > '2013-06-01 18:00:00' and gid in 
+(select id from dchub_groups where name in ())    
+order by timestamp desc
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '))    
+order by timestamp desc' at line 2
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-06-28 19:14:31]
+Query error:
+select id from dchub_post where deleted=0 and approvedby!=0 and createdOn > '2013-06-01 18:00:00' and gid in 
+(select id from dchub_groups where name in ())    
+order by timestamp desc
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '))    
+order by timestamp desc' at line 2
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-06-28 19:14:32]
+Query error:
+select id from dchub_post where deleted=0 and approvedby!=0 and createdOn > '2013-06-01 18:00:00' and gid in 
+(select id from dchub_groups where name in ())    
+order by timestamp desc
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '))    
+order by timestamp desc' at line 2
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-02 00:31:21]
+Query error:
+SELECT * FROM dchub_content where deleted = 0 order by timestamp desc LIMIT 0 , 10
+Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'verlihub.dchub_content' doesn't exist
+C:\Program Files (x86)\EasyPHP-5.3.5.0\www\dchub\functions.php
+======================================================================
+[2013-07-02 00:32:07]
+Query error:
+select count(email) as count from dchub_users where nick1 = 'sdf'
+Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'verlihub.dchub_users' doesn't exist
+C:\Program Files (x86)\EasyPHP-5.3.5.0\www\dchub\functions.php
+======================================================================
+[2013-07-02 00:32:07]
+Query error:
+select count(email) count from dchub_users where nick2 like ''
+Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'verlihub.dchub_users' doesn't exist
+C:\Program Files (x86)\EasyPHP-5.3.5.0\www\dchub\functions.php
+======================================================================
+[2013-07-02 00:32:07]
+Query error:
+select count(email) as count from dchub_users where ipaddress = '127.0.0.1'
+Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'verlihub.dchub_users' doesn't exist
+C:\Program Files (x86)\EasyPHP-5.3.5.0\www\dchub\functions.php
+======================================================================
+[2013-07-02 00:32:07]
+Query error:
+INSERT INTO dchub_users (fullname, roll_course, roll_number, roll_year, branch, hostel, room, email, gender, phone, security_ques, security_ans, nick1, password1, nick2, password2, friend, ipaddress, groups, createdOn, updatedOn) VALUES ('Sasadfa', 'BE', 'asdfa', '2010', 'asfdasf', '1', 'sadfa', 'asfd@fadfab', 'M', '', 'bbsab', 'baba', 'sdf', 'a', '', '', '', '127.0.0.1', '2k10', '2013-07-02 00:32:07', '2013-07-02 00:32:07')
+Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'verlihub.dchub_users' doesn't exist
+C:\Program Files (x86)\EasyPHP-5.3.5.0\www\dchub\functions.php
+======================================================================
+[2013-07-03 11:56:11]
+Query error:
+select mas(id) from dchub_message where fromid = 9 or toid = 9
+Error: SQLSTATE[42000]: Syntax error or access violation: 1305 FUNCTION verlihub.mas does not exist
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-03 11:56:15]
+Query error:
+select mas(id) from dchub_message where fromid = 9 or toid = 9
+Error: SQLSTATE[42000]: Syntax error or access violation: 1305 FUNCTION verlihub.mas does not exist
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-03 11:56:17]
+Query error:
+select mas(id) from dchub_message where fromid = 9 or toid = 9
+Error: SQLSTATE[42000]: Syntax error or access violation: 1305 FUNCTION verlihub.mas does not exist
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-03 11:56:18]
+Query error:
+select mas(id) from dchub_message where fromid = 9 or toid = 9
+Error: SQLSTATE[42000]: Syntax error or access violation: 1305 FUNCTION verlihub.mas does not exist
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-03 11:56:18]
+Query error:
+select mas(id) from dchub_message where fromid = 9 or toid = 9
+Error: SQLSTATE[42000]: Syntax error or access violation: 1305 FUNCTION verlihub.mas does not exist
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-03 11:56:21]
+Query error:
+select mas(id) from dchub_message where fromid = 9 or toid = 9
+Error: SQLSTATE[42000]: Syntax error or access violation: 1305 FUNCTION verlihub.mas does not exist
 /host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
 ======================================================================
