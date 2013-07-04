@@ -10,8 +10,8 @@
     </li>
     <li>
         Download and install a DC client from the Internet, or from one of the following links:<br/>
-        Windows<a href='download/ApexDC++_1.5.4_Setup.exe'>ApexDC++ 1.5.4</a> (Recommended), <a href='download/StrongDC-2.42.exe'>StrongDC++ 2.42</a>, <a href='download/DCPlusPlus-0.799.exe'>DC++ 0.799</a>, <a href='download/EiskaltDC++-2.2.7-x86.exe'>EiskaltDC++ 2.2.7</a>
-        <br/>LinuxInstall from your Software Center (Recommended), <a href='download/linuxdcpp-1.1.0.tar.bz2'>Linux DC++ 1.1.0</a>, <a href='download/eiskaltdcpp-2.2.7.tar.bz2'>EiskaltDC++</a>
+        <b>Windows:</b> <a href='download/ApexDC++_1.5.6_Setup.exe'>ApexDC++ 1.5.6</a> (Recommended), <a href='download/StrongDC-2.42.exe'>StrongDC++ 2.42</a>, <a href='download/DCPlusPlus-0.825.exe'>DC++ 0.825</a>, <a href='download/EiskaltDC++-2.2.8-x86.exe'>EiskaltDC++ 2.2.8</a>
+        <br/><b>Linux:</b> Install from your Software Center (Recommended), <a href='download/linuxdcpp-1.1.0.tar.bz2'>Linux DC++ 1.1.0</a>, <a href='download/eiskaltdcpp-2.2.8.tar.xz'>EiskaltDC++</a>
     </li>
     <li>After installation, go to <span>File -> Settings</span>, and under the "Personal Information" section (possibly under the "General" section), enter the Nickname which you registered above. If you feel the need, you may go to the "Downloads" section and change the default Downloads Directory.<br/>
         Then go the section titles "Sharing", and select a directories whose contents you wish to share with others. You can login with 0 share but will be given limited functionality. There is a minimum requirement to share at least 20GB of files and folders to attain complete functionality and be able to use all services available on the Hub. Press OK and the window will close.
@@ -35,7 +35,7 @@
     </li>
 </ol>
 
-<h2>Access Levels</h2>
+<hr/><h2>Access Levels</h2>
 <div class='accesslevel'>
     <h4>Access Level 0 : Novice</h4><HR/>
     This is the default state of all newly registered users. Users can now connect to the Hub and start downloading/sharing content. But all other services of the Hub are not available to the user.<br/>
@@ -93,7 +93,7 @@
 </div>
 
 <div class='accesslevel'>
-    <h4>Access Level 4 : Pseudo-admin</h4><hr/>
+    <h4>Access Level 4 : Pseudo-Admin</h4><hr/>
     Users are upgraded to Level-4 when they share more than 1 TB AND Regularly download New Content.<br/>
     Level-4 Users are granted privileges to send Broadcast messages to all users.
     <br/><br/>
@@ -108,7 +108,7 @@
 There exist Access Levels higher than those listed above.
 If you wish to upgrade your Access Level, please do something that will be beneficial to the DC Hub Community as a whole (such as introducing new items to the LAN or sharing massive amounts of useful and properly organized stuff). If you feel that you deserve to be upgraded, please contact an Administrator, who will verify your claim before upgrading you.
 
-<h2>More Options</h2>
+<hr/><h2>More Options</h2>
 You may add your friends to the "Favorite Users" list so that you get notifications whenever they come online. In addition, you can also choose to grant them Download Slots directly (without waiting in a queue) should they need one.
 <br/><br/>Depending on whether your client supports this, you can set an "Away Message" (<span>File -> Settings -> General -> Away Message</span>). Later, if you are going to leave your room for a while but leave your system switched on and connected to DC, you can set your status as "AWAY" (by pressing the "AWAY" toggle button in the toolbar). Now, if anyone sends you a private message, your "Away Message" will immediately be sent back as a response.
 <br/><br/>If you prefer to download items to different folders based on what they are, you could add "Favorite Download Directories" under File -> Settings -> Downloads -> Favorites, so that from the next time, you can right-click on an item, and under the "Download to" option, you will find this list.

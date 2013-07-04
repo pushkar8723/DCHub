@@ -11,7 +11,10 @@ function head() { ?>
     <script src="<?php echo JS_URL; ?>/jquery-1.8.2.min.js"></script>
     <script src="<?php echo JS_URL; ?>/bootstrap.js"></script>
     <script src="<?php echo JS_URL; ?>/jquery-ui-1.10.0.custom.min.js"></script>
-    <?php if (!isset($_GET['tab']) || $_GET['tab'] != 'register') { ?>
+    <?php
+    $list = array('register', 'admin');
+    if (!isset($_GET['tab']) || !in_array($_GET['tab'], $list)) {
+        ?>
         <script src="<?php echo JS_URL; ?>/jquery.dropkick-1.0.0.js"></script>
         <script src="<?php echo JS_URL; ?>/application.js"></script>
     <?php } ?>
@@ -20,6 +23,31 @@ function head() { ?>
     <script src="<?php echo JS_URL; ?>/jquery.tagsinput.js"></script>
     <script src="<?php echo JS_URL; ?>/bootstrap-tooltip.js"></script>
     <script src="<?php echo JS_URL; ?>/jquery.placeholder.js"></script>
+    <script type='text/javascript'>
+        var tmp = $.fn.popover.Constructor.prototype.show;
+        $.fn.popover.Constructor.prototype.show = function() {
+            tmp.call(this);
+            if (this.options.callback) {
+                this.options.callback();
+            }
+        }
+        $(function()
+        {
+            $("#signin").popover({
+                html: true,
+                content: "<?php echo ((isset($_SESSION['loginerr'])) ? ("<div class='alert alert-danger' style='text-align:center;'>$_SESSION[loginerr]</div>") : ("")); ?><form class='form-horizontal' action=\"<?php echo SITE_URL; ?>/process.php\" method=\"post\"><div class='control-group'><div class='control-label' style='width: 100px;'><label for = \"username\" style='width: 100px;'>Username:</label></div><div class='controls' style='margin-left: 120px;'><input id = 'username' type = \"text\" name=\"data[username]\" required></div></div><div class='control-group'><div class='control-label' style='width: 100px;'><label for = \"password\" style='width: 100px;'>Password:</label></div><div class='controls' style='margin-left: 120px;'><input id = \"password\" type=\"password\" name=\"data[password]\" required></div></div><div class='control-group'><div class='control-label' style='width: 100px;'></div><div class='controls' style='margin-left: 120px;'><input class = \"btn btn-danger\" type=\"submit\" value=\"Sign In\" name =\"login\"/></div><hr/><center><a href = \"#\">Forgot Password?</a></form></center>",
+                callback: function() {
+                    document.getElementById('username').focus();
+                }
+            });
+    <?php
+    if (isset($_SESSION['loginerr'])) {
+        echo "$('#signin').popover('show');";
+        unset($_SESSION['loginerr']);
+    }
+    ?>
+        });
+    </script>
     <?php
 }
 
@@ -28,13 +56,9 @@ function navbar() {
     <div class="navbar navbar-fixed-top navbar-inverse">
         <div class="navbar-inner">
             <div class="container">
-                <b class="brand">DC Hub</b>
                 <ul class="nav">
-                    <li><a href="<?php echo SITE_URL; ?>">Home</a></li>
+                    <li><a href="<?php echo SITE_URL; ?>">DC Hub</a></li>
                     <li><a href="<?php echo SITE_URL; ?>/latest">Latest Contents</a></li>
-                    <?php if (isset($_SESSION['loggedin']) && $_SESSION['user']['accesslevel'] >= 6) { ?>
-                        <li><a href="<?php echo SITE_URL; ?>/groups">Groups</a></li>
-                    <?php } ?>
                     <li>
                         <a href="#">
                             Pages
@@ -46,6 +70,10 @@ function navbar() {
                         </ul>
                     </li>
                     <li><a href="<?php echo SITE_URL; ?>/faq">FAQ</a></li>
+                    <?php if (isset($_SESSION['loggedin']) && $_SESSION['user']['accesslevel'] >= 9) { ?>
+                        <li><a href="<?php echo SITE_URL; ?>/groups">Groups</a></li>
+                        <li><a href="<?php echo SITE_URL; ?>/admin">Administration</a></li>
+                    <?php } ?>
                 </ul>
                 <?php
                 if (isset($_SESSION['loggedin'])) {
@@ -74,7 +102,8 @@ order by timestamp desc";
                         </li>
                     </ul>
                 <?php } else { ?>
-                    <a class="btn btn-large btn-danger pull-right" href="<?php echo SITE_URL; ?>/register">Create Account</a>
+                    <a class="btn btn-large btn-danger pull-right" href="<?php echo SITE_URL; ?>/register">Register</a>
+                    <a style='margin-right: 5px;' class="btn btn-large btn-danger pull-right" href="#" data-placement='bottom' rel="popover" data-original-title="Sign In" id="signin">Sign In</a>
                 <?php } ?>
             </div>
         </div>
@@ -89,7 +118,7 @@ function footer() {
         Administrators : <a href="<?php echo SITE_URL; ?>/users/DeathEater">DeathEater</a> · <a href="<?php echo SITE_URL; ?>/users/Red_Devil">Red_Devil</a> · <a href="<?php echo SITE_URL; ?>/users/sdh">sdh</a>
     </div>
     <div class="pull-right">
-        <a href="#">About</a> · <a href="<?php echo SITE_URL; ?>/privacy">Privacy Policy</a> · <a href="<?php echo SITE_URL; ?>/terms">Terms and Conditions</a>
+        <a href="<?php echo SITE_URL; ?>/about">About</a> · <a href="<?php echo SITE_URL; ?>/privacy">Privacy Policy</a> · <a href="<?php echo SITE_URL; ?>/terms">Terms and Conditions</a>
     </div>
     <br/><br/>    
     <?php
@@ -168,14 +197,41 @@ function contentshow($data, $sharedby = true) {
                 $btn = "<a href='#' class='btn recommend' id='$row[cid]'>Recommend</a>";
             }
         } else {
-            $btn = "<a href='" . SITE_URL . "' class='btn'>Login to Recommend</a>";
+            $btn = "<a href='#' onclick=\"$('#signin').popover('show');\" class='btn'>Login to Recommend</a>";
         }
-        
+
         //printing
         echo "<tr><td>" . (($row['magnetlink'] != "") ? ("<a href='$row[magnetlink]'>" . stripslashes($row['title']) . "</a>") : (stripslashes($row['title']))) . "</td>
             <td>$tagstr</td>" . (($sharedby) ? ("<td><a href='" . SITE_URL . "/users/$user[nick1]'>$user[nick1]</a></td>") : ("")) . "
                 <td style='text-align:center;'><span id='$row[cid]_count'>$rec[recommendations]</span> recommendation(s)<br/>$btn</td></tr>";
     }
     echo "</table>";
+}
+
+function createForm($name, $fields, $submitname) {
+    echo "<form class='form-horizontal' method='post' action='" . SITE_URL . "/process.php'>";
+    foreach ($fields as $key => $value) {
+        if ($value[1] == 'hidden') {
+            echo "<input type='$value[1]' name='$key' id='$key' " . ((isset($value[2])) ? ("value='$value[2]'") : ("")) . "/>";
+        } else {
+            echo "<div class='control-group'>
+            <div class='control-label'><label for='$key'>$value[0]</label></div>
+            <div class='controls'>";
+            if ($value[1] != "select") {
+                echo "<input type='$value[1]' name='$key' id='$key' " . ((isset($value[2])) ? ("value='$value[2]'") : ("")) . "/>";
+            } else {
+                echo "<select name='$key' id='$key'>";
+                foreach (explode(',', $value[2]) as $opt) {
+                    $attr = explode(':', $opt);
+                    echo "<option value='$attr[0]' " . ((isset($value[3]) && $value[3] == $attr[0]) ? ("selected") : ("")) . ">$attr[1]</option>";
+                }
+                echo "</select>";
+            }
+            echo "</div>
+        </div>";
+        }
+    }
+    echo "<div class='control-group'><div class='control-label'></div><div class='controls'><input class='btn' type='submit' name='$name' value='$submitname'></div></div>
+        </form>";
 }
 ?>

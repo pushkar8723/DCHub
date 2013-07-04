@@ -55,7 +55,7 @@ if (isset($_GET['code'])) {
             </form>
             <?php
         }
-        if (isset($_SESSION['loggedin']) && $_SESSION['user']['accesslevel'] > 7) {
+        if (isset($_SESSION['loggedin']) && $_SESSION['user']['accesslevel'] >= 9) {
             echo "<table class='table table-hover'>";
             foreach ($user as $key => $value) {
                 echo "<tr><th>$key</th><td>$value</td></tr>";

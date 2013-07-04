@@ -57,7 +57,7 @@ if(isset($_SESSION['loggedin'])){
         <input type='submit' value='Request' name='request' class='btn'/>
         </form>";
 } else {
-    echo "<a href='" . SITE_URL . "' class='btn btn-danger btn-block btn-large'>Login to make a Request</a>";
+    echo "<a href='#' onclick=\"$('#signin').popover('show');\" class='btn btn-danger btn-block btn-large'>Login to make a Request</a>";
 }
 $body = "from dchub_request where deleted = 0 order by id desc";
 $res = DB::findAllWithCount("select *", $body, $page, 20);

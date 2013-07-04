@@ -57,7 +57,7 @@ foreach ($res as $row) {
                 $btn = "<a href='#' class='btn recommend' id='$row[cid]'>Recommend</a>";
             }
         } else {
-            $btn = "<a href='" . SITE_URL . "' class='btn'>Login to Recommend</a>";
+            $btn = "<a href='#' onclick=\"$('#signin').popover('show');\" class='btn'>Login to Recommend</a>";
         }
    } else {
        $btn = '';

@@ -1,6 +1,8 @@
 <?php
-if (isset($_SESSION['loggedin']))
-    redirectTo(SITE_URL);
+if (isset($_SESSION['loggedin'])) {
+    echo "<br/><br/><br/><h1>Already registered :D</h1>You have already registed!<br/><br/><br/>";
+    return;
+}
 ?>
 <script type='text/javascript'>
     function check() {
@@ -169,13 +171,13 @@ if (isset($_SESSION['loggedin']))
                 </div>
                 <hr/>
                 <div class="control-group">
-                    <label class="control-label" for="nick1">Nick 1 <span class='req'>*</span></label>
+                    <label class="control-label" for="nick1">Public Nick <span class='req'>*</span></label>
                     <div class="controls">
                         <input type="text" id="nick1" name="data[nick1]" <?php if (isset($_SESSION['data'])) echo "value='" . $_SESSION['data']['nick1'] . "'"; ?>  required>
                     </div>
                 </div>
                 <div class="control-group">
-                    <label class="control-label" for="nick2">Nick 2</label>
+                    <label class="control-label" for="nick2">Secret Nick</label>
                     <div class="controls">
                         <input type="text" id="nick2" name="data[nick2]" <?php if (isset($_SESSION['data'])) echo "value='" . $_SESSION['data']['nick2'] . "'"; ?>>
                     </div>
@@ -183,13 +185,13 @@ if (isset($_SESSION['loggedin']))
                 <div class="control-group">
                     <label class="control-label" for="pass1">Password <span class='req'>*</span></label>
                     <div class="controls">
-                        <input type="password" id="pass1" name="data[password1]"  required>
+                        <input type="password" id="pass1" name="data[password_]"  required>
                     </div>
                 </div>
                 <div class="control-group">
                     <label class="control-label" for="repass1">Retype Password <span class='req'>*</span></label>
                     <div class="controls">
-                        <input type="password" id="repass1" name="data[repassword1]"  required>
+                        <input type="password" id="repass1" name="data[repassword_]"  required>
                     </div>
                 </div>
                 <label class="checkbox" for="terms">
