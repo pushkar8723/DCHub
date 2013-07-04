@@ -40,8 +40,9 @@ define("MAIL_PATH", "Mail.php");
 define("ERROR_LOG", dirname(__FILE__) . "/errors.txt");
 
 date_default_timezone_set("Asia/Kolkata");
-$class = array('Novice', 'Experienced', 'Famous', 'Moderator', 'Pseudo-admin', 'GD Admin', 'Operator', 'Master', 'Cheef', 'Admin');
+$class = array(0 => 'Novice', 1 => 'Experienced', 2 => 'Famous', 3 => 'Moderator', 4 => 'Pseudo-admin', 7=> 'GD Admin', 8=> 'Master', 9 => 'Cheef', 10 => 'Admin');
 $defaultGroup = array('2010' => '2k10', '2011' => '2k11', '2012' => '2k12', '2013' => '2k13');
+$categories = array('Everything' => '', "Movies" => 'movie', "TV Series" => 'tv', "Books" => 'book', 'Games' => 'game');
 require_once 'functions.php';
 require_once 'components.php';
 ?>

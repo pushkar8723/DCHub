@@ -44,7 +44,7 @@ if (isset($_SESSION['loggedin'])) {
     <div class='row'>
         <div class='span4'>
             <div class='palette palette-firm-dark' style='box-shadow: 0 0 10px #aaa;'>
-                <center><h4>User Class : <?php echo $class[$_SESSION['user']['accesslevel'] - 1]; ?></h4></center>
+                <center><h4>User Class : <?php echo $class[$_SESSION['user']['accesslevel']]; ?></h4></center>
             </div>
             <div class='palette palette-firm' style='border-radius: 0 0 10px 10px; box-shadow: 0 0 10px #aaa;'>
                 <h5>Account Details</h5>
@@ -64,6 +64,7 @@ if (isset($_SESSION['loggedin'])) {
                     <tr><td class="bold">Hostel</td><td> <?php echo $_SESSION['user']['hostel']; ?></td></tr>
                     <tr><td class="bold">Room</td><td> <?php echo $_SESSION['user']['room']; ?></td></tr>
                 </table><br/>
+                <?php if($_SESSION['user']['accesslevel'] >= 6) { ?>
                 <h5>My Groups</h5>
                 <hr/>
                 <ul class='nav nav-list grp'>
@@ -74,22 +75,38 @@ if (isset($_SESSION['loggedin'])) {
                     ?>
                     <li><a href="<?php echo SITE_URL; ?>/groups">See All</a></li>
                 </ul>
+                <?php } ?>
             </div>
         </div>
         <div class='span8'>
+            <?php
+                if($_SESSION['user']['accesslevel'] == 0){
+                    echo "<div class='alert' style='margin-top: 10px;'>You are not an authenticated user. <a href='".SITE_URL."/account'>Click Here</a> to authenticate yourself.</div>";
+                }
+            ?>
             <h3>Share</h3>
             <form class='form-horizontal' action="<?php echo SITE_URL; ?>/process.php" method="post">
                 <div class='control-group'>
-                    <div class='control-label'><label for='filename'>File Name(required)</label></div>
+                    <div class='control-label'><label for='filename'>File Name / Magnet Link</label></div>
                     <div class='controls'><input type='text' style='width:97%;' name='data[title]' id='filename' /></div>
                 </div>
                 <div class='control-group'>
-                    <div class='control-label'><label for='magnet'>Magnet Link</label></div>
-                    <div class='controls'><input type='text' style='width:97%;' name='data[magnetlink]' id='magnet' /></div>
-                </div>
-                <div class='control-group'>
-                    <div class='control-label'><label for='tagsinput'>Tags (required)</label></div>
-                    <div class='controls'><input name="data[tag]" style='width: 100%;' id="tagsinput" class="tagsinput" /></div>
+                    <div class='control-label'><label for='tagsinput'>Tags</label></div>
+                    <div class='controls'>
+                        <input name="data[tag]" style='width: 100%;' id="tagsinput" class="tagsinput"/><br/>
+                        <?php
+                        foreach ($categories as $key => $value) {
+                            if ($value != '') {
+                                ?>
+                                <label class="checkbox" for="<?php echo $value; ?>">
+                                    <input type="checkbox" name='data[<?php echo $value; ?>]' value="<?php echo $value; ?>" id="<?php echo $value; ?>">
+                                    <?php echo $key; ?>
+                                </label>
+                                <?php
+                            }
+                        }
+                        ?>
+                    </div>
                 </div>
                 <div class='control-group'>
                     <div class='control-label'></div>
@@ -101,26 +118,7 @@ if (isset($_SESSION['loggedin'])) {
             $body = "from dchub_content where deleted = 0 and uid = " . $_SESSION['user']['id'] . " order by timestamp desc";
             $res = DB::findAllWithCount("select *", $body, $page, 10);
             $data = $res['data'];
-            echo "<table class='table'>
-                    <tr><th>File Name</th><th>Tags</th><th style='text-align: center;'>Recommendations</th></tr>";
-            foreach ($data as $row) {
-                $query = "select count(cid) as recommendations from dchub_recommend where cid = $row[cid]";
-                $rec = DB::findOneFromQuery($query);
-                $query = "select uid from dchub_recommend where cid = $row[cid] and uid = " . $_SESSION['user']['id'];
-                $response = DB::findAllFromQuery($query);
-                if ($response) {
-                    $btn = "<a href='#' class='btn discourage' id='$row[cid]'>Discourage</a>";
-                } else {
-                    $btn = "<a href='#' class='btn recommend' id='$row[cid]'>Recommend</a>";
-                }
-                $splittag = explode(',', $row['tag']);
-                echo "<tr><td>" . (($row['magnetlink'] != "") ? ("<a href='$row[magnetlink]'>" . stripslashes($row['title']) . "</a>") : (stripslashes($row['title']))) . "</td><td>";
-                foreach ($splittag as $tag)
-                    echo "<a href='" . SITE_URL . "/latest/$tag'>$tag</a> ";
-                echo "</td><td style='text-align:center;'><span id='$row[cid]_count'>$rec[recommendations]</span> recommendation(s)<br/> 
-                  $btn</td></tr>";
-            }
-            echo "</table>";
+            contentshow($data, FALSE);
             pagination($res['noofpages'], SITE_URL . "/", $page, 10);
             ?>
         </div>

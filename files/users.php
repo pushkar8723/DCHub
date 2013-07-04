@@ -1,3 +1,38 @@
+<script type='text/javascript'>
+    $(document).ready(function() {
+        $('.recommend, .discourage').click(function(event) {
+            $('#' + event.target.id).html("Processing...");
+            if ($('#' + event.target.id).attr('class') == "btn discourage") {
+                $.post("<?php echo SITE_URL; ?>/process.php", {
+                    "discourage": '',
+                    "cid": event.target.id
+                }, function(result) {
+                    if (result == '1') {
+                        $('#' + event.target.id).removeClass('discourage').addClass('recommend').html('Recommend');
+                        $('#' + event.target.id + "_count").html(parseInt($('#' + event.target.id + "_count").html()) - 1);
+                    }
+                    else {
+                        $('#' + event.target.id).html(result);
+                    }
+                });
+            }
+            else {
+                $.post("<?php echo SITE_URL; ?>/process.php", {
+                    "recommend": '',
+                    "cid": event.target.id
+                }, function(result) {
+                    if (result == '1') {
+                        $('#' + event.target.id).removeClass('recommend').addClass('discourage').html('Discourage');
+                        $('#' + event.target.id + "_count").html(parseInt($('#' + event.target.id + "_count").html()) + 1);
+
+                    } else {
+                        $('#' + event.target.id).html(result);
+                    }
+                });
+            }
+        });
+    });
+</script>
 <?php
 $_GET = secure($_GET);
 if (isset($_GET['code'])) {
@@ -9,7 +44,7 @@ if (isset($_GET['code'])) {
     $query = "select * from dchub_users where deleted=0 and (nick1 = '$_GET[code]' OR nick2 = '$_GET[code]')";
     $user = DB::findOneFromQuery($query);
     if ($user) {
-        echo "<center><h1>User : $user[nick1]</h1>" . (($user['nick2'] != "") ? ("<h4>Secondary Nick : $user[nick2]</h4>") : ("")) . "<h4>User Class : " . $class[$user['class'] - 1] . "</h4></center>";
+        echo "<center><h1>User : $_GET[code]</h1><h4>User Class : " . $class[$user['class']] . "</h4></center>";
         if (isset($_SESSION['loggedin'])) {
             ?>
             <h3>Leave a Message</h3>
@@ -31,16 +66,7 @@ if (isset($_GET['code'])) {
         $body = "from dchub_content where deleted = 0 and uid = $user[id] order by timestamp desc";
         $res = DB::findAllWithCount("select *", $body, $page, 25);
         $data = $res['data'];
-        echo "<table class='table table-striped'>
-                    <tr><th>File Name</th><th>Tags</th><th>Recommendations</th></tr>";
-        foreach ($data as $row) {
-            $splittag = explode(',', $row['tag']);
-            echo "<tr><td>" . (($row['magnetlink'] != "") ? ("<a href='$row[magnetlink]'>" . stripslashes($row['title']) . "</a>") : (stripslashes($row['title']))) . "</td><td>";
-            foreach ($splittag as $tag)
-                echo "<a href='" . SITE_URL . "/latest/$tag'>$tag</a> ";
-            echo "</td><td></td></tr>";
-        }
-        echo "</table>";
+        contentshow($data, FALSE);
         pagination($res['noofpages'], SITE_URL . "/users/$_GET[code]", $page, 10);
     } else {
         echo "<br/><br/><br/><h1>User not found</h1>The user you are searching for doesn't exsits.<br/><br/><br/>";

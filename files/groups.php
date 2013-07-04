@@ -1,5 +1,5 @@
 <?php
-if (isset($_GET['code'])) {
+if (isset($_GET['code']) && isset($_SESSION['loggedin']) && $_SESSION['user']['accesslevel'] >= 6) {
     if (isset($_GET['page']) && $_GET['page'] > 0) {
         $page = $_GET['page'];
     } else {
@@ -62,7 +62,7 @@ if (isset($_GET['code'])) {
     } else {
         echo "<br/><br/><br/><h1>Group not found</h1>The group you are searching for doesn't exsits.<br/><br/><br/>";
     }
-} else {
+} else if (isset($_SESSION['loggedin']) && $_SESSION['user']['accesslevel'] >= 6) {
     $query = "select * from dchub_groups where deleted = 0";
     $res = DB::findAllFromQuery($query);
     echo "<h1>Groups</h1><table class='table table-hover'><tr><th>Name</th><th>Description</th></tr>";
@@ -70,5 +70,7 @@ if (isset($_GET['code'])) {
         echo "<tr><td><a href='" . SITE_URL . "/groups/$row[name]'>$row[name]</a></td><td>$row[description]</td></tr>";
     }
     echo "</table>";
+} else {
+    echo "<br/><br/><br/><h1>Page not found</h1>The page you are searching for doesn't exsits.<br/><br/><br/>";
 }
 ?>

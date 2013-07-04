@@ -363,5 +363,5 @@ AddCharset utf-8 .atom .css .js .json .rss .vtt .xml
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule .* - [S=3]
   RewriteRule ^([^./]+)$ ?tab=$1 [L]
-  RewriteRule ^([^./]+)/([^./]+)$ ?tab=$1&code=$2 [L]
+  RewriteRule ^([^./]+)/([^/]+)$ ?tab=$1&code=$2 [L]
 </IfModule>

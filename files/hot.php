@@ -35,7 +35,7 @@
 </script>
 <h1>HOT Page</h1>
 <table class='table table-hover'>
-    <tr><th>Name</th><th>Tags</th><th>Shared By</th><th style='text-align: center;'>Recommendations</th></tr>
+    <tr><th>Name</th><th>Tags</th><th>Shared By</th><th style='width: 170px; text-align: center;'>Recommendations</th></tr>
 <?php
 $time = time() - 60*60*24*7;
 $query = "select * from dchub_hot where time > $time order by votes desc limit 0, 24";
