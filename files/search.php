@@ -6,13 +6,17 @@ if (isset($_GET['page']) && $_GET['page'] > 0) {
 }
 if (isset($_GET['code'])) {
     $_GET = secure($_GET);
-    $select = array();
-    foreach(explode(' ', $_GET['code']) as $term){
-        array_push($select, "select * from dchub_content where deleted = 0 and title like '%$term%'");
+    $clause = array();
+    foreach (explode(' ', $_GET['code']) as $term) {
+        array_push($clause, "title like '%$term%'");
     }
-    $table = implode(" union ", $select);
-    $body = "from ($table)t order by timestamp";
+    $table = implode(" AND ", $clause);
+    $body = "from dchub_content where $table order by timestamp desc";
+//    echo $body;
+    $msc = microtime(true);
     $res = DB::findAllWithCount("select *", $body, $page, 20);
+    $msc = microtime(true) - $msc;
+      
     $data = $res['data'];
     ?>
     <script type='text/javascript'>
@@ -27,8 +31,8 @@ if (isset($_GET['code'])) {
         <input id='search' name='search' type='text' class='search-query' placeholder='Search' value='<?php echo $_GET['code']; ?>'/>
     </form>
     <h1>Search Results</h1>
-
     <?php
+    echo '('.$res['total'].' total, Query took '.number_format($msc, 3, '.', ','). ' seconds)<br/><br/>'; // in second  
     contentshow($data, $_GET['code']);
     ?>
 

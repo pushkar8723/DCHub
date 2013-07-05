@@ -58,3 +58,39 @@ select nick1, nick2, fullname, roll_course, roll_number, roll_year, hostel, room
 Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'from dchub_users where nick1 = 'le_first_nick' or nick2 = 'le_first_nick'' at line 1
 /host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
 ======================================================================
+[2013-07-05 11:06:50]
+Query error:
+SELECT count(*) as count from (select * from dchub_content where deleted = 0 and title like '%720p%' intersect select * from dchub_content where deleted = 0 and title like '%2012%')t order by timestamp
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'intersect select * from dchub_content where deleted = 0 and title like '%2012%')' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-05 11:06:50]
+Query error:
+select * from (select * from dchub_content where deleted = 0 and title like '%720p%' intersect select * from dchub_content where deleted = 0 and title like '%2012%')t order by timestamp LIMIT 0,20
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'intersect select * from dchub_content where deleted = 0 and title like '%2012%')' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-05 11:10:53]
+Query error:
+SELECT count(*) as count from (select * from dchub_content where deleted = 0 and title like '%720p%' intersect select * from dchub_content where deleted = 0 and title like '%2012%')t order by timestamp
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'intersect select * from dchub_content where deleted = 0 and title like '%2012%')' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-05 11:10:53]
+Query error:
+select * from (select * from dchub_content where deleted = 0 and title like '%720p%' intersect select * from dchub_content where deleted = 0 and title like '%2012%')t order by timestamp LIMIT 0,20
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'intersect select * from dchub_content where deleted = 0 and title like '%2012%')' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-05 11:47:00]
+Query error:
+SELECT count(*) as count from dchub_content where like '%iron%' AND like '%man%' order by timestamp desc
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'like '%iron%' AND like '%man%' order by timestamp desc' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-05 11:47:00]
+Query error:
+select * from dchub_content where like '%iron%' AND like '%man%' order by timestamp desc LIMIT 0,20
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'like '%iron%' AND like '%man%' order by timestamp desc LIMIT 0,20' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
