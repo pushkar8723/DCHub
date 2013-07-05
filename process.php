@@ -341,6 +341,12 @@ if (isset($_POST['register'])) {
         DB::update('dchub_users', $_POST['data'], 'id = '.$_POST['data']['id']);
         $_SESSION['msg'] = "Account Updated";
         redirectTo("http://" . $_SERVER['HTTP_HOST'] . $_SESSION['url']);
+    } else if(isset ($_POST['addnick']) && !isset($_SESSION['user']['nick2'])){
+        $_POST['data'] = secure($_POST['data']);
+        DB::update('dchub_users', $_POST['data'], 'id = '.$_SESSION['user']['id']);
+        $_SESSION['user']['nick2'] = $_POST['data']['nick2'];
+        $_SESSION['msg'] = 'Nick Added';
+        redirectTo(SITE_URL."/account");
     }
 }
 ?>

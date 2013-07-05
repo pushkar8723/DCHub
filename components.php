@@ -171,10 +171,16 @@ function check($var) {
     return $flag;
 }
 
-function contentshow($data, $sharedby = true) {
+function contentshow($data, $highlight = '', $sharedby = true) {
     echo "<table class='table table-striped'>
                     <tr><th>File Name</th><th>Tags</th>" . (($sharedby) ? ("<th>Shared By</th>") : ("")) . "<th style='width:170px; text-align:center;'>Recommendations</th></tr>";
     foreach ($data as $row) {
+        // highlight searched terms
+        if($highlight != ''){
+            $str = preg_replace('/'.str_replace(' ', '|', trim($highlight)).'/i', '<b>$0</b>', stripslashes($row['title']));
+        } else {
+            $str = stripslashes($row['title']);
+        }
         // who shared the content
         if ($sharedby) {
             $query = "select nick1 from dchub_users where id = $row[uid]";
@@ -201,7 +207,7 @@ function contentshow($data, $sharedby = true) {
         }
 
         //printing
-        echo "<tr><td>" . (($row['magnetlink'] != "") ? ("<a href='$row[magnetlink]'>" . stripslashes($row['title']) . "</a>") : (stripslashes($row['title']))) . "</td>
+        echo "<tr><td>" . (($row['magnetlink'] != "") ? ("<a href='$row[magnetlink]'>" .$str. "</a>") : ($str)) . "</td>
             <td>$tagstr</td>" . (($sharedby) ? ("<td><a href='" . SITE_URL . "/users/$user[nick1]'>$user[nick1]</a></td>") : ("")) . "
                 <td style='text-align:center;'><span id='$row[cid]_count'>$rec[recommendations]</span> recommendation(s)<br/>$btn</td></tr>";
     }

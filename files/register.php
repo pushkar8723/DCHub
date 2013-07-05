@@ -147,7 +147,7 @@ if (isset($_SESSION['loggedin'])) {
                 <div class="control-group">
                     <label class="control-label" for="email">Email <span class='req'>*</span></label>
                     <div class="controls">
-                        <input type="text" id="email" name="data[email]"<?php if (isset($_SESSION['data'])) echo "value='" . $_SESSION['data']['email'] . "'"; ?>  required>
+                        <input type="email" id="email" name="data[email]"<?php if (isset($_SESSION['data'])) echo "value='" . $_SESSION['data']['email'] . "'"; ?>  required>
                     </div>
                 </div>
                 <div class="control-group">

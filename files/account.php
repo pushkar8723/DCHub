@@ -31,6 +31,14 @@ if (!isset($_SESSION['loggedin'])) {
     </div>
     <?php
 }
+if (!isset($_SESSION['user']['nick2'])){ ?>
+    <h3>Add another nick</h3>
+    <?php
+    $fields = array(
+        'data[nick2]' => array("Nick", "text")
+    );
+     createForm('addnick', $fields, 'Add nick');
+}
 ?>
 <h3>Change Password</h3>
 <?php

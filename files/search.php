@@ -24,12 +24,12 @@ if (isset($_GET['code'])) {
         });
     </script>
     <form class='pull-right' style='margin-top: 10px;' method='post' action='<?php echo SITE_URL; ?>/process.php'>
-        <input id='search' name='search' type='text' class='search-query' placeholder='Search'/>
+        <input id='search' name='search' type='text' class='search-query' placeholder='Search' value='<?php echo $_GET['code']; ?>'/>
     </form>
     <h1>Search Results</h1>
 
     <?php
-    contentshow($data);
+    contentshow($data, $_GET['code']);
     ?>
 
     <?php
