@@ -323,9 +323,9 @@ if (isset($_POST['register'])) {
         $query = "update dchub_users set authenticated=1, class=2 where nick1 = '$_POST[nick]' and (friend ='" . $_SESSION['user']['nick'] . "'" . ((isset($_SESSION['user']['nick2'])) ? (" or friend='" . $_SESSION['user']['nick2'] . "')") : (")"));
         DB::query($query);
         $friend = DB::findOneFromQuery("select nick1, nick2 from dchub_users where nick = '$_POST[nick]'");
-        DB::update('reglist', array('class' => 1, "nick='" . $friend['nick1'] . "'"));
+        DB::update('reglist', array('class' => 1), "nick='" . $friend['nick1'] . "'");
         if ($friend['nick2'] != "") {
-            DB::update('reglist', array('class' => 1, "nick='" . $friend['nick2'] . "'"));
+            DB::update('reglist', array('class' => 1), "nick='" . $friend['nick2'] . "'");
         }
         redirectTo(SITE_URL . "/friends");
         
