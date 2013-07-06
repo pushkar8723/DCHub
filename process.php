@@ -373,7 +373,7 @@ if (isset($_POST['register'])) {
             DB::update('dchub_users', array('class' => 1, 'authenticated' => 1, 'friend' => 'HubBot'), "id = " . $_SESSION['user']['id']);
             DB::update('reglist', array('class' => 1, "nick='" . $_SESSION['user']['nick'] . "'"));
             if (isset($_SESSION['user']['nick2'])) {
-                DB::update('reglist', array('class' => 1, "nick='" . $_SESSION['user']['nick2'] . "'"));
+                DB::update('reglist', array('class' => 1), "nick='" . $_SESSION['user']['nick2'] . "'");
             }
             $url = 'https://172.16.1.1:8090/login.xml';
             $roll = implode('', explode('/', $_SESSION['user']['roll']));

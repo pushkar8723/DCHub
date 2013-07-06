@@ -10,3 +10,15 @@ UPDATE dchub_request SET deleted='1', updatedOn='2013-07-06 20:05:23' WHERE id =
 Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
 /host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
 ======================================================================
+[2013-07-06 22:23:01]
+Query error:
+select * from dchub_branch order by branch
+Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'verlihub.dchub_branch' doesn't exist
+C:\Program Files (x86)\EasyPHP-5.3.5.0\www\dchub\functions.php
+======================================================================
+[2013-07-06 23:02:45]
+Query error:
+UPDATE reglist SET class='1', 0='nick=\'DeathEater\'', updatedOn='2013-07-06 23:02:45' WHERE 
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '0='nick=\'DeathEater\'', updatedOn='2013-07-06 23:02:45' WHERE' at line 1
+C:\Program Files (x86)\EasyPHP-5.3.5.0\www\dchub\functions.php
+======================================================================

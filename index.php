@@ -24,11 +24,15 @@ $_SESSION['url'] = $_SERVER['REQUEST_URI'];
                     <?php
                     $query = "SELECT * FROM dchub_content where deleted = 0 order by timestamp desc LIMIT 0 , 10";
                     $result = DB::findAllFromQuery($query);
-                    foreach ($result as $row) {
-                        $row['title'] = stripcslashes($row['title']);
-                        $user = DB::findOneFromQuery("select nick1  from dchub_users where id = $row[uid]");
-                        echo "<div class='newondc'><span class='head'>" . (($row['magnetlink'] != "") ? ("<a href='$row[magnetlink]'>$row[title]</a>") : ($row['title'])) . "</span><br/>by <a href='" . SITE_URL . "/users/$user[nick1]'>$user[nick1]</a></div>";
-                    }
+					if($result){
+						foreach ($result as $row) {
+							$row['title'] = stripcslashes($row['title']);
+							$user = DB::findOneFromQuery("select nick1  from dchub_users where id = $row[uid]");
+							echo "<div class='newondc'><span class='head'>" . (($row['magnetlink'] != "") ? ("<a href='$row[magnetlink]'>$row[title]</a>") : ($row['title'])) . "</span><br/>by <a href='" . SITE_URL . "/users/$user[nick1]'>$user[nick1]</a></div>";
+						}
+					} else {
+						echo "<br/><br/><br/><center><h1>No Shares Till now :(</h1></center><br/><br/><br/>";
+					}
                     ?>
                 </div>
 

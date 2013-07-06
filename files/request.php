@@ -67,39 +67,43 @@ if (isset($_GET['page']) && $_GET['page'] > 0) {
         $body = "from dchub_request where deleted = 0 order by id desc";
         $res = DB::findAllWithCount("select *", $body, $page, 10);
         $data = $res['data'];
-        foreach ($data as $row) {
-            echo "<div class='accesslevel'>";
-            $row['request_file'] = preg_replace('/\n/', '<br/>', htmlspecialchars($row['request_file']));
-            $user = DB::findOneFromQuery("select nick1 from dchub_users where id = $row[uid]");
-            echo "<h4><a href='" . SITE_URL . "/users/$user[nick1]'>$user[nick1]</a> requested for :</h4>
-            <div class='post'>$row[request_file]</div>";
-            $vol = explode(',', $row['volunteer']);
+		if($data){
+			foreach ($data as $row) {
+				echo "<div class='accesslevel'>";
+				$row['request_file'] = preg_replace('/\n/', '<br/>', htmlspecialchars($row['request_file']));
+				$user = DB::findOneFromQuery("select nick1 from dchub_users where id = $row[uid]");
+				echo "<h4><a href='" . SITE_URL . "/users/$user[nick1]'>$user[nick1]</a> requested for :</h4>
+				<div class='post'>$row[request_file]</div>";
+				$vol = explode(',', $row['volunteer']);
 
-            echo "<div class='pull-left button'>";
-            if (isset($_SESSION['loggedin']) && !in_array($_SESSION['user']['nick'], $vol)) {
-                echo "<a id='$row[id]' class='volunteer' href='#'>Volunteer</a><br/>";
-            } else if (isset($_SESSION['loggedin']) && in_array($_SESSION['user']['nick'], $vol)) {
-                echo "<a id='$row[id]' class='chickenout' href='#'>Chicken Out</a><br/>";
-            } else {
-                echo "<a href='" . SITE_URL . "'>Login to Volunteer</a><br/>";
-            }
-            echo "</div>";
-            echo "<div style='padding:10px; margin: 5px;'>
-        <span class='highlight' id='$row[id]_volcount'>";
-            if ($row['volunteer'] != "") {
+				echo "<div class='pull-left button'>";
+				if (isset($_SESSION['loggedin']) && !in_array($_SESSION['user']['nick'], $vol)) {
+					echo "<a id='$row[id]' class='volunteer' href='#'>Volunteer</a><br/>";
+				} else if (isset($_SESSION['loggedin']) && in_array($_SESSION['user']['nick'], $vol)) {
+					echo "<a id='$row[id]' class='chickenout' href='#'>Chicken Out</a><br/>";
+				} else {
+					echo "<a href='" . SITE_URL . "'>Login to Volunteer</a><br/>";
+				}
+				echo "</div>";
+				echo "<div style='padding:10px; margin: 5px;'>
+			<span class='highlight' id='$row[id]_volcount'>";
+				if ($row['volunteer'] != "") {
 
-                $vol = explode(',', $row['volunteer']);
-                foreach ($vol as $pick) {
-                    if ($pick != "")
-                        echo "<a href='" . SITE_URL . "/users/$pick'>$pick</a> ";
-                }
-            } else {
-                echo "No one";
-            }
-            echo "</span> has volunteered</div>
-                </div>";
-        }
-        pagination($res['noofpages'], SITE_URL."/request", $page, 10);
+					$vol = explode(',', $row['volunteer']);
+					foreach ($vol as $pick) {
+						if ($pick != "")
+							echo "<a href='" . SITE_URL . "/users/$pick'>$pick</a> ";
+					}
+				} else {
+					echo "No one";
+				}
+				echo "</span> has volunteered</div>
+					</div>";
+			}
+			pagination($res['noofpages'], SITE_URL."/request", $page, 10);
+		} else {
+			echo "<h1>No request till now.</h1><h3>Go ahead make one.</h3>";
+		}
         ?>
     </div>
     <div class='span5'>

@@ -124,8 +124,8 @@ order by timestamp desc";
                             </li>
                         </ul>
     <?php } else { ?>
-                        <a class="btn btn-large btn-danger pull-right" href="<?php echo SITE_URL; ?>/register">Register</a>
-                        <a style='margin-right: 5px;' class="btn btn-large btn-danger pull-right" href="#" data-placement='bottom' rel="popover" data-original-title="Sign In" id="signin">Sign In</a>
+                        <a style='margin-top: 3px;' class="btn btn-large btn-danger pull-right" href="<?php echo SITE_URL; ?>/register">Register</a>
+                        <a style='margin-top: 3px; margin-right: 5px;' class="btn btn-large btn-danger pull-right" href="#" data-placement='bottom' rel="popover" data-original-title="Sign In" id="signin">Sign In</a>
     <?php } ?>
             </div>
         </div>
