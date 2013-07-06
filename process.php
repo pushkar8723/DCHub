@@ -368,10 +368,10 @@ if (isset($_POST['register'])) {
         $xml = simplexml_load_string($result) or $_SESSION['msg'] = 'Error! Contact Admin';
         $opt = array("You have successfully logged in", "You are not allowed to login at this time", "You have reached Maximum Login Limit.");
         if (isset($xml->message) && in_array($xml->message, $opt)) {
-            $_SESSION['msg'] = 'Authentication Successfull' . $xml->message;
+            $_SESSION['msg'] = 'Authentication Successfull';
             $_SESSION['user']['accesslevel'] = 1;
             DB::update('dchub_users', array('class' => 1, 'authenticated' => 1, 'friend' => 'HubBot'), "id = " . $_SESSION['user']['id']);
-            DB::update('reglist', array('class' => 1, "nick='" . $_SESSION['user']['nick'] . "'"));
+            DB::update('reglist', array('class' => 1), "nick='" . $_SESSION['user']['nick'] . "'");
             if (isset($_SESSION['user']['nick2'])) {
                 DB::update('reglist', array('class' => 1), "nick='" . $_SESSION['user']['nick2'] . "'");
             }
@@ -429,14 +429,27 @@ if (isset($_POST['register'])) {
     } else if (isset($_POST['adminupdate']) && $_SESSION['user']['accesslevel'] >= 9) {
         $_POST['data'] = secure($_POST['data']);
         DB::update('dchub_users', $_POST['data'], 'id = ' . $_POST['data']['id']);
+		if($_POST['data']['class'] != 10) {
+			$nicks = DB::findOneFromQuery("select nick1, nick2 from dchub_users where id = ".$_POST['data']['id']);
+			DB::update('reglist', array('class' => $classmap[$_POST['data']['class']]), "nick = '$nicks[nick1]'");
+			DB::update('reglist', array('class' => $classmap[$_POST['data']['class']]), "nick = '$nicks[nick2]'");
+		} else {
+			$nicks = DB::findOneFromQuery("select nick1, nick2 from dchub_users where id = ".$_POST['data']['id']);
+			DB::update('reglist', array('class' => $classmap[$_POST['data']['class']]), "nick = '$nicks[nick1]'");
+		}
         $_SESSION['msg'] = "Account Updated";
         redirectTo("http://" . $_SERVER['HTTP_HOST'] . $_SESSION['url']);
+		
+		// add second nick
     } else if (isset($_POST['addnick']) && !isset($_SESSION['user']['nick2'])) {
         if (in_array(strtolower($_POST['data']['nick2']), $restrictednicks)) {
             $_SESSION['msg'] = 'Nick not allowed';
         } else {
             $_POST['data'] = secure($_POST['data']);
             DB::update('dchub_users', $_POST['data'], 'id = ' . $_SESSION['user']['id']);
+			$passwd = DB::findOneFromQuery("select password_ from dchub_users where id = ".$_SESSION['user']['id']);
+			$ver = array('nick' => $_POST['data']['nick2'], 'class' => '0', 'pwd_crypt' => 0, 'login_pwd' => $passwd['password_']);
+            $res1 = DB::insert("reglist", $ver);
             $_SESSION['user']['nick2'] = $_POST['data']['nick2'];
             $_SESSION['msg'] = 'Nick Added';
         }

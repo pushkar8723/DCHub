@@ -102,7 +102,7 @@ if (isset($_GET['page']) && $_GET['page'] > 0) {
 			}
 			pagination($res['noofpages'], SITE_URL."/request", $page, 10);
 		} else {
-			echo "<h1>No request till now.</h1><h3>Go ahead make one.</h3>";
+			echo "<br/><br/><br/><br/><h1>No request till now.</h1><h3>Go ahead make one.</h3><br/><br/><br/><br/>";
 		}
         ?>
     </div>

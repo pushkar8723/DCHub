@@ -542,7 +542,7 @@ CREATE TABLE IF NOT EXISTS `reglist` (
   `hide_share` tinyint(1) DEFAULT '0',
   `reg_date` int(11) DEFAULT NULL,
   `reg_op` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `pwd_change` tinyint(1) DEFAULT '1',
+  `pwd_change` tinyint(1) DEFAULT '0',
   `pwd_crypt` tinyint(1) DEFAULT '1',
   `login_pwd` varchar(60) COLLATE utf8_unicode_ci DEFAULT NULL,
   `login_last` int(11) DEFAULT '0',
