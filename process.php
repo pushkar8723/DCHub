@@ -368,7 +368,7 @@ if (isset($_POST['register'])) {
         $xml = simplexml_load_string($result) or $_SESSION['msg'] = 'Error! Contact Admin';
         $opt = array("You have successfully logged in", "You are not allowed to login at this time", "You have reached Maximum Login Limit.");
         if (isset($xml->message) && in_array($xml->message, $opt)) {
-            $_SESSION['msg'] = 'Authentication Successfull';
+            $_SESSION['msg'] = 'Authentication Successful!';
             $_SESSION['user']['accesslevel'] = 1;
             DB::update('dchub_users', array('class' => 1, 'authenticated' => 1, 'friend' => 'HubBot'), "id = " . $_SESSION['user']['id']);
             DB::update('reglist', array('class' => 1), "nick='" . $_SESSION['user']['nick'] . "'");
@@ -447,8 +447,8 @@ if (isset($_POST['register'])) {
         } else {
             $_POST['data'] = secure($_POST['data']);
             DB::update('dchub_users', $_POST['data'], 'id = ' . $_SESSION['user']['id']);
-			$passwd = DB::findOneFromQuery("select password_ from dchub_users where id = ".$_SESSION['user']['id']);
-			$ver = array('nick' => $_POST['data']['nick2'], 'class' => '0', 'pwd_crypt' => 0, 'login_pwd' => $passwd['password_']);
+			$passwd = DB::findOneFromQuery("select password_, class from dchub_users where id = ".$_SESSION['user']['id']);
+			$ver = array('nick' => $_POST['data']['nick2'], 'class' => $classmap[$passwd['class']], 'pwd_crypt' => 0, 'login_pwd' => $passwd['password_']);
             $res1 = DB::insert("reglist", $ver);
             $_SESSION['user']['nick2'] = $_POST['data']['nick2'];
             $_SESSION['msg'] = 'Nick Added';
