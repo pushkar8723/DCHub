@@ -1,6 +1,8 @@
 <?php
-if (!isset($_SESSION['loggedin']))
-    redirectTo(SITE_URL);
+if (!isset($_SESSION['loggedin'])) {
+    echo "<br/><br/><br/><h1>Not Logged in :(</h1>You need to login to access this page.<br/><br/><br/>";
+    return;
+}
 if ($_SESSION['user']['accesslevel'] == 0) {
     echo "<br/><br/><br/><h1>Permission Denied :(</h1>You have to get authenticated first to authenticate your firend.<br/><br/><br/>";
 } else {

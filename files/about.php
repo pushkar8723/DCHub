@@ -3,7 +3,7 @@
 <h3>Why use DC Hub?</h3>
 <ul>
     <li>DC Hub is the <b>Official Direct Connect Hub</b> of BIT Mesra.</li>
-    <li>Since its hosted on a system in RnD Building, its <b>Always Online.</b></li>
+    <li>It is <b>Always Online.</b></li>
     <li><b>Latest Contents</b>: Users get to see what new content has been shared on DC.</li>
     <li>Want something downloaded? Post on our <b>Request Page</b>.</li>
     <li>Get the Schedule of your favorite TV Shows with our <b>TV Scheduler</b>.</li>

@@ -81,7 +81,7 @@ if (isset($_SESSION['loggedin'])) {
         <div class='span8'>
             <?php
                 if($_SESSION['user']['accesslevel'] == 0){
-                    echo "<div class='alert' style='margin-top: 10px;'>You are not an authenticated user. <a href='".SITE_URL."/account'>Click Here</a> to authenticate yourself.</div>";
+                    echo "<div class='alert' style='text-align: center; margin-top: 10px;'>You are not an authenticated user. IP and chat facilities are restricted.<br/> <a href='".SITE_URL."/account'>Click Here</a> to authenticate yourself.</div>";
                 }
             ?>
             <h3>Share</h3>
@@ -118,7 +118,7 @@ if (isset($_SESSION['loggedin'])) {
             $body = "from dchub_content where deleted = 0 and uid = " . $_SESSION['user']['id'] . " order by timestamp desc";
             $res = DB::findAllWithCount("select *", $body, $page, 10);
             $data = $res['data'];
-            contentshow($data, FALSE);
+            contentshow($data,'',FALSE);
             pagination($res['noofpages'], SITE_URL . "/", $page, 10);
             ?>
         </div>

@@ -51,7 +51,7 @@ if (isset($_GET['page']) && $_GET['page'] > 0) {
     });
 </script>
 <form class='pull-right' style='margin-top: 10px;' method='post' action='<?php echo SITE_URL; ?>/process.php'>
-    <input id='search' name='search' type='text' class='search-query' placeholder='Search'/>
+    <input id='search' name='search' type='text' class='search-query' placeholder='Search' required/>
 </form>
 <h1>Latest Contents</h1>
 <ul class="nav nav-tabs">

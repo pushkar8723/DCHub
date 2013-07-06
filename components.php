@@ -1,5 +1,4 @@
 <?php
-
 function head() { ?>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -66,7 +65,8 @@ function navbar() {
                         <ul>
                             <li><a href="<?php echo SITE_URL; ?>/hot">HOT Page</a></li>
                             <li><a href="<?php echo SITE_URL; ?>/request">Request Page</a></li>
-                            <li><a href="<?php echo SITE_URL; ?>/hof">Hall of Fame</a></li>
+                            <li><a href="<?php echo SITE_URL; ?>/recommend">Recommendation Page</a></li>
+                            <!--<li><a href="<?php echo SITE_URL; ?>/hof">Hall of Fame</a></li>-->
                         </ul>
                     </li>
                     <li><a href="<?php echo SITE_URL; ?>/faq">FAQ</a></li>
@@ -172,7 +172,7 @@ function check($var) {
 }
 
 function contentshow($data, $highlight = '', $sharedby = true) {
-    echo "<table class='table table-striped'>
+    echo "<table class='table table-hover'>
                     <tr><th>File Name</th><th>Tags</th>" . (($sharedby) ? ("<th>Shared By</th>") : ("")) . "<th style='width:170px; text-align:center;'>Recommendations</th></tr>";
     foreach ($data as $row) {
         // highlight searched terms
@@ -192,10 +192,10 @@ function contentshow($data, $highlight = '', $sharedby = true) {
         foreach ($splittag as $tag)
             $tagstr .= "<a href='" . SITE_URL . "/latest/$tag'>$tag</a> ";
         // recommend button
-        $query = "select count(cid) as recommendations from dchub_recommend where cid = $row[cid]";
+        $query = "select count(cid) as recommendations from dchub_recommend where cid = $row[cid] and type='lc'";
         $rec = DB::findOneFromQuery($query);
         if (isset($_SESSION['loggedin'])) {
-            $query = "select uid from dchub_recommend where cid = $row[cid] and uid = " . $_SESSION['user']['id'];
+            $query = "select uid from dchub_recommend where type='lc' and cid = $row[cid] and uid = " . $_SESSION['user']['id'];
             $response = DB::findAllFromQuery($query);
             if ($response) {
                 $btn = "<a href='#' class='btn discourage' id='$row[cid]'>Discourage</a>";

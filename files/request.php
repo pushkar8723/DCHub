@@ -1,4 +1,10 @@
 <script type='text/javascript'>
+    function replaceURLWithHTMLLinks(text) {
+        var exp = /(\b(magnet):?[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+        text = text.replace(exp, "<a href='$1'>$1</a>");
+        var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+        return text.replace(exp, "<a target='_blank' href='$1'>$1</a>");
+    }
     $(document).ready(function() {
         $('.volunteer, .chickenout').click(function(event) {
             $('#' + event.target.id).html("Processing...");
@@ -9,10 +15,10 @@
                 }, function(result) {
                     if (result == '1') {
                         $('#' + event.target.id).removeClass('volunteer').addClass('chickenout').html('Chicken Out');
-                        if($('#' + event.target.id + "_volcount").html() == "No one")
-                            $('#' + event.target.id + "_volcount").html("<?php if (isset($_SESSION['loggedin'])) echo "<a href=\\\"".SITE_URL."/users/".$_SESSION['user']['nick']."\\\">".$_SESSION['user']['nick']."</a>"; ?>");
+                        if ($('#' + event.target.id + "_volcount").html() == "No one")
+                            $('#' + event.target.id + "_volcount").html("<?php if (isset($_SESSION['loggedin'])) echo "<a href=\\\"" . SITE_URL . "/users/" . $_SESSION['user']['nick'] . "\\\">" . $_SESSION['user']['nick'] . "</a>"; ?>");
                         else
-                            $('#' + event.target.id + "_volcount").html($('#' + event.target.id + "_volcount").html()+" <?php if (isset($_SESSION['loggedin'])) echo "<a href='".SITE_URL."/users/".$_SESSION['user']['nick']."'>".$_SESSION['user']['nick']."</a>"; ?>");
+                            $('#' + event.target.id + "_volcount").html($('#' + event.target.id + "_volcount").html() + " <?php if (isset($_SESSION['loggedin'])) echo "<a href='" . SITE_URL . "/users/" . $_SESSION['user']['nick'] . "'>" . $_SESSION['user']['nick'] . "</a>"; ?>");
                     }
                     else {
                         $('#' + event.target.id).html(result);
@@ -28,9 +34,9 @@
                         $('#' + event.target.id).removeClass('chickenout').addClass('volunteer').html('Volunteer');
                         var str;
                         str = $('#' + event.target.id + "_volcount").html();
-                        str = str.replace("<?php if (isset($_SESSION['loggedin'])) echo "<a href=\\\"".SITE_URL."/users/".$_SESSION['user']['nick']."\\\">".$_SESSION['user']['nick']."</a>"; ?>", "");
+                        str = str.replace("<?php if (isset($_SESSION['loggedin'])) echo "<a href=\\\"" . SITE_URL . "/users/" . $_SESSION['user']['nick'] . "\\\">" . $_SESSION['user']['nick'] . "</a>"; ?>", "");
                         str = str.trim();
-                        if(str == "")
+                        if (str == "")
                             $('#' + event.target.id + "_volcount").html("No one");
                         else
                             $('#' + event.target.id + "_volcount").html(str);
@@ -41,51 +47,75 @@
                 });
             }
         });
+        $('.post').each(function() {
+            $(this).html(replaceURLWithHTMLLinks($(this).html()));
+        });
     });
 </script>
 <h1>Request Page</h1>
+<hr/>
 <?php
 if (isset($_GET['page']) && $_GET['page'] > 0) {
     $page = $_GET['page'];
 } else {
     $page = 1;
 }
-if(isset($_SESSION['loggedin'])){
-    echo "<h4>Make a request</h4>
-        <form action='".SITE_URL."/process.php' method='post'>
-        <textarea name='data[request_file]'></textarea><br/>
+?>
+<div class='row'>
+    <div class='span7'>
+        <?php
+        $body = "from dchub_request where deleted = 0 order by id desc";
+        $res = DB::findAllWithCount("select *", $body, $page, 10);
+        $data = $res['data'];
+        foreach ($data as $row) {
+            echo "<div class='accesslevel'>";
+            $row['request_file'] = preg_replace('/\n/', '<br/>', htmlspecialchars($row['request_file']));
+            $user = DB::findOneFromQuery("select nick1 from dchub_users where id = $row[uid]");
+            echo "<h4><a href='" . SITE_URL . "/users/$user[nick1]'>$user[nick1]</a> requested for :</h4>
+            <div class='post'>$row[request_file]</div>";
+            $vol = explode(',', $row['volunteer']);
+
+            echo "<div class='pull-left button'>";
+            if (isset($_SESSION['loggedin']) && !in_array($_SESSION['user']['nick'], $vol)) {
+                echo "<a id='$row[id]' class='volunteer' href='#'>Volunteer</a><br/>";
+            } else if (isset($_SESSION['loggedin']) && in_array($_SESSION['user']['nick'], $vol)) {
+                echo "<a id='$row[id]' class='chickenout' href='#'>Chicken Out</a><br/>";
+            } else {
+                echo "<a href='" . SITE_URL . "'>Login to Volunteer</a><br/>";
+            }
+            echo "</div>";
+            echo "<div style='padding:10px; margin: 5px;'>
+        <span class='highlight' id='$row[id]_volcount'>";
+            if ($row['volunteer'] != "") {
+
+                $vol = explode(',', $row['volunteer']);
+                foreach ($vol as $pick) {
+                    if ($pick != "")
+                        echo "<a href='" . SITE_URL . "/users/$pick'>$pick</a> ";
+                }
+            } else {
+                echo "No one";
+            }
+            echo "</span> has volunteered</div>
+                </div>";
+        }
+        pagination($res['noofpages'], SITE_URL."/request", $page, 10);
+        ?>
+    </div>
+    <div class='span5'>
+        <div style='position: fixed; width: 350px;'>
+            <?php
+            if (isset($_SESSION['loggedin'])) {
+                echo "<h4>Make a request</h4>
+        <b>If possible try to provide URL / magnet links for the content.</b><br/><br/>
+        <form action='" . SITE_URL . "/process.php' method='post'>
+        <textarea style='width: 100%;' name='data[request_file]' required></textarea><br/>
         <input type='submit' value='Request' name='request' class='btn'/>
         </form>";
-} else {
-    echo "<a href='#' onclick=\"$('#signin').popover('show');\" class='btn btn-danger btn-block btn-large'>Login to make a Request</a>";
-}
-$body = "from dchub_request where deleted = 0 order by id desc";
-$res = DB::findAllWithCount("select *", $body, $page, 20);
-$data = $res['data'];
-foreach($data as $row){
-    $row['request_file'] = htmlspecialchars(preg_replace('/\n/', '<br/>', $row['request_file']));
-    $user = DB::findOneFromQuery("select nick1 from dchub_users where id = $row[uid]");
-    echo "<hr/><b><a href='".SITE_URL."/users/$user[nick1]'>$user[nick1]</a> requested for :</b><br/>
-            $row[request_file]<br/>";
-    $vol = explode(',', $row['volunteer']);
-    if(isset($_SESSION['loggedin']) && !in_array($_SESSION['user']['nick'], $vol)){
-        echo "<a id='$row[id]' class='volunteer' href='#'>Volunteer</a><br/>";
-    } else if(isset($_SESSION['loggedin']) && in_array($_SESSION['user']['nick'], $vol)){
-        echo "<a id='$row[id]' class='chickenout' href='#'>Chicken Out</a><br/>";
-    } else {
-        echo "<a href='".SITE_URL."'>Login to Volunteer</a><br/>";
-    }
-    echo "<span id='$row[id]_volcount'>";
-    if($row['volunteer'] != ""){
-        
-        $vol = explode(',', $row['volunteer']);
-        foreach ($vol as $pick){
-            if($pick != "")
-                echo "<a href='".SITE_URL."/users/$pick'>$pick</a> ";
-        }
-    } else {
-        echo "No one";
-    }
-    echo "</span> has volunteered<br/>";
-}
-?>
+            } else {
+                echo "<a href='#' onclick=\"$('#signin').popover('show');\" class='btn btn-danger btn-block btn-large'>Login to make a Request</a>";
+            }
+            ?>
+        </div>
+    </div>
+</div>

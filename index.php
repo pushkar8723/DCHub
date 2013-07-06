@@ -20,7 +20,7 @@ $_SESSION['url'] = $_SERVER['REQUEST_URI'];
                 <div class="palette palette-firm" style="margin-top: 10px;">
                     <h3>What's new on DC?</h3>
                 </div>
-                <div class="palette palette-night" style='max-height: 280px; overflow-y: auto; padding: 0;'>
+                <div class="palette palette-night" style='overflow-y: auto; padding: 0;'>
                     <?php
                     $query = "SELECT * FROM dchub_content where deleted = 0 order by timestamp desc LIMIT 0 , 10";
                     $result = DB::findAllFromQuery($query);

@@ -40,6 +40,8 @@ define("MAIL_PATH", "Mail.php");
 define("ERROR_LOG", dirname(__FILE__) . "/errors.txt");
 
 date_default_timezone_set("Asia/Kolkata");
+$classmap = array(0 => 0, 1 => 1, 2 => 1, 3 => 1, 4 => 1, 7 => 1, 8 => 1, 9 => 3, 10 => 10);
+$restrictednicks = array('hubbot', 'opchat', 'dj', 'sourcecode');
 $class = array(0 => 'Novice', 1 => 'Experienced', 2 => 'Famous', 3 => 'Moderator', 4 => 'Pseudo-Admin', 8=> 'Master', 9 => 'Cheef', 10 => 'Admin');
 $defaultGroup = array('2010' => '2k10', '2011' => '2k11', '2012' => '2k12', '2013' => '2k13');
 $categories = array('Everything' => '', "Movies" => 'movie', "TV Series" => 'tv', "Books" => 'book', 'Games' => 'game');

@@ -66,7 +66,7 @@ if (isset($_GET['code'])) {
         $body = "from dchub_content where deleted = 0 and uid = $user[id] order by timestamp desc";
         $res = DB::findAllWithCount("select *", $body, $page, 25);
         $data = $res['data'];
-        contentshow($data, FALSE);
+        contentshow($data, '', FALSE);
         pagination($res['noofpages'], SITE_URL . "/users/$_GET[code]", $page, 10);
     } else {
         echo "<br/><br/><br/><h1>User not found</h1>The user you are searching for doesn't exsits.<br/><br/><br/>";

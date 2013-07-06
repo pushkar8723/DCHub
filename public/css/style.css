@@ -73,3 +73,29 @@ th{
    font-size: 25px;
    padding: 10px;
 }
+.highlight{
+    font-size: 15px;
+    font-weight: bold;
+    padding-left: 20px;
+}
+.post{
+    border-width: 1px 0 1px 0;
+    border-color: #ddd;
+    border-style:solid;
+    padding: 10px;
+    overflow-x: hidden;
+}
+.button{
+    border-radius: 5px;
+    background: rgb(52, 73, 94);
+    width: 100px;
+    text-align: center;
+    margin: 5px;
+    padding: 10px;
+}
+.button a {
+    color: #fff;
+    text-decoration: none;
+}.button a:hover {
+    color: #1abc9c;
+}

@@ -19,18 +19,27 @@ $(document).ready(function(){
     echo "<div class='form-horizontal'><div class='control-group'>
         <div class='control-label'><label>Select Nick</label></div>
         <div class='controls'><select id='nick'>";
+    if(!isset($_GET['code']))
+        echo "<option>Select a nick</option>";
     foreach($res as $row){
         echo "<option value='$row[nick]' ".((isset($_GET['code']) && $_GET['code'] == $row['nick'])?("selected"):("")).">$row[nick]</option>";
     }
     echo "</select></div></div></div>";
     if(isset($_GET['code'])){
-        $query = "select id, nick1, nick2, fullname, roll_course, roll_number, roll_year, hostel, room, branch, phone, gender  from dchub_users where nick1 = '$_GET[code]' or nick2 = '$_GET[code]'";
+        $query = "select id, class, nick1, nick2, fullname, roll_course, roll_number, roll_year, hostel, room, branch, phone, authenticated  from dchub_users where nick1 = '$_GET[code]' or nick2 = '$_GET[code]'";
         $user = DB::findOneFromQuery($query);
         $fields = array();
         foreach ($user as $key => $value){
             if($key == 'id'){
                 $fields['data[id]'] = array($key, 'hidden', $value);
-            } else if($key == 'roll_course'){
+            } else if($key == 'class'){
+                $cstr = array();
+                foreach($class as $ckey => $cvalue){
+                    array_push($cstr, "$ckey:$cvalue ($ckey)");
+                }
+                $cstr = implode(',', $cstr);
+                $fields['data['.$key."]"] = array($key, 'select', $cstr, $value);
+            }else if($key == 'roll_course'){
                 $fields['data['.$key."]"] = array($key, 'select', "BE:BE,ME:ME,MCA:MCA,MBA:MBA,MBI:MBI,BPH:BPH,BPH:BPH,BT:BT,MT:MT,MSC:MSC,BARCH:BARCH,BHMCT:BHMCT,BMI:BMI,MUP:MUP,IMH:IMH,PHD:PHD,EMP:EMP", $value);
             } else if($key == 'roll_year'){
                 $fields['data['.$key."]"] = array($key, 'select', "2013:2013,2012:2012,2011:2011,2010:2010,2009:2009,2008:2008,2007:2007,2006:2006,2005:2005", $value);

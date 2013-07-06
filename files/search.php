@@ -11,7 +11,7 @@ if (isset($_GET['code'])) {
         array_push($clause, "title like '%$term%'");
     }
     $table = implode(" AND ", $clause);
-    $body = "from dchub_content where $table order by timestamp desc";
+    $body = "from dchub_content where deleted = 0 and $table order by timestamp desc";
 //    echo $body;
     $msc = microtime(true);
     $res = DB::findAllWithCount("select *", $body, $page, 20);
@@ -28,7 +28,7 @@ if (isset($_GET['code'])) {
         });
     </script>
     <form class='pull-right' style='margin-top: 10px;' method='post' action='<?php echo SITE_URL; ?>/process.php'>
-        <input id='search' name='search' type='text' class='search-query' placeholder='Search' value='<?php echo $_GET['code']; ?>'/>
+        <input id='search' name='search' type='text' class='search-query' placeholder='Search' value='<?php echo $_GET['code']; ?>'  required/>
     </form>
     <h1>Search Results</h1>
     <?php
@@ -49,7 +49,7 @@ if (isset($_GET['code'])) {
         });
     </script>
     <form style='margin-top: 10px;' method='post' action='<?php echo SITE_URL; ?>/process.php'>
-        <input id='search' name='search' type='text' class='search-query' placeholder='Search'/>
+        <input id='search' name='search' type='text' class='search-query' placeholder='Search' required/>
     </form>
     <?php
 }
