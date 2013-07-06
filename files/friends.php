@@ -11,7 +11,7 @@ if ($_SESSION['user']['accesslevel'] == 0) {
     <div class='auth'>
         <h4>Authentication Request</h4><hr/>
         <?php
-        $query = "select * from dchub_users where deleted=0 and authenticated=0 and (friend = '" . $_SESSION['user']['nick'] . "'" . ((isset($_SESSION['user']['nick2']) ? (" or friend = '" . $_SESSION['user']['nick2'] . "')") : (")")));
+        $query = "select * from dchub_users where deleted=0 and class=0 and (friend = '" . $_SESSION['user']['nick'] . "'" . ((isset($_SESSION['user']['nick2']) ? (" or friend = '" . $_SESSION['user']['nick2'] . "')") : (")")));
         $res = DB::findAllFromQuery($query);
         foreach ($res as $row) {
             echo "<h5>$row[fullname]</h5><b>Nick :</b> <a href='" . SITE_URL . "/users/$row[nick1]'>$row[nick1]</a><br/>
@@ -30,7 +30,7 @@ if ($_SESSION['user']['accesslevel'] == 0) {
     <h4>Approved Friends</h4><hr/>
     <div class="row">
         <?php
-        $query = "select * from dchub_users where deleted=0 and authenticated=1 and (friend = '" . $_SESSION['user']['nick'] . "'" . ((isset($_SESSION['user']['nick2']) ? (" or friend = '" . $_SESSION['user']['nick2'] . "')") : (")")));
+        $query = "select * from dchub_users where deleted=0 and class=1 and (friend = '" . $_SESSION['user']['nick'] . "'" . ((isset($_SESSION['user']['nick2']) ? (" or friend = '" . $_SESSION['user']['nick2'] . "')") : (")")));
         $res = DB::findAllFromQuery($query);
         foreach ($res as $row) {
             echo "<div class='span4'><h5>$row[fullname]</h5><b>Nick :</b> <a href='" . SITE_URL . "/users/$row[nick1]'>$row[nick1]</a><br/>

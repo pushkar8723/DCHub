@@ -70,7 +70,7 @@ if (isset($_POST['register'])) {
     }
     $res = DB::findOneFromQuery("select count(email) as count from dchub_users where roll_course = '" . $_POST['data']['roll_course'] . "' and roll_number = '" . $_POST['data']['roll_number'] . "' and roll_year = '" . $_POST['data']['roll_year'] . "'");
     if ($res['count'] > 0) {
-        $_SESSION['msg'] .= "Roll number is already registered. Contact Admins if you haven't registered.<br/>";
+        $_SESSION['msg'] .= "Roll number is already registered. contact the Admins if you haven't registered.<br/>";
         $error = 1;
     }
     if ($error == 1) {
@@ -137,7 +137,7 @@ if (isset($_POST['register'])) {
             redirectAfter(SITE_URL);
         } else {
             $_SESSION['data'] = $_POST['data'];
-            $_SESSION['msg'] .= "Sorry there was an error! Contact Admin";
+            $_SESSION['msg'] .= "Sorry there was an error! contact the Admins";
             redirectTo(SITE_URL . '/register');
         }
     }
@@ -365,7 +365,7 @@ if (isset($_POST['register'])) {
         );
         $context = stream_context_create($options);
         $result = file_get_contents($url, false, $context);
-        $xml = simplexml_load_string($result) or $_SESSION['msg'] = 'Error! Contact Admin';
+        $xml = simplexml_load_string($result) or $_SESSION['msg'] = 'Error! contact the Admins';
         $opt = array("You have successfully logged in", "You are not allowed to login at this time", "You have reached Maximum Login Limit.");
         if (isset($xml->message) && in_array($xml->message, $opt)) {
             $_SESSION['msg'] = 'Authentication Successful!';
@@ -388,7 +388,7 @@ if (isset($_POST['register'])) {
             $context = stream_context_create($options);
             $result = file_get_contents($url, false, $context);
         } else {
-            $_SESSION['msg'] = 'Authentication Failed! If you are sure about your password contact admin.';
+            $_SESSION['msg'] = 'Authentication Failed! If you are sure about your password contact the Admins.';
         }
         redirectTo("http://" . $_SERVER['HTTP_HOST'] . $_SESSION['url']);
         
@@ -484,7 +484,7 @@ if (isset($_POST['register'])) {
             $gid = DB::findOneFromQuery("select * from dchub_groups where name='everybody'");
             $data['gid'] =$gid['id'];
             DB::insert('dchub_post', $data);
-            $_SESSION['msg'] = "Message will be broadcasted after approval from admin.";
+            $_SESSION['msg'] = "Message will be broadcasted after approval from Admin.";
         }else {
             $res = DB::findAllFromQuery("select * from dchub_groups");
             $groups = array();
@@ -523,7 +523,7 @@ if (isset($_POST['register'])) {
                 $data['gid'] = $val;
                 DB::insert('dchub_post', $data);
             }
-            $_SESSION['msg'] = "Message will be delivered to people in " . implode(', ', $grname) . " after approval from admin.";
+            $_SESSION['msg'] = "Message will be delivered to people in " . implode(', ', $grname) . " after approval from Admin.";
         }
         redirectTo(SITE_URL . "/messages");
         
