@@ -1,4 +1,5 @@
 <?php
+
 function head() { ?>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -70,41 +71,62 @@ function navbar() {
                         </ul>
                     </li>
                     <li><a href="<?php echo SITE_URL; ?>/faq">FAQ</a></li>
-                    <?php if (isset($_SESSION['loggedin']) && $_SESSION['user']['accesslevel'] >= 9) { ?>
-                        <li><a href="<?php echo SITE_URL; ?>/groups">Groups</a></li>
-                        <li><a href="<?php echo SITE_URL; ?>/admin">Administration</a></li>
+                    <?php if (isset($_SESSION['loggedin']) && $_SESSION['user']['accesslevel'] >= 2) { ?>
+                            <li><a href="#">Manage</a>
+                                <ul>
+                                    <li><a href="<?php echo SITE_URL; ?>/recmanage">Recommendation Page</a></li>
+                                    <li><a href="<?php echo SITE_URL; ?>/reqmanage">Request Page</a></li>
+                                    <?php
+                                    if($_SESSION['user']['accesslevel'] >= 3){
+                                        echo "<li><a href='".SITE_URL."/latmanage'>Latest Content</a></li>";
+                                    }
+                                    if($_SESSION['user']['accesslevel'] >= 4){
+                                        echo "<li><a href='".SITE_URL."/msgmanage'>Message Approval</a></li>";
+                                    }
+                                    ?>
+                                </ul>
+                            </li>
                     <?php } ?>
-                </ul>
-                <?php
-                if (isset($_SESSION['loggedin'])) {
-                    $query = "select * from dchub_users where authenticated = 0 and (friend = '" . $_SESSION['user']['nick'] . "' " . ((isset($_SESSION['user']['nick2'])) ? ("OR friend = '" . $_SESSION['user']['nick2'] . "'") : ('')) . ")";
-                    $res = DB::findAllFromQuery($query);
-                    $query = "select distinct(fromid) as fromid from dchub_message where id > '" . $_SESSION['user']['msgid'] . "' and toid = " . $_SESSION['user']['id'] . "
+    <?php if (isset($_SESSION['loggedin']) && $_SESSION['user']['accesslevel'] >= 9) { ?>
+                            <li><a href="#">Admin</a>
+                                <ul>
+                                    <li><a href="<?php echo SITE_URL; ?>/groups">Groups</a></li>
+                                    <li><a href="<?php echo SITE_URL; ?>/admin">Administration</a></li>
+                                    <li><a href="<?php echo SITE_URL; ?>/motd">MotD</a></li>
+                                </ul>
+                            </li>
+                    <?php } ?>
+                    </ul>
+                    <?php
+                    if (isset($_SESSION['loggedin'])) {
+                        $query = "select * from dchub_users where authenticated = 0 and (friend = '" . $_SESSION['user']['nick'] . "' " . ((isset($_SESSION['user']['nick2'])) ? ("OR friend = '" . $_SESSION['user']['nick2'] . "'") : ('')) . ")";
+                        $res = DB::findAllFromQuery($query);
+                        $query = "select distinct(fromid) as fromid from dchub_message where id > '" . $_SESSION['user']['msgid'] . "' and toid = " . $_SESSION['user']['id'] . "
             union
             select distinct(toid) as fromid from dchub_message where id > '" . $_SESSION['user']['msgid'] . "' and fromid = " . $_SESSION['user']['id'];
-                    $resmsg = DB::findAllFromQuery($query);
-                    $usrgrp = "'" . implode("','", $_SESSION['user']['groups']) . "'";
-                    $query = "select id from dchub_post where deleted=0 and approvedby!=0 and id > '" . $_SESSION['user']['notificationid'] . "' and gid in 
+                        $resmsg = DB::findAllFromQuery($query);
+                        $usrgrp = "'" . implode("','", $_SESSION['user']['groups']) . "'";
+                        $query = "select id from dchub_post where deleted=0 and approvedby!=0 and id > '" . $_SESSION['user']['notificationid'] . "' and gid in 
 (select id from dchub_groups where name in ($usrgrp))    
 order by timestamp desc";
-                    $resnot = DB::findAllFromQuery($query);
-                    ?>
-                    <ul class="nav pull-right">
-                        <li id='friendnav' <?php if (count($res) > 0) echo "class='active'"; ?>><a href="<?php echo SITE_URL; ?>/friends"><span class="fui-man-24"></span><?php if (count($res) > 0) echo '<span class="navbar-unread">' . count($res) . '</span>'; ?></a></li>
-                        <li id='msgnav' <?php if (count($resmsg) > 0) echo "class='active'"; ?>><a href="<?php echo SITE_URL; ?>/messages"><span class="fui-bubble-24"></span><?php if (count($resmsg) > 0) echo '<span class="navbar-unread">' . count($resmsg) . '</span>'; ?></a></li>
-                        <li id='notnav' <?php if (count($resnot) > 0) echo "class='active'"; ?>><a href="<?php echo SITE_URL; ?>/notifications"><span class="fui-menu-24"></span><?php if (count($resnot) > 0) echo '<span class="navbar-unread">' . count($resnot) . '</span>'; ?></a></li>
-                        <li>
-                            <a href="#">Account</a>
-                            <ul style='left: -120px;'>
-                                <li><a href="<?php echo SITE_URL ?>/account">Account Settings</a></li>
-                                <li><a href="<?php echo SITE_URL ?>/process.php?logout">Logout</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                <?php } else { ?>
-                    <a class="btn btn-large btn-danger pull-right" href="<?php echo SITE_URL; ?>/register">Register</a>
-                    <a style='margin-right: 5px;' class="btn btn-large btn-danger pull-right" href="#" data-placement='bottom' rel="popover" data-original-title="Sign In" id="signin">Sign In</a>
-                <?php } ?>
+                        $resnot = DB::findAllFromQuery($query);
+                        ?>
+                        <ul class="nav pull-right">
+                            <li id='friendnav' <?php if (count($res) > 0) echo "class='active'"; ?>><a href="<?php echo SITE_URL; ?>/friends"><span class="fui-man-24"></span><?php if (count($res) > 0) echo '<span class="navbar-unread">' . count($res) . '</span>'; ?></a></li>
+                            <li id='msgnav' <?php if (count($resmsg) > 0) echo "class='active'"; ?>><a href="<?php echo SITE_URL; ?>/messages"><span class="fui-bubble-24"></span><?php if (count($resmsg) > 0) echo '<span class="navbar-unread">' . count($resmsg) . '</span>'; ?></a></li>
+                            <li id='notnav' <?php if (count($resnot) > 0) echo "class='active'"; ?>><a href="<?php echo SITE_URL; ?>/notifications"><span class="fui-menu-24"></span><?php if (count($resnot) > 0) echo '<span class="navbar-unread">' . count($resnot) . '</span>'; ?></a></li>
+                            <li>
+                                <a href="#">Account</a>
+                                <ul style='left: -120px;'>
+                                    <li><a href="<?php echo SITE_URL ?>/account">Account Settings</a></li>
+                                    <li><a href="<?php echo SITE_URL ?>/process.php?logout">Logout</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+    <?php } else { ?>
+                        <a class="btn btn-large btn-danger pull-right" href="<?php echo SITE_URL; ?>/register">Register</a>
+                        <a style='margin-right: 5px;' class="btn btn-large btn-danger pull-right" href="#" data-placement='bottom' rel="popover" data-original-title="Sign In" id="signin">Sign In</a>
+    <?php } ?>
             </div>
         </div>
     </div>
@@ -149,7 +171,7 @@ function pagination($noofpages, $url, $page, $maxcontent) {
                 if ($page < $noofpages) {
                     ?>
                     <li class="next"><a href="<?php echo $url . "&page=" . ($page + 1); ?>"><img src="<?php echo IMAGE_URL; ?>/pager/next.png" /></a></li>
-                        <?php } ?>
+        <?php } ?>
             </ul>
         </div>
         <?php
@@ -176,8 +198,8 @@ function contentshow($data, $highlight = '', $sharedby = true) {
                     <tr><th>File Name</th><th>Tags</th>" . (($sharedby) ? ("<th>Shared By</th>") : ("")) . "<th style='width:170px; text-align:center;'>Recommendations</th></tr>";
     foreach ($data as $row) {
         // highlight searched terms
-        if($highlight != ''){
-            $str = preg_replace('/'.str_replace(' ', '|', trim($highlight)).'/i', '<b>$0</b>', stripslashes($row['title']));
+        if ($highlight != '') {
+            $str = preg_replace('/' . str_replace(' ', '|', trim($highlight)) . '/i', '<b>$0</b>', stripslashes($row['title']));
         } else {
             $str = stripslashes($row['title']);
         }
@@ -207,7 +229,7 @@ function contentshow($data, $highlight = '', $sharedby = true) {
         }
 
         //printing
-        echo "<tr><td>" . (($row['magnetlink'] != "") ? ("<a href='$row[magnetlink]'>" .$str. "</a>") : ($str)) . "</td>
+        echo "<tr><td>" . (($row['magnetlink'] != "") ? ("<a href='$row[magnetlink]'>" . $str . "</a>") : ($str)) . "</td>
             <td>$tagstr</td>" . (($sharedby) ? ("<td><a href='" . SITE_URL . "/users/$user[nick1]'>$user[nick1]</a></td>") : ("")) . "
                 <td style='text-align:center;'><span id='$row[cid]_count'>$rec[recommendations]</span> recommendation(s)<br/>$btn</td></tr>";
     }

@@ -9,6 +9,10 @@
             $('#sendtoone').hide();
             $('#sendtomany').show();
         });
+        $('#optionsRadios3').change(function() {
+            $('#sendtoone').hide();
+            $('#sendtomany').hide();
+        });
         $('#composemsg').click(function() {
             if($('#composemsg').html() == 'Compose Message')
                 $('#composemsg').html('Discart Message');
@@ -52,10 +56,13 @@ if ($_SESSION['user']['accesslevel'] > 0) {
                         <input type="radio" name="data[select]" id="optionsRadios2" value="many">
                         Send to Many
                     </label>
+                    <label class='radio'>
+                        <input type="radio" name="data[select]" id="optionsRadios3" value="everybody">
+                        Send to Everybody
+                    </label>
                     <div id='sendtoone'>
                         <input type='text' name='data[to]' placeholder='Enter Nick here'/>
                     </div>
-
                     <div id ='sendtomany' class='row-fluid'  style='display: none;'>
                         <div class='span4'>
                             <h5>Branch</h5>

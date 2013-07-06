@@ -40,6 +40,7 @@ define("MAIL_PATH", "Mail.php");
 define("ERROR_LOG", dirname(__FILE__) . "/errors.txt");
 
 date_default_timezone_set("Asia/Kolkata");
+$motdfile = '/home/administrator/Documents/motd';
 $classmap = array(0 => 0, 1 => 1, 2 => 1, 3 => 1, 4 => 1, 7 => 1, 8 => 1, 9 => 3, 10 => 10);
 $restrictednicks = array('hubbot', 'opchat', 'dj', 'sourcecode');
 $class = array(0 => 'Novice', 1 => 'Experienced', 2 => 'Famous', 3 => 'Moderator', 4 => 'Pseudo-Admin', 8=> 'Master', 9 => 'Cheef', 10 => 'Admin');

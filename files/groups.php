@@ -22,7 +22,7 @@ if (isset($_GET['code']) && isset($_SESSION['loggedin']) && $_SESSION['user']['a
             if ($res) {
                 echo "<div style='background: #f2f2f2; padding: 5px; margin: 10px 0;'><h4>Posts awaiting approval</h4>";
                 foreach ($res as $row) {
-                    $row['post'] = htmlspecialchars(preg_replace('/\n/', '<br/>', $row['post']));
+                    $row['post'] = preg_replace('/\n/', '<br/>', htmlspecialchars($row['post']));
                     echo "<div style='border-bottom: 1px solid #ddd;'><b><a href='" . SITE_URL . "/users/$row[postby]'>$row[postby]</a></b><br/></div>$row[post]<br/>
                         <form class='form-inline pull-left' style='margin:5px;' action='" . SITE_URL . "/process.php' method='post'>
                 <input type='hidden' value='$row[id]' name='id'>
@@ -50,7 +50,7 @@ if (isset($_GET['code']) && isset($_SESSION['loggedin']) && $_SESSION['user']['a
         $res = DB::findAllWithCount("select *", $body, $page, 10);
         $data = $res['data'];
         foreach ($data as $row) {
-            $row['post'] = htmlspecialchars(preg_replace('/\n/', '<br/>', $row['post']));
+            $row['post'] = preg_replace('/\n/', '<br/>', htmlspecialchars($row['post']));
             echo "<div style='border-bottom: 1px solid #ddd;'><b><a href='" . SITE_URL . "/users/$row[postby]'>$row[postby]</a></b><br/><span class='postdate'>" . date('M d, h:i a', $row['timestamp']) . "</span></div>$row[post]<br/>";
             if (isset($_SESSION['loggedin']) && $_SESSION['user']['accesslevel'] >= 6) {
                 $app = DB::findOneFromQuery("select nick1 from dchub_users where id=$row[approvedby]");

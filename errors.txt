@@ -1,0 +1,12 @@
+[2013-07-06 20:05:11]
+Query error:
+UPDATE dchub_request SET deleted='1', updatedOn='2013-07-06 20:05:11' WHERE cid = 
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-06 20:05:23]
+Query error:
+UPDATE dchub_request SET deleted='1', updatedOn='2013-07-06 20:05:23' WHERE id = 
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================

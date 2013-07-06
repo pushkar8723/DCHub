@@ -20,8 +20,8 @@ if ($res) {
         echo "<div class='accesslevel'>";
         $group = DB::findOneFromQuery("select name from dchub_groups where id = $row[gid]");
         $row['post'] = preg_replace('/\n/', '<br/>', htmlspecialchars(stripslashes($row['post'])));
-        echo "<div style='border-bottom: 1px solid #ddd;'><span class='pull-right postdate'>" . date('M d, h:i a', $row['timestamp']) . "</span><h4><a href='" . SITE_URL . "/users/$row[postby]'>$row[postby]</a> <i class='icon-chevron-right'></i> <a href='" . SITE_URL . "/groups/$group[name]'>$group[name]</a></h4></div>$row[post]<br/>";
-        if (isset($_SESSION['loggedin']) && $_SESSION['user']['accesslevel'] >= 6) {
+        echo "<div style='border-bottom: 1px solid #ddd;'><span class='pull-right postdate'>" . date('M d, h:i a', $row['timestamp']) . "</span><h4><a href='" . SITE_URL . "/users/$row[postby]'>$row[postby]</a> <i class='icon-chevron-right'></i> $group[name]</h4></div>$row[post]<br/>";
+        if (isset($_SESSION['loggedin']) && $_SESSION['user']['accesslevel'] >= 9) {
             $app = DB::findOneFromQuery("select nick1 from dchub_users where id=$row[approvedby]");
             echo "Approved by : <a href='" . SITE_URL . "/users/$app[nick1]'>$app[nick1]</a><br/>";
         }

@@ -43,7 +43,7 @@ if (isset($_GET['page']) && $_GET['page'] > 0) {
 <h1>Recommendation Page</h1>
 <div class='alert'>
     Watched a movie. Liked it? Now recommend it to others. <br/>
-    <b>Note : </b>Share your latest content on Latest content page, not here.
+    <b>Note : </b>Share your new content on Latest content page, not here.
 </div>
 <form class='form-horizontal' action="<?php echo SITE_URL; ?>/process.php" method="post">
     <div class='control-group'>

@@ -68,7 +68,7 @@ if (isset($_GET['page']) && $_GET['page'] > 0) {
     $query = "from dchub_content where deleted=0";
     if ($tab != "")
         $query .= " and tag like '%$tab%'";
-    $query .= " order by timestamp desc";
+    $query .= " order by priority desc, timestamp desc";
     $res = DB::findAllWithCount("select *", $query, $page, 25);
     $data = $res['data'];
     contentshow($data);
