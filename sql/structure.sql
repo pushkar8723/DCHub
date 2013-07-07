@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jul 06, 2013 at 10:42 PM
+-- Generation Time: Jul 07, 2013 at 10:11 PM
 -- Server version: 5.5.31-0ubuntu0.13.04.1
 -- PHP Version: 5.4.9-4ubuntu2.1
 
@@ -271,7 +271,7 @@ CREATE TABLE IF NOT EXISTS `dchub_rc` (
   `updatedOn` datetime NOT NULL,
   `createdOn` datetime NOT NULL,
   PRIMARY KEY (`cid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
 
 -- --------------------------------------------------------
 
@@ -301,7 +301,7 @@ CREATE TABLE IF NOT EXISTS `dchub_recommend` (
   `uid` int(11) NOT NULL,
   `type` tinytext NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=71 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=75 ;
 
 -- --------------------------------------------------------
 
@@ -346,7 +346,6 @@ CREATE TABLE IF NOT EXISTS `dchub_users` (
   `security_ans` tinytext NOT NULL,
   `friend` tinytext NOT NULL,
   `class` int(11) DEFAULT '0',
-  `authenticated` tinyint(1) DEFAULT '0',
   `deleted` tinyint(1) DEFAULT '0',
   `note` tinytext,
   `groups` text NOT NULL,
@@ -542,7 +541,7 @@ CREATE TABLE IF NOT EXISTS `reglist` (
   `hide_share` tinyint(1) DEFAULT '0',
   `reg_date` int(11) DEFAULT NULL,
   `reg_op` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `pwd_change` tinyint(1) DEFAULT '0',
+  `pwd_change` tinyint(1) DEFAULT '1',
   `pwd_crypt` tinyint(1) DEFAULT '1',
   `login_pwd` varchar(60) COLLATE utf8_unicode_ci DEFAULT NULL,
   `login_last` int(11) DEFAULT '0',
