@@ -1,0 +1,38 @@
+[2013-07-08 02:08:55]
+Query error:
+select id, class, nick1, nick2, password_, fullname, roll_course, roll_number, roll_year, hostel, room, branch, phone, authenticated  from dchub_users where nick1 = 'DeathEater' or nick2 = 'DeathEater'
+Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'authenticated' in 'field list'
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-08 02:13:55]
+Query error:
+select * from dchub_post where deleted=0 and approvedby!=0 and id > '32' and gid in 
+(Array)    
+order by timestamp desc
+Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'Array' in 'where clause'
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-08 02:48:10]
+Query error:
+select name from dchub_groups where id = 
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-08 02:48:10]
+Query error:
+select nick1 from dchub_users where id=
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-08 02:48:10]
+Query error:
+select name from dchub_groups where id = 
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-08 02:48:10]
+Query error:
+select nick1 from dchub_users where id=
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================

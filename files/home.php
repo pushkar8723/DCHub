@@ -64,18 +64,6 @@ if (isset($_SESSION['loggedin'])) {
                     <tr><td class="bold">Hostel</td><td> <?php echo $_SESSION['user']['hostel']; ?></td></tr>
                     <tr><td class="bold">Room</td><td> <?php echo $_SESSION['user']['room']; ?></td></tr>
                 </table><br/>
-                <?php if ($_SESSION['user']['accesslevel'] >= 6) { ?>
-                    <h5>My Groups</h5>
-                    <hr/>
-                    <ul class='nav nav-list grp'>
-                        <?php
-                        foreach ($_SESSION['user']['groups'] as $row) {
-                            echo "<li><a href='" . SITE_URL . "/groups/$row'>$row</a></li>";
-                        }
-                        ?>
-                        <li><a href="<?php echo SITE_URL; ?>/groups">See All</a></li>
-                    </ul>
-                <?php } ?>
             </div>
         </div>
         <div class='span8'>

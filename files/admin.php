@@ -26,7 +26,7 @@ $(document).ready(function(){
     }
     echo "</select></div></div></div>";
     if(isset($_GET['code'])){
-        $query = "select id, class, nick1, nick2, password_, fullname, roll_course, roll_number, roll_year, hostel, room, branch, phone, authenticated  from dchub_users where nick1 = '$_GET[code]' or nick2 = '$_GET[code]'";
+        $query = "select id, class, nick1, nick2, password_, fullname, roll_course, roll_number, roll_year, hostel, room, branch, phone  from dchub_users where nick1 = '$_GET[code]' or nick2 = '$_GET[code]'";
         $user = DB::findOneFromQuery($query);
         $fields = array();
         foreach ($user as $key => $value){

@@ -89,16 +89,26 @@ if (isset($_POST['register'])) {
             $_SESSION['user']['nick2'] = $_POST['data']['nick2'];
         }
         $_SESSION['user']['email'] = $_POST['data']['email'];
-        $res = DB::findAllFromQuery("select * from dchub_branch");
-        $grps = array();
+        $res = DB::findAllFromQuery("Select * from dchub_groups");
         foreach ($res as $row) {
-            $grps[$row['id']] = $row['branch'];
+            $identifiertoid[$row['identifier']] = $row['id'];
         }
-        if(in_array($_POST['data']['roll_year'], array('2010','2011','2012','2013'))){
-            $_POST['data']['groups'] = 'Everybody,'.$grps[$_POST['data']['branch']] . "," . $grps[$_POST['data']['branch']] . '-' . $defaultGroup[$_POST['data']['roll_year']] . ',' . $defaultGroup[$_POST['data']['roll_year']] . ',H-' . $_POST['data']['hostel'];
+        if (in_array($_POST['data']['roll_year'], array_keys($defaultGroup))) {
+            $pieces = array(
+                $identifiertoid['Everybody'],
+                $identifiertoid[$defaultGroup[$_POST['data']['roll_year']]],
+                $identifiertoid[$_POST['data']['branch']],
+                $identifiertoid[$_POST['data']['branch'] . "-" . $defaultGroup[$_POST['data']['roll_year']]],
+                $identifiertoid["H-" . $_POST['data']['hostel']]
+            );
         } else {
-            $_POST['data']['groups'] = 'Everybody,'.$grps[$_POST['data']['branch']] . "," .',H-' . $_POST['data']['hostel'];
+            $pieces = array(
+                $identifiertoid['Everybody'],
+                $identifiertoid[$_POST['data']['branch']],
+                $identifiertoid["H-" . $_POST['data']['hostel']]
+            );
         }
+        $_POST['data']['groups'] = implode(',', $pieces);
         unset($_POST['data']['repassword_']);
         unset($_POST['data']['others']);
         $maxmsg = DB::findOneFromQuery("select max(id) as id from dchub_message");
@@ -134,19 +144,19 @@ if (isset($_POST['register'])) {
             $_SESSION['user']['lastnotificationid'] = $maxnot['id'];
             $_SESSION['user']['notificationid'] = $maxnot['id'];
             $_SESSION['msg'] = 'Registration Successful';
-            redirectAfter(SITE_URL."/welcome");
+            redirectAfter(SITE_URL . "/welcome");
         } else {
             $_SESSION['data'] = $_POST['data'];
             $_SESSION['msg'] .= "Sorry there was an error! contact the Admins";
             redirectTo(SITE_URL . '/register');
         }
     }
-    
+
     // Logout
 } else if (isset($_GET['logout'])) {
     session_destroy();
     redirectTo(SITE_URL);
-    
+
     //Login 
 } else if (isset($_POST['login'])) {
     $_POST['data'] = secure($_POST['data']);
@@ -180,7 +190,7 @@ if (isset($_POST['register'])) {
         $_SESSION['loginerr'] = 'Incorrect Username or Password';
         redirectTo("http://" . $_SERVER['HTTP_HOST'] . $_SESSION['url']);
     }
-    
+
     // Import from last year's nick
 } else if (isset($_POST['ajaxFetch'])) {
     $res = DB::findOneFromQuery("select fullname, roll_course, roll_number, roll_year, email, phone from dchub_importedusers where nickname = '$_POST[nick]' and password_ = '$_POST[password]'");
@@ -191,7 +201,6 @@ if (isset($_POST['register'])) {
         echo "Incorrect nick / password";
     }
 } else if (isset($_SESSION['loggedin'])) { // Request available for only logged in users
-
     //share new content on latest content page
     if (isset($_POST['share'])) {
         $_POST['data'] = secure($_POST['data']);
@@ -220,19 +229,21 @@ if (isset($_POST['register'])) {
             $_SESSION['msg'] = "Some values missing<br/>";
             redirectTo(SITE_URL);
         }
-        
+
         // Join or leave a group 
     } else if (isset($_POST['grpToggle'])) {
-        $_POST = secure($_POST);
-        if (($key = array_search($_POST['group'], $_SESSION['user']['groups'])) !== false) {
-            unset($_SESSION['user']['groups'][$key]);
-        } else {
-            array_push($_SESSION['user']['groups'], $_POST['group']);
-        }
-        $query = "update dchub_users set groups='" . implode(',', $_SESSION['user']['groups']) . "' where id = " . $_SESSION['user']['id'];
-        DB::query($query);
-        redirectTo(SITE_URL . "/groups/$_POST[group]");
-        
+            $_SESSION['msg'] = 'Yet to implement';
+          redirectTo(SITE_URL . "/groups/$_POST[group]");
+//        $_POST = secure($_POST);
+//        if (($key = array_search($_POST['group'], $_SESSION['user']['groups'])) !== false) {
+//            unset($_SESSION['user']['groups'][$key]);
+//        } else {
+//            array_push($_SESSION['user']['groups'], $_POST['group']);
+//        }
+//        $query = "update dchub_users set groups='" . implode(',', $_SESSION['user']['groups']) . "' where id = " . $_SESSION['user']['id'];
+//        DB::query($query);
+//        redirectTo(SITE_URL . "/groups/$_POST[group]");
+
         // approve a post on groups
     } else if (isset($_POST['approve'])) {
         $_POST = secure($_POST);
@@ -246,7 +257,7 @@ if (isset($_POST['register'])) {
             $_SESSION['msg'] = "Access Denied: Not enough previleges.";
             redirectTo($_SERVER['HTTP_HOST'] . $_SESSION['url']);
         }
-        
+
         // decline a post on groups
     } else if (isset($_POST['decline'])) {
         $_POST = secure($_POST);
@@ -260,7 +271,7 @@ if (isset($_POST['register'])) {
             $_SESSION['msg'] = "Access Denied: Not enough previleges.";
             redirectTo($_SERVER['HTTP_HOST'] . $_SESSION['url']);
         }
-        
+
         // user post something on group page
     } else if (isset($_POST['post'])) {
         if ($_SESSION['user']['accesslevel'] > 0) {
@@ -272,19 +283,19 @@ if (isset($_POST['register'])) {
             $_SESSION['msg'] = "You need to be authenticated to use this feature.";
         }
         redirectTo("http://" . $_SERVER['HTTP_HOST'] . $_SESSION['url']);
-        
+
         // recommend a content on latest content page
     } else if (isset($_POST['recommend'])) {
         $_POST = secure($_POST);
         $res = DB::query("insert into dchub_recommend (cid, uid, type) values($_POST[cid], " . $_SESSION['user']['id'] . ", 'lc')");
         echo $res ? "1" : "0";
-        
+
         // discourage a content on latest content page
     } else if (isset($_POST['discourage'])) {
         $_POST = secure($_POST);
         $res = DB::query("delete from dchub_recommend where type = 'lc' and cid = $_POST[cid] and uid = " . $_SESSION['user']['id']);
         echo $res ? "1" : "0";
-        
+
         // volunteer on request page
     } else if (isset($_POST['volunteer'])) {
         $_POST = secure($_POST);
@@ -294,7 +305,7 @@ if (isset($_POST['register'])) {
         $vol = implode(',', $vol);
         $res = DB::query("update dchub_request set volunteer = '$vol' where id=$_POST[cid]");
         echo $res ? "1" : "0";
-        
+
         // chicken out on request page
     } else if (isset($_POST['chickenout'])) {
         $_POST = secure($_POST);
@@ -305,7 +316,7 @@ if (isset($_POST['register'])) {
         $vol = implode(',', $vol);
         $res = DB::query("update dchub_request set volunteer = '$vol' where id=$_POST[cid]");
         echo $res ? "1" : "0";
-        
+
         // request something on request page
     } else if (isset($_POST['request']) && $_POST['data']['request_file'] != '') {
         if ($_SESSION['user']['accesslevel'] > 0) {
@@ -316,7 +327,7 @@ if (isset($_POST['register'])) {
             $_SESSION['msg'] = "You need to be authenticated to use this feature.";
         }
         redirectTo(SITE_URL . "/request");
-        
+
         // approve / authenticate a friend
     } else if (isset($_POST['approvefriend']) && $_SESSION['user']['accesslevel'] > 0) {
         $_POST = secure($_POST);
@@ -328,14 +339,14 @@ if (isset($_POST['register'])) {
             DB::update('reglist', array('class' => 1), "nick='" . $friend['nick2'] . "'");
         }
         redirectTo(SITE_URL . "/friends");
-        
+
         // deny a friend
     } else if (isset($_POST['denyfriend']) && $_SESSION['user']['accesslevel'] > 0) {
         $_POST = secure($_POST);
         $query = "update dchub_users set friend='' where nick1 = '$_POST[nick]' and (friend ='" . $_SESSION['user']['nick'] . "'" . ((isset($_SESSION['user']['nick2'])) ? (" or friend='" . $_SESSION['user']['nick2'] . "')") : (")"));
         DB::query($query);
         redirectTo(SITE_URL . "/friends");
-        
+
         // offline msg to someone
     } else if (isset($_POST['messagepost'])) {
         if ($_SESSION['user']['accesslevel'] > 0) {
@@ -350,7 +361,7 @@ if (isset($_POST['register'])) {
             $_SESSION['msg'] = "You need to be authenticated to use this feature.";
         }
         redirectTo("http://" . $_SERVER['HTTP_HOST'] . $_SESSION['url']);
-        
+
         // authtication via cyberoam password
     } else if (isset($_POST['cyberauth'])) {
         $url = 'https://172.16.1.1:8090/login.xml';
@@ -391,19 +402,19 @@ if (isset($_POST['register'])) {
             $_SESSION['msg'] = 'Authentication Failed! If you are sure about your password contact the Admins.';
         }
         redirectTo("http://" . $_SERVER['HTTP_HOST'] . $_SESSION['url']);
-        
+
         // ask friend to authenticate
     } else if (isset($_POST['friendauth'])) {
         $_POST['friend'] = addslashes($_POST['friend']);
         $res = DB::findOneFromQuery("Select * from dchub_users where nick1 = '$_POST[friend]' or nick2 = '$_POST[friend]'");
-        if($res) {
+        if ($res) {
             DB::update('dchub_users', array('friend' => $_POST['friend']), "id = " . $_SESSION['user']['id']);
             $_SESSION['msg'] = 'Authentication request sent. Your class will be updated as soon as your friend authenticates you.';
         } else {
             $_SESSION['msg'] = "Friend not found. Are you sure that the nick is correct?";
         }
         redirectTo("http://" . $_SERVER['HTTP_HOST'] . $_SESSION['url']);
-        
+
         // password change
     } else if (isset($_POST['changepasswd'])) {
         $_POST['data'] = secure($_POST['data']);
@@ -420,7 +431,7 @@ if (isset($_POST['register'])) {
             $_SESSION['msg'] = "Incorrect Password";
         }
         redirectTo(SITE_URL . "/account");
-        
+
         // update details
     } else if (isset($_POST['updatedetails'])) {
         $_POST['data'] = secure($_POST['data']);
@@ -429,49 +440,49 @@ if (isset($_POST['register'])) {
         DB::update('dchub_users', $_POST['data'], "id = " . $_SESSION['user']['id']);
         $_SESSION['msg'] = "Account Updated";
         redirectTo(SITE_URL . "/account");
-        
+
         // admin updates an account
     } else if (isset($_POST['adminupdate']) && $_SESSION['user']['accesslevel'] >= 9) {
         $_POST['data'] = secure($_POST['data']);
         DB::update('dchub_users', $_POST['data'], 'id = ' . $_POST['data']['id']);
-		if($_POST['data']['class'] != 10) {
-			$nicks = DB::findOneFromQuery("select nick1, nick2 from dchub_users where id = ".$_POST['data']['id']);
-			DB::update('reglist', array('class' => $classmap[$_POST['data']['class']]), "nick = '$nicks[nick1]'");
-			DB::update('reglist', array('class' => $classmap[$_POST['data']['class']]), "nick = '$nicks[nick2]'");
-		} else {
-			$nicks = DB::findOneFromQuery("select nick1, nick2 from dchub_users where id = ".$_POST['data']['id']);
-			DB::update('reglist', array('class' => $classmap[$_POST['data']['class']]), "nick = '$nicks[nick1]'");
-		}
+        if ($_POST['data']['class'] != 10) {
+            $nicks = DB::findOneFromQuery("select nick1, nick2 from dchub_users where id = " . $_POST['data']['id']);
+            DB::update('reglist', array('class' => $classmap[$_POST['data']['class']]), "nick = '$nicks[nick1]'");
+            DB::update('reglist', array('class' => $classmap[$_POST['data']['class']]), "nick = '$nicks[nick2]'");
+        } else {
+            $nicks = DB::findOneFromQuery("select nick1, nick2 from dchub_users where id = " . $_POST['data']['id']);
+            DB::update('reglist', array('class' => $classmap[$_POST['data']['class']]), "nick = '$nicks[nick1]'");
+        }
         $_SESSION['msg'] = "Account Updated";
         redirectTo("http://" . $_SERVER['HTTP_HOST'] . $_SESSION['url']);
-		
-		// add second nick
+
+        // add second nick
     } else if (isset($_POST['addnick']) && !isset($_SESSION['user']['nick2'])) {
         if (in_array(strtolower($_POST['data']['nick2']), $restrictednicks)) {
             $_SESSION['msg'] = 'Nick not allowed';
         } else {
             $_POST['data'] = secure($_POST['data']);
             DB::update('dchub_users', $_POST['data'], 'id = ' . $_SESSION['user']['id']);
-			$passwd = DB::findOneFromQuery("select password_, class from dchub_users where id = ".$_SESSION['user']['id']);
-			$ver = array('nick' => $_POST['data']['nick2'], 'class' => $classmap[$passwd['class']], 'pwd_crypt' => 0, 'login_pwd' => $passwd['password_']);
+            $passwd = DB::findOneFromQuery("select password_, class from dchub_users where id = " . $_SESSION['user']['id']);
+            $ver = array('nick' => $_POST['data']['nick2'], 'class' => $classmap[$passwd['class']], 'pwd_crypt' => 0, 'login_pwd' => $passwd['password_']);
             $res1 = DB::insert("reglist", $ver);
             $_SESSION['user']['nick2'] = $_POST['data']['nick2'];
             $_SESSION['msg'] = 'Nick Added';
         }
         redirectTo(SITE_URL . "/account");
-        
+
         // recommend a content on recommend page
     } else if (isset($_POST['rec_recommend'])) {
         $_POST = secure($_POST);
         $res = DB::query("insert into dchub_recommend (cid, uid, type) values($_POST[cid], " . $_SESSION['user']['id'] . ", 'rc')");
         echo $res ? "1" : "0";
-        
+
         // discourage a content on content page
     } else if (isset($_POST['rec_discourage'])) {
         $_POST = secure($_POST);
         $res = DB::query("delete from dchub_recommend where type='rc' and cid = $_POST[cid] and uid = " . $_SESSION['user']['id']);
         echo $res ? "1" : "0";
-        
+
         // message of one or many
     } else if (isset($_POST['composemsg']) && $_SESSION['user']['accesslevel'] > 0) {
         $_POST['data'] = secure($_POST['data']);
@@ -483,18 +494,21 @@ if (isset($_POST['register'])) {
             $data['fromid'] = $_SESSION['user']['id'];
             DB::insert('dchub_message', $data);
             $_SESSION['msg'] = "Message queued for delivery to $tonick";
-        } else if($_POST['data']['select'] == 'everybody'){
+        } else if ($_POST['data']['select'] == 'everybody') {
             $data['post'] = $_POST['data']['msg'];
             $data['postby'] = $_SESSION['user']['nick'];
             $gid = DB::findOneFromQuery("select * from dchub_groups where name='everybody'");
-            $data['gid'] =$gid['id'];
+            $data['gid'] = $gid['id'];
             DB::insert('dchub_post', $data);
             $_SESSION['msg'] = "Message will be broadcasted after approval from Admin.";
-        }else {
+        } else {
             $res = DB::findAllFromQuery("select * from dchub_groups");
-            $groups = array();
             foreach ($res as $row) {
-                $groups[$row['name']] = $row['id'];
+                $identifiertoid[$row['identifier']] = $row['id'];
+            }
+            $res = DB::findAllFromQuery("select * from dchub_branch");
+            foreach ($res as $row) {
+                $branchtoid[$row['branch']] = $row['id'];
             }
             $data['post'] = $_POST['data']['msg'];
             $data['postby'] = $_SESSION['user']['nick'];
@@ -503,24 +517,24 @@ if (isset($_POST['register'])) {
             if (isset($_POST['branch']) && isset($_POST['batch'])) {
                 foreach ($_POST['branch'] as $brval) {
                     foreach ($_POST['batch'] as $btval) {
-                        array_push($togid, $groups[$brval . '-' . $btval]);
+                        array_push($togid, $identifiertoid[$branchtoid[$brval] . '-' . $btval]);
                         array_push($grname, $brval . '-' . $btval);
                     }
                 }
             } else if (isset($_POST['branch'])) {
                 foreach ($_POST['branch'] as $brval) {
-                    array_push($togid, $groups[$brval]);
+                    array_push($togid, $identifiertoid[$branchtoid[$brval]]);
                     array_push($grname, $brval);
                 }
             } else if (isset($_POST['batch'])) {
                 foreach ($_POST['batch'] as $btval) {
-                    array_push($togid, $groups[$btval]);
+                    array_push($togid, $identifiertoid[$btval]);
                     array_push($grname, $btval);
                 }
             }
             if (isset($_POST['hostel'])) {
                 foreach ($_POST['hostel'] as $htval) {
-                    array_push($togid, $groups[$htval]);
+                    array_push($togid, $identifiertoid[$htval]);
                     array_push($grname, $htval);
                 }
             }
@@ -531,7 +545,7 @@ if (isset($_POST['register'])) {
             $_SESSION['msg'] = "Message will be delivered to people in " . implode(', ', $grname) . " after approval from Admin.";
         }
         redirectTo(SITE_URL . "/messages");
-        
+
         // post a content on recommendation page
     } else if (isset($_POST['recommendcontent']) && $_SESSION['user']['accesslevel'] > 0) {
         $_POST['data'] = secure($_POST['data']);
@@ -550,74 +564,74 @@ if (isset($_POST['register'])) {
             //$_SESSION['msg'] = print_r($_POST['data'], true);
             $_POST['data']['timestamp'] = time();
             DB::insert('dchub_rc', $_POST['data']);
-            redirectTo(SITE_URL."/recommend");
+            redirectTo(SITE_URL . "/recommend");
         } else {
             $_SESSION['msg'] = "Some values missing<br/>";
-            redirectTo(SITE_URL."/recommend");
+            redirectTo(SITE_URL . "/recommend");
         }
-        
+
         // update recommended content
-    } else if (isset ($_POST['updaterec']) && $_SESSION['user']['accesslevel'] >= 2) {
+    } else if (isset($_POST['updaterec']) && $_SESSION['user']['accesslevel'] >= 2) {
         $_POST['data'] = secure($_POST['data']);
         $cid = $_POST['data']['cid'];
         unset($_POST['data']['cid']);
         $rec = DB::update('dchub_rc', $_POST['data'], "cid = $cid");
-        echo ($rec)?('1'):('0');
-        
+        echo ($rec) ? ('1') : ('0');
+
         // delete recommended content
-    } else if (isset ($_POST['deleterec']) && $_SESSION['user']['accesslevel'] >= 2) {
+    } else if (isset($_POST['deleterec']) && $_SESSION['user']['accesslevel'] >= 2) {
         $cid = addslashes($_POST['cid']);
         $rec = DB::delete('dchub_rc', "cid = $cid");
-        echo ($rec)?('1'):('0');
-        
+        echo ($rec) ? ('1') : ('0');
+
         // update request
-    } else if (isset ($_POST['updatereq']) && $_SESSION['user']['accesslevel'] >= 2) {
+    } else if (isset($_POST['updatereq']) && $_SESSION['user']['accesslevel'] >= 2) {
         $_POST['data'] = secure($_POST['data']);
         $cid = $_POST['data']['id'];
         unset($_POST['data']['cid']);
         $rec = DB::update('dchub_request', $_POST['data'], "id = $cid");
-        echo ($rec)?('1'):('0');
-        
+        echo ($rec) ? ('1') : ('0');
+
         // delete request
-    } else if (isset ($_POST['deletereq']) && $_SESSION['user']['accesslevel'] >= 2) {
+    } else if (isset($_POST['deletereq']) && $_SESSION['user']['accesslevel'] >= 2) {
         $cid = addslashes($_POST['id']);
         $rec = DB::delete('dchub_request', "id = $cid");
-        echo ($rec)?('1'):('0');
-        
+        echo ($rec) ? ('1') : ('0');
+
         // update latest content
-    } else if (isset ($_POST['updatelat']) && $_SESSION['user']['accesslevel'] >= 3) {
+    } else if (isset($_POST['updatelat']) && $_SESSION['user']['accesslevel'] >= 3) {
         $_POST['data'] = secure($_POST['data']);
         $cid = $_POST['data']['cid'];
         unset($_POST['data']['cid']);
         $rec = DB::update('dchub_content', $_POST['data'], "cid = $cid");
-        echo ($rec)?('1'):('0');
-        
+        echo ($rec) ? ('1') : ('0');
+
         // delete latest content
-    } else if (isset ($_POST['deletelat']) && $_SESSION['user']['accesslevel'] >= 3) {
+    } else if (isset($_POST['deletelat']) && $_SESSION['user']['accesslevel'] >= 3) {
         $cid = addslashes($_POST['cid']);
         $rec = DB::delete('dchub_content', "cid = $cid");
-        echo ($rec)?('1'):('0');
-        
+        echo ($rec) ? ('1') : ('0');
+
         // set latest content to featured
-    } else if (isset ($_POST['featurelat']) && $_SESSION['user']['accesslevel'] >= 3) {
+    } else if (isset($_POST['featurelat']) && $_SESSION['user']['accesslevel'] >= 3) {
         $cid = addslashes($_POST['cid']);
         $p = DB::findOneFromQuery("select priority from dchub_content where cid = '$cid'");
-        if($p['priority'] == '0'){
+        if ($p['priority'] == '0') {
             $maxp = DB::findOneFromQuery("select max(priority) as max from dchub_content");
             $priority = $maxp['max'] + 1;
-            $rec = DB::update('dchub_content', array('priority' => $priority) ,"cid = $cid");
+            $rec = DB::update('dchub_content', array('priority' => $priority), "cid = $cid");
             $ret = '1';
         } else {
-            $rec = DB::update('dchub_content', array('priority' => 0) ,"cid = $cid");
+            $rec = DB::update('dchub_content', array('priority' => 0), "cid = $cid");
             $ret = '2';
         }
-        echo ($rec)?($ret):('0');
-        
+        echo ($rec) ? ($ret) : ('0');
+
         // Update motd
-    } else if(isset ($_POST['motdupdate']) && $_SESSION['user']['accesslevel'] >= 9){
+    } else if (isset($_POST['motdupdate']) && $_SESSION['user']['accesslevel'] >= 9) {
         $_POST['motdcontent'] = addslashes($_POST['motdcontent']);
         file_put_contents($motdfile, $_POST['motdcontent']);
-        redirectTo(SITE_URL."/motd");
+        redirectTo(SITE_URL . "/motd");
     }
 }
 ?>

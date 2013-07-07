@@ -114,9 +114,8 @@ function navbar() {
             union
             select distinct(toid) as fromid from dchub_message where id > '" . $_SESSION['user']['msgid'] . "' and fromid = " . $_SESSION['user']['id'];
                     $resmsg = DB::findAllFromQuery($query);
-                    $usrgrp = "'" . implode("','", $_SESSION['user']['groups']) . "'";
-                    $query = "select id from dchub_post where deleted=0 and approvedby!=0 and id > '" . $_SESSION['user']['notificationid'] . "' and gid in 
-(select id from dchub_groups where name in ($usrgrp))    
+                    $usrgrp = implode(",", $_SESSION['user']['groups']);
+                    $query = "select id from dchub_post where deleted=0 and approvedby!=0 and id > '" . $_SESSION['user']['notificationid'] . "' and gid in ($usrgrp)    
 order by timestamp desc";
                     $resnot = DB::findAllFromQuery($query);
                     ?>
@@ -127,6 +126,7 @@ order by timestamp desc";
                         <li>
                             <a href="#">Account</a>
                             <ul style='left: -120px;'>
+                                <li><a href="<?php echo SITE_URL ?>/notifications/archive">Notification Archive</a></li>
                                 <li><a href="<?php echo SITE_URL ?>/account">Account Settings</a></li>
                                 <li><a href="<?php echo SITE_URL ?>/process.php?logout">Logout</a></li>
                             </ul>
