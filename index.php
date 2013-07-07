@@ -1,6 +1,10 @@
 <?php
 include 'config.php';
 $_SESSION['url'] = $_SERVER['REQUEST_URI'];
+if(isset($_SESSION['loggedin']) && $_SESSION['user']['accesslevel'] == 0){
+    $update = DB::findOneFromQuery("select class, friend from dchub_users where id=".$_SESSION['user']['id']);
+    $_SESSION['user']['accesslevel'] = $update['class'];
+}
 ?>
 <!DOCTYPE html>
 <html>

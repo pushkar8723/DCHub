@@ -9,13 +9,16 @@ if (isset($_GET['page']) && $_GET['page'] > 0) {
 } else {
     $page = 1;
 }
-
 ?>
 <script type='text/javascript'>
     $(document).ready(function() {
-        $('form').submit(function(){
-            $(location).attr('href', '<?php echo SITE_URL; ?>/search/' + $('#search').val());
-            return false;
+        $('form').submit(function(event) {
+            if (event.target.id == "searchform") {
+                $(location).attr('href', '<?php echo SITE_URL; ?>/search/' + $('#search').val());
+                return false;
+            } else {
+                return true;
+            }
         });
         $('.recommend, .discourage').click(function(event) {
             $('#' + event.target.id).html("Processing...");
@@ -50,7 +53,7 @@ if (isset($_GET['page']) && $_GET['page'] > 0) {
         });
     });
 </script>
-<form class='pull-right' style='margin-top: 10px;' method='post' action='<?php echo SITE_URL; ?>/process.php'>
+<form id="searchform" class='pull-right' style='margin-top: 10px;' method='post' action='<?php echo SITE_URL; ?>/process.php'>
     <input id='search' name='search' type='text' class='search-query' placeholder='Search' required/>
 </form>
 <h1>Latest Contents</h1>
@@ -62,17 +65,17 @@ if (isset($_GET['page']) && $_GET['page'] > 0) {
     ?>
     <?php if (!in_array($tab, $categories)) { ?>
         <li class="active"><a href="<?php echo SITE_URL . "/latest/$tab"; ?>"><?php echo $tab; ?></a></li>
-    <?php } ?>
+        <?php } ?>
 </ul>
-    <?php
-    $query = "from dchub_content where deleted=0";
-    if ($tab != "")
-        $query .= " and tag like '%$tab%'";
-    $query .= " order by priority desc, timestamp desc";
-    $res = DB::findAllWithCount("select *", $query, $page, 25);
-    $data = $res['data'];
-    contentshow($data);
-    ?>
+<?php
+$query = "from dchub_content where deleted=0";
+if ($tab != "")
+    $query .= " and tag like '%$tab%'";
+$query .= " order by priority desc, timestamp desc";
+$res = DB::findAllWithCount("select *", $query, $page, 25);
+$data = $res['data'];
+contentshow($data);
+?>
 <?php
 pagination($res['noofpages'], SITE_URL . "/latest" . (($tab != '') ? ("/" . $tab) : ('')), $page, 10);
 ?>

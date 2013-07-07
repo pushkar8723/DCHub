@@ -12,15 +12,15 @@ if (!isset($_SESSION['loggedin'])) {
         <h4><b>There are two methods to authenticate yourself</b></h4><br/>
         <div class="row-fluid">
             <div class="span6 auth">
-                <h4><b>Method 1:</b> Use your Cyberoam Password</h4>
-                <b>We will not store your password. Pinky swear.</b>
+                <b>Method 1:</b> Instant authentication using Cyberoam Password<br/>
+                <b>We will not store your password. Pinky swear.</b><br/><br/>
                 <?php
                     $fields = array("cyberpass" => array("Cyberoam Password", "password"));
                     createForm('cyberauth', $fields, 'Authenticate');
                 ?>
             </div>
             <div class="span6 auth">
-                <h4><b>Method 2:</b> Ask a friend</h4><br/>
+                <b>Method 2:</b> Ask a friend<br/><br/><br/>
                 <?php
                 $query = "select friend from dchub_users where id = " . $_SESSION['user']['id'];
                 $res = DB::findOneFromQuery($query);

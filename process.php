@@ -134,7 +134,7 @@ if (isset($_POST['register'])) {
             $_SESSION['user']['lastnotificationid'] = $maxnot['id'];
             $_SESSION['user']['notificationid'] = $maxnot['id'];
             $_SESSION['msg'] = 'Registration Successful';
-            redirectAfter(SITE_URL);
+            redirectAfter(SITE_URL."/welcome");
         } else {
             $_SESSION['data'] = $_POST['data'];
             $_SESSION['msg'] .= "Sorry there was an error! contact the Admins";
@@ -318,9 +318,9 @@ if (isset($_POST['register'])) {
         redirectTo(SITE_URL . "/request");
         
         // approve / authenticate a friend
-    } else if (isset($_POST['approvefriend']) && $_SESSION['user']['accesslevl'] > 0) {
+    } else if (isset($_POST['approvefriend']) && $_SESSION['user']['accesslevel'] > 0) {
         $_POST = secure($_POST);
-        $query = "update dchub_users set authenticated=1, class=2 where nick1 = '$_POST[nick]' and (friend ='" . $_SESSION['user']['nick'] . "'" . ((isset($_SESSION['user']['nick2'])) ? (" or friend='" . $_SESSION['user']['nick2'] . "')") : (")"));
+        $query = "update dchub_users set class=1 where nick1 = '$_POST[nick]' and (friend ='" . $_SESSION['user']['nick'] . "'" . ((isset($_SESSION['user']['nick2'])) ? (" or friend='" . $_SESSION['user']['nick2'] . "')") : (")"));
         DB::query($query);
         $friend = DB::findOneFromQuery("select nick1, nick2 from dchub_users where nick = '$_POST[nick]'");
         DB::update('reglist', array('class' => 1), "nick='" . $friend['nick1'] . "'");
@@ -370,7 +370,7 @@ if (isset($_POST['register'])) {
         if (isset($xml->message) && in_array($xml->message, $opt)) {
             $_SESSION['msg'] = 'Authentication Successful!';
             $_SESSION['user']['accesslevel'] = 1;
-            DB::update('dchub_users', array('class' => 1, 'authenticated' => 1, 'friend' => 'HubBot'), "id = " . $_SESSION['user']['id']);
+            DB::update('dchub_users', array('class' => 1, 'friend' => 'HubBot'), "id = " . $_SESSION['user']['id']);
             DB::update('reglist', array('class' => 1), "nick='" . $_SESSION['user']['nick'] . "'");
             if (isset($_SESSION['user']['nick2'])) {
                 DB::update('reglist', array('class' => 1), "nick='" . $_SESSION['user']['nick2'] . "'");
@@ -395,8 +395,13 @@ if (isset($_POST['register'])) {
         // ask friend to authenticate
     } else if (isset($_POST['friendauth'])) {
         $_POST['friend'] = addslashes($_POST['friend']);
-        DB::update('dchub_users', array('friend' => $_POST['friend']), "id = " . $_SESSION['user']['id']);
-        $_SESSION['msg'] = 'Authentication request sent. Your class will be updated as soon as your friend authenticates you.';
+        $res = DB::findOneFromQuery("Select * from dchub_users where nick1 = '$_POST[friend]' or nick2 = '$_POST[friend]'");
+        if($res) {
+            DB::update('dchub_users', array('friend' => $_POST['friend']), "id = " . $_SESSION['user']['id']);
+            $_SESSION['msg'] = 'Authentication request sent. Your class will be updated as soon as your friend authenticates you.';
+        } else {
+            $_SESSION['msg'] = "Friend not found. Are you sure that the nick is correct?";
+        }
         redirectTo("http://" . $_SERVER['HTTP_HOST'] . $_SESSION['url']);
         
         // password change
@@ -528,11 +533,10 @@ if (isset($_POST['register'])) {
         redirectTo(SITE_URL . "/messages");
         
         // post a content on recommendation page
-    } else if (isset($_POST['recommendcontent'])) {
+    } else if (isset($_POST['recommendcontent']) && $_SESSION['user']['accesslevel'] > 0) {
         $_POST['data'] = secure($_POST['data']);
         if (check(array($_POST['data']['title']))) {
             $_POST['data']['uid'] = $_SESSION['user']['id'];
-            $_POST['data']['magnetlink'] = $_POST['data']['title'];
             foreach ($categories as $value) {
                 if (isset($_POST['data'][$value])) {
                     if ($_POST['data']['tag'] != "") {

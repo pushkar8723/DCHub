@@ -21,10 +21,14 @@ if (isset($_GET['code'])) {
     ?>
     <script type='text/javascript'>
         $(document).ready(function() {
-            $('form').submit(function() {
+            $('form').submit(function(event) {
+            if (event.target.id == "searchform") {
                 $(location).attr('href', '<?php echo SITE_URL; ?>/search/' + $('#search').val());
                 return false;
-            });
+            } else {
+                return true;
+            }
+        });
         });
     </script>
     <form class='pull-right' style='margin-top: 10px;' method='post' action='<?php echo SITE_URL; ?>/process.php'>
@@ -48,7 +52,7 @@ if (isset($_GET['code'])) {
             });
         });
     </script>
-    <form style='margin-top: 10px;' method='post' action='<?php echo SITE_URL; ?>/process.php'>
+    <form id="searchform" style='margin-top: 10px;' method='post' action='<?php echo SITE_URL; ?>/process.php'>
         <input id='search' name='search' type='text' class='search-query' placeholder='Search' required/>
     </form>
     <?php

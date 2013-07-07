@@ -62,7 +62,7 @@ if (isset($_GET['page']) && $_GET['page'] > 0) {
 }
 ?>
 <div class='row'>
-    <div class='span7'>
+    <div class='span7' style='min-height: 400px;'>
         <?php
         $body = "from dchub_request where deleted = 0 order by id desc";
         $res = DB::findAllWithCount("select *", $body, $page, 10);
@@ -117,7 +117,7 @@ if (isset($_GET['page']) && $_GET['page'] > 0) {
         <input type='submit' value='Request' name='request' class='btn'/>
         </form>";
             } else {
-                echo "<a href='#' onclick=\"$('#signin').popover('show');\" class='btn btn-danger btn-block btn-large'>Login to make a Request</a>";
+                echo "<a href='#' onclick=\"$('#signinbox').modal('show');\" class='btn btn-danger btn-block btn-large'>Login to make a Request</a>";
             }
             ?>
         </div>

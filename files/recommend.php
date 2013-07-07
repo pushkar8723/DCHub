@@ -6,6 +6,12 @@ if (isset($_GET['page']) && $_GET['page'] > 0) {
 }
 ?>
 <script type='text/javascript'>
+    function replaceURLWithHTMLLinks(text) {
+        var exp = /(\b(magnet):?[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+        text = text.replace(exp, "<a href='$1'>$1</a>");
+        var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+        return text.replace(exp, "<a target='_blank' href='$1'>$1</a>");
+    }
     $(document).ready(function() {
         $('.rec_recommend, .rec_discourage').click(function(event) {
             $('#' + event.target.id).html("Processing...");
@@ -38,6 +44,9 @@ if (isset($_GET['page']) && $_GET['page'] > 0) {
                 });
             }
         });
+        $('.des').each(function() {
+            $(this).html(replaceURLWithHTMLLinks($(this).html()));
+        });
     });
 </script>
 <h1>Recommendation Page</h1>
@@ -45,10 +54,12 @@ if (isset($_GET['page']) && $_GET['page'] > 0) {
     Watched a movie. Liked it? Now recommend it to others. <br/>
     <b>Note : </b>Share your new content on Latest content page, not here.
 </div>
+<?php
+if(isset($_SESSION['loggedin']) && $_SESSION['user']['accesslevel'] > 0){ ?>
 <form class='form-horizontal' action="<?php echo SITE_URL; ?>/process.php" method="post">
     <div class='control-group'>
-        <div class='control-label'><label for='filename'>Link</label></div>
-        <div class='controls'><input type='text' style='width:97%;' name='data[title]' id='filename' /></div>
+        <div class='control-label'><label for='filename'>Description</label></div>
+        <div class='controls'><textarea style='width: 98%;' name='data[title]' id='filename'></textarea></div>
     </div>
     <div class='control-group'>
         <div class='control-label'><label for='tagsinput'>Tags</label></div>
@@ -74,6 +85,11 @@ if (isset($_GET['page']) && $_GET['page'] > 0) {
     </div>
 </form>
 <?php
+} else if (!isset ($_SESSION['loggedin'])) {
+    echo "<center><h3>Login to recommend</h3></center><br/>";
+} else {
+    echo "<center><h3>Only authenticated user can recommend.</h3></center><br/>";
+}
 $query = "from dchub_rc where deleted=0 order by timestamp desc";
 $res = DB::findAllWithCount("select *", $query, $page, 25);
 $data = $res['data'];
@@ -100,11 +116,11 @@ foreach ($data as $row) {
             $btn = "<a href='#' class='btn rec_recommend' id='$row[cid]'>Recommend</a>";
         }
     } else {
-        $btn = "<a href='#' onclick=\"$('#signin').popover('show');\" class='btn'>Login to Recommend</a>";
+        $btn = "<a href='#' onclick=\"$('#signinbox').modal('show');\" class='btn'>Login to Recommend</a>";
     }
-    $str = stripslashes($row['title']);
+    $str = preg_replace('/\n/', '<br/>', htmlspecialchars(stripslashes($row['title'])));
     //printing
-    echo "<tr><td>" . (($row['magnetlink'] != "") ? ("<a href='$row[magnetlink]'>" . $str . "</a>") : ($str)) . "</td>
+    echo "<tr><td><div class='des'>$str</div></td>
             <td>$tagstr</td><td><a href='" . SITE_URL . "/users/$user[nick1]'>$user[nick1]</a></td>
                 <td style='text-align:center;'><span id='$row[cid]_count'>$rec[recommendations]</span> recommendation(s)<br/>$btn</td></tr>";
 }

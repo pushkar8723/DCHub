@@ -12,7 +12,7 @@ if (isset($_GET['page']) && $_GET['page'] > 0) {
 } else {
     $page = 1;
 }
-$body = "from dchub_content where deleted=0 order by createdOn desc";
+$body = "from dchub_content where deleted=0 order by priority desc, timestamp desc";
 $rec = DB::findAllWithCount("select *", $body, $page, 20);
 $data = $rec['data'];
 ?>

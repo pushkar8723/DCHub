@@ -23,36 +23,45 @@ function head() { ?>
     <script src="<?php echo JS_URL; ?>/jquery.tagsinput.js"></script>
     <script src="<?php echo JS_URL; ?>/bootstrap-tooltip.js"></script>
     <script src="<?php echo JS_URL; ?>/jquery.placeholder.js"></script>
-    <script type='text/javascript'>
-        var tmp = $.fn.popover.Constructor.prototype.show;
-        $.fn.popover.Constructor.prototype.show = function() {
-            tmp.call(this);
-            if (this.options.callback) {
-                this.options.callback();
-            }
-        }
-        $(function()
-        {
-            $("#signin").popover({
-                html: true,
-                content: "<?php echo ((isset($_SESSION['loginerr'])) ? ("<div class='alert alert-danger' style='text-align:center;'>$_SESSION[loginerr]</div>") : ("")); ?><form class='form-horizontal' action=\"<?php echo SITE_URL; ?>/process.php\" method=\"post\"><div class='control-group'><div class='control-label' style='width: 100px;'><label for = \"username\" style='width: 100px;'>Username:</label></div><div class='controls' style='margin-left: 120px;'><input id = 'username' type = \"text\" name=\"data[username]\" required></div></div><div class='control-group'><div class='control-label' style='width: 100px;'><label for = \"password\" style='width: 100px;'>Password:</label></div><div class='controls' style='margin-left: 120px;'><input id = \"password\" type=\"password\" name=\"data[password]\" required></div></div><div class='control-group'><div class='control-label' style='width: 100px;'></div><div class='controls' style='margin-left: 120px;'><input class = \"btn btn-danger\" type=\"submit\" value=\"Sign In\" name =\"login\"/></div><hr/><center><a href = \"#\">Forgot Password?</a></form></center>",
-                callback: function() {
-                    document.getElementById('username').focus();
-                }
-            });
+
     <?php
     if (isset($_SESSION['loginerr'])) {
-        echo "$('#signin').popover('show');";
-        unset($_SESSION['loginerr']);
+        echo "<script type='text/javascript'>
+                $(document).ready(function(){
+                    $('#signinbox').modal('show');
+                });
+              </script>";
     }
-    ?>
-        });
-    </script>
-    <?php
 }
 
 function navbar() {
     ?>
+    <div id="signinbox" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="myModalLabel">Sign In</h3>
+        </div>
+        <div class="modal-body">
+            <?php
+            if (isset($_SESSION['loginerr'])) {
+                echo "<div class='alert alert-danger' style='text-align:center;'>$_SESSION[loginerr]</div>";
+                unset($_SESSION['loginerr']);
+            }
+            echo "<div style='padding-left: 50px;'>";
+            $fields = array(
+                'data[username]' => array('Username', 'text'),
+                'data[password]' => array('Password', 'password')
+            );
+            createForm('login', $fields, 'Sign In');
+            echo "</div>";
+            ?>
+
+        </div>
+        <div class="modal-footer">
+            <center><a href = "#">Forgot Password?</a></center>
+        </div>
+    </div>
+
     <div class="navbar navbar-fixed-top navbar-inverse">
         <div class="navbar-inner">
             <div class="container">
@@ -72,61 +81,61 @@ function navbar() {
                     </li>
                     <li><a href="<?php echo SITE_URL; ?>/faq">FAQ</a></li>
                     <?php if (isset($_SESSION['loggedin']) && $_SESSION['user']['accesslevel'] >= 2) { ?>
-                            <li><a href="#">Manage</a>
-                                <ul>
-                                    <li><a href="<?php echo SITE_URL; ?>/recmanage">Recommendation Page</a></li>
-                                    <li><a href="<?php echo SITE_URL; ?>/reqmanage">Request Page</a></li>
-                                    <?php
-                                    if($_SESSION['user']['accesslevel'] >= 3){
-                                        echo "<li><a href='".SITE_URL."/latmanage'>Latest Content</a></li>";
-                                    }
-                                    if($_SESSION['user']['accesslevel'] >= 4){
-                                        echo "<li><a href='".SITE_URL."/msgmanage'>Message Approval</a></li>";
-                                    }
-                                    ?>
-                                </ul>
-                            </li>
+                        <li><a href="#">Manage</a>
+                            <ul>
+                                <li><a href="<?php echo SITE_URL; ?>/recmanage">Recommendation Page</a></li>
+                                <li><a href="<?php echo SITE_URL; ?>/reqmanage">Request Page</a></li>
+                                <?php
+                                if ($_SESSION['user']['accesslevel'] >= 3) {
+                                    echo "<li><a href='" . SITE_URL . "/latmanage'>Latest Content</a></li>";
+                                }
+                                if ($_SESSION['user']['accesslevel'] >= 4) {
+                                    echo "<li><a href='" . SITE_URL . "/msgmanage'>Message Approval</a></li>";
+                                }
+                                ?>
+                            </ul>
+                        </li>
                     <?php } ?>
-    <?php if (isset($_SESSION['loggedin']) && $_SESSION['user']['accesslevel'] >= 9) { ?>
-                            <li><a href="#">Admin</a>
-                                <ul>
-                                    <li><a href="<?php echo SITE_URL; ?>/groups">Groups</a></li>
-                                    <li><a href="<?php echo SITE_URL; ?>/admin">Administration</a></li>
-                                    <li><a href="<?php echo SITE_URL; ?>/motd">MotD</a></li>
-                                </ul>
-                            </li>
+                    <?php if (isset($_SESSION['loggedin']) && $_SESSION['user']['accesslevel'] >= 9) { ?>
+                        <li><a href="#">Admin</a>
+                            <ul>
+                                <li><a href="<?php echo SITE_URL; ?>/groups">Groups</a></li>
+                                <li><a href="<?php echo SITE_URL; ?>/admin">Administration</a></li>
+                                <li><a href="<?php echo SITE_URL; ?>/motd">MotD</a></li>
+                            </ul>
+                        </li>
                     <?php } ?>
-                    </ul>
-                    <?php
-                    if (isset($_SESSION['loggedin'])) {
-                        $query = "select * from dchub_users where class = 0 and (friend = '" . $_SESSION['user']['nick'] . "' " . ((isset($_SESSION['user']['nick2'])) ? ("OR friend = '" . $_SESSION['user']['nick2'] . "'") : ('')) . ")";
-                        $res = DB::findAllFromQuery($query);
-                        $query = "select distinct(fromid) as fromid from dchub_message where id > '" . $_SESSION['user']['msgid'] . "' and toid = " . $_SESSION['user']['id'] . "
+                </ul>
+                <?php
+                if (isset($_SESSION['loggedin'])) {
+                    $query = "select * from dchub_users where class = 0 and (friend = '" . $_SESSION['user']['nick'] . "' " . ((isset($_SESSION['user']['nick2'])) ? ("OR friend = '" . $_SESSION['user']['nick2'] . "'") : ('')) . ")";
+                    $res = DB::findAllFromQuery($query);
+                    $query = "select distinct(fromid) as fromid from dchub_message where id > '" . $_SESSION['user']['msgid'] . "' and toid = " . $_SESSION['user']['id'] . "
             union
             select distinct(toid) as fromid from dchub_message where id > '" . $_SESSION['user']['msgid'] . "' and fromid = " . $_SESSION['user']['id'];
-                        $resmsg = DB::findAllFromQuery($query);
-                        $usrgrp = "'" . implode("','", $_SESSION['user']['groups']) . "'";
-                        $query = "select id from dchub_post where deleted=0 and approvedby!=0 and id > '" . $_SESSION['user']['notificationid'] . "' and gid in 
+                    $resmsg = DB::findAllFromQuery($query);
+                    $usrgrp = "'" . implode("','", $_SESSION['user']['groups']) . "'";
+                    $query = "select id from dchub_post where deleted=0 and approvedby!=0 and id > '" . $_SESSION['user']['notificationid'] . "' and gid in 
 (select id from dchub_groups where name in ($usrgrp))    
 order by timestamp desc";
-                        $resnot = DB::findAllFromQuery($query);
-                        ?>
-                        <ul class="nav pull-right">
-                            <li id='friendnav' <?php if (count($res) > 0) echo "class='active'"; ?>><a href="<?php echo SITE_URL; ?>/friends"><span class="fui-man-24"></span><?php if (count($res) > 0) echo '<span class="navbar-unread">' . count($res) . '</span>'; ?></a></li>
-                            <li id='msgnav' <?php if (count($resmsg) > 0) echo "class='active'"; ?>><a href="<?php echo SITE_URL; ?>/messages"><span class="fui-bubble-24"></span><?php if (count($resmsg) > 0) echo '<span class="navbar-unread">' . count($resmsg) . '</span>'; ?></a></li>
-                            <li id='notnav' <?php if (count($resnot) > 0) echo "class='active'"; ?>><a href="<?php echo SITE_URL; ?>/notifications"><span class="fui-menu-24"></span><?php if (count($resnot) > 0) echo '<span class="navbar-unread">' . count($resnot) . '</span>'; ?></a></li>
-                            <li>
-                                <a href="#">Account</a>
-                                <ul style='left: -120px;'>
-                                    <li><a href="<?php echo SITE_URL ?>/account">Account Settings</a></li>
-                                    <li><a href="<?php echo SITE_URL ?>/process.php?logout">Logout</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-    <?php } else { ?>
-                        <a style='margin-top: 3px;' class="btn btn-large btn-danger pull-right" href="<?php echo SITE_URL; ?>/register">Register</a>
-                        <a style='margin-top: 3px; margin-right: 5px;' class="btn btn-large btn-danger pull-right" href="#" data-placement='bottom' rel="popover" data-original-title="Sign In" id="signin">Sign In</a>
-    <?php } ?>
+                    $resnot = DB::findAllFromQuery($query);
+                    ?>
+                    <ul class="nav pull-right">
+                        <li id='friendnav' <?php if (count($res) > 0) echo "class='active'"; ?>><a href="<?php echo SITE_URL; ?>/friends"><span class="fui-man-24"></span><?php if (count($res) > 0) echo '<span class="navbar-unread">' . count($res) . '</span>'; ?></a></li>
+                        <li id='msgnav' <?php if (count($resmsg) > 0) echo "class='active'"; ?>><a href="<?php echo SITE_URL; ?>/messages"><span class="fui-bubble-24"></span><?php if (count($resmsg) > 0) echo '<span class="navbar-unread">' . count($resmsg) . '</span>'; ?></a></li>
+                        <li id='notnav' <?php if (count($resnot) > 0) echo "class='active'"; ?>><a href="<?php echo SITE_URL; ?>/notifications"><span class="fui-menu-24"></span><?php if (count($resnot) > 0) echo '<span class="navbar-unread">' . count($resnot) . '</span>'; ?></a></li>
+                        <li>
+                            <a href="#">Account</a>
+                            <ul style='left: -120px;'>
+                                <li><a href="<?php echo SITE_URL ?>/account">Account Settings</a></li>
+                                <li><a href="<?php echo SITE_URL ?>/process.php?logout">Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                <?php } else { ?>
+                    <a style='margin-top: 3px;' class="btn btn-large btn-danger pull-right" href="<?php echo SITE_URL; ?>/register">Register</a>
+                    <a style='margin-top: 3px; margin-right: 5px;'  role="button" data-toggle="modal" class="btn btn-large btn-danger pull-right" href="#signinbox">Sign In</a>
+                <?php } ?>
             </div>
         </div>
     </div>
@@ -171,7 +180,7 @@ function pagination($noofpages, $url, $page, $maxcontent) {
                 if ($page < $noofpages) {
                     ?>
                     <li class="next"><a href="<?php echo $url . "&page=" . ($page + 1); ?>"><img src="<?php echo IMAGE_URL; ?>/pager/next.png" /></a></li>
-        <?php } ?>
+                        <?php } ?>
             </ul>
         </div>
         <?php
@@ -225,7 +234,7 @@ function contentshow($data, $highlight = '', $sharedby = true) {
                 $btn = "<a href='#' class='btn recommend' id='$row[cid]'>Recommend</a>";
             }
         } else {
-            $btn = "<a href='#' onclick=\"$('#signin').popover('show');\" class='btn'>Login to Recommend</a>";
+            $btn = "<a href='#' onclick=\"$('#signinbox').modal('show');\" class='btn'>Login to Recommend</a>";
         }
 
         //printing
