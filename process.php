@@ -322,7 +322,7 @@ if (isset($_POST['register'])) {
         $_POST = secure($_POST);
         $query = "update dchub_users set class=1 where nick1 = '$_POST[nick]' and (friend ='" . $_SESSION['user']['nick'] . "'" . ((isset($_SESSION['user']['nick2'])) ? (" or friend='" . $_SESSION['user']['nick2'] . "')") : (")"));
         DB::query($query);
-        $friend = DB::findOneFromQuery("select nick1, nick2 from dchub_users where nick = '$_POST[nick]'");
+        $friend = DB::findOneFromQuery("select nick1, nick2 from dchub_users where nick1 = '$_POST[nick]'");
         DB::update('reglist', array('class' => 1), "nick='" . $friend['nick1'] . "'");
         if ($friend['nick2'] != "") {
             DB::update('reglist', array('class' => 1), "nick='" . $friend['nick2'] . "'");
@@ -330,7 +330,7 @@ if (isset($_POST['register'])) {
         redirectTo(SITE_URL . "/friends");
         
         // deny a friend
-    } else if (isset($_POST['denyfriend']) && $_SESSION['user']['accesslevl'] > 0) {
+    } else if (isset($_POST['denyfriend']) && $_SESSION['user']['accesslevel'] > 0) {
         $_POST = secure($_POST);
         $query = "update dchub_users set friend='' where nick1 = '$_POST[nick]' and (friend ='" . $_SESSION['user']['nick'] . "'" . ((isset($_SESSION['user']['nick2'])) ? (" or friend='" . $_SESSION['user']['nick2'] . "')") : (")"));
         DB::query($query);

@@ -60,6 +60,7 @@ $data = $rec['data'];
     <tr><th>File name</th><th>Requested By</th><th>Options</th></tr>
     <?php
     foreach ($data as $row) {
+        $row['request_file'] = stripslashes($row['request_file']);
         $user = DB::findOneFromQuery("select nick1 from dchub_users where id = $row[uid]");
         echo "<tr>
         <td>
