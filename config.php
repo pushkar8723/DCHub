@@ -14,7 +14,7 @@ function displayErrors($option = true) {
 }
 displayErrors(TRUE);
 
-define("SITE_URL", "http://" . $_SERVER['HTTP_HOST'] . "/DCHub");
+define("SITE_URL", "http://" . $_SERVER['HTTP_HOST'] . "/dchub");
 define("PUBLIC_URL", SITE_URL . "/public");
 define("JS_URL", PUBLIC_URL . "/js");
 define("CSS_URL", PUBLIC_URL . "/css");
@@ -24,9 +24,9 @@ session_set_cookie_params (0, substr(SITE_URL, strlen("http://" . $_SERVER['HTTP
 session_start();
 clearstatcache();
 
-define("SQL_USER", "verlihub2");     
-define("SQL_PASS", "diss73");      
-define("SQL_DB", "verlihub2");
+define("SQL_USER", "verlihub");     
+define("SQL_PASS", "verlihub");      
+define("SQL_DB", "verlihub");
 define("SQL_HOST", "localhost");
 define("SQL_PORT", "3306");
 
