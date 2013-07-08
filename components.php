@@ -79,7 +79,7 @@ function navbar() {
                             <!--<li><a href="<?php echo SITE_URL; ?>/hof">Hall of Fame</a></li>-->
                         </ul>
                     </li>
-                    <li><a href="<?php echo SITE_URL; ?>/faq">FAQ</a></li>
+                    <li><a href="<?php echo SITE_URL; ?>/info">Hub Info</a></li>
                     <?php if (isset($_SESSION['loggedin']) && $_SESSION['user']['accesslevel'] >= 2) { ?>
                         <li><a href="#">Manage</a>
                             <ul>
@@ -126,6 +126,7 @@ order by timestamp desc";
                         <li>
                             <a href="#">Account</a>
                             <ul style='left: -120px;'>
+                                <li><a href="<?php echo SITE_URL ?>/msgarchive">Message Archive</a></li>
                                 <li><a href="<?php echo SITE_URL ?>/notifications/archive">Notification Archive</a></li>
                                 <li><a href="<?php echo SITE_URL ?>/account">Account Settings</a></li>
                                 <li><a href="<?php echo SITE_URL ?>/process.php?logout">Logout</a></li>

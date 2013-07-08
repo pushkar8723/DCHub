@@ -150,3 +150,21 @@ select * from msgarchive where fromnick in ('DeathEater') and tonick = 'DJ_test'
 Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ') or (fromnick = 'DJ_test' and tonick in ('DeathEater')) order by createdOn desc' at line 1
 /host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
 ======================================================================
+[2013-07-08 13:37:31]
+Query error:
+SELECT count(*) as count from dchub_content where deleted = 0 and order by timestamp desc
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'order by timestamp desc' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-08 13:37:31]
+Query error:
+select * from dchub_content where deleted = 0 and order by timestamp desc LIMIT 0,10
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'order by timestamp desc LIMIT 0,10' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-08 13:44:37]
+Query error:
+select *  LIMIT 0,20
+Error: SQLSTATE[HY000]: General error: 1096 No tables used
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================

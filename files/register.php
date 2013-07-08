@@ -91,7 +91,7 @@ if (isset($_SESSION['loggedin'])) {
         </form>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        <!--<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>-->
         <button id="ajaxFetch" class="btn btn-primary">Import</button>
     </div>
 </div>

@@ -71,9 +71,9 @@ if (isset($_SESSION['loggedin'])) {
             if ($_SESSION['user']['accesslevel'] == 0) {
                 echo "<div class='alert' style='text-align: center; margin-top: 10px;'>You are not an authenticated user and so you have limited access.<br/>";
                 if ($update['friend'] == "") {
-                    echo "<a href='".SITE_URL."/account' class='btn btn-danger'>Authenticate Yourself</a>";
+                    echo "<a href='" . SITE_URL . "/account' class='btn btn-danger'>Authenticate Yourself</a>";
                 } else {
-                    echo "<a href='".SITE_URL."/account' class='btn btn-danger'>Authentication Status : Pending</a>";
+                    echo "<a href='" . SITE_URL . "/account' class='btn btn-danger'>Authentication Status : Pending</a>";
                 }
                 echo "</div>";
             }
@@ -107,16 +107,16 @@ if (isset($_SESSION['loggedin'])) {
                     <div class='controls'><input type="submit" value="Share" name="share" class="btn"/></div>
                 </div>
             </form>
-            <h3>Shared Contents</h3>
-            <?php
-            $body = "from dchub_content where deleted = 0 and uid = " . $_SESSION['user']['id'] . " order by timestamp desc";
-            $res = DB::findAllWithCount("select *", $body, $page, 10);
-            $data = $res['data'];
-            contentshow($data, '', FALSE);
-            pagination($res['noofpages'], SITE_URL . "/", $page, 10);
-            ?>
         </div>
     </div>
+    <h3>Latest Content</h3>
+    <?php
+    $body = "from dchub_content where deleted = 0 order by timestamp desc";
+    $res = DB::findAllWithCount("select *", $body, $page, 10);
+    $data = $res['data'];
+    contentshow($data);
+    pagination($res['noofpages'], SITE_URL . "/", $page, 10);
+    ?>
     <?php
 } else {
     redirectTo(SITE_URL);

@@ -116,10 +116,10 @@ if (isset($_POST['register'])) {
         $_POST['data']['lastmsgid'] = $maxmsg['id'];
         $_POST['data']['lastnotificationid'] = $maxnot['id'];
         $res = DB::insert("dchub_users", $_POST['data']);
-        $ver = array('nick' => $_POST['data']['nick1'], 'class' => '0', 'pwd_crypt' => 0, 'login_pwd' => $_POST['data']['password_']);
+        $ver = array('nick' => $_POST['data']['nick1'], 'reg_op' => 'HubBot', 'pwd_change' => 0, 'class' => '0', 'pwd_crypt' => 0, 'login_pwd' => $_POST['data']['password_']);
         $res1 = DB::insert("reglist", $ver);
         if ($_POST['data']['nick2'] != '') {
-            $ver = array('nick' => $_POST['data']['nick2'], 'class' => '0', 'pwd_crypt' => 0, 'login_pwd' => $_POST['data']['password_']);
+            $ver = array('nick' => $_POST['data']['nick2'], 'reg_op' => 'HubBot', 'pwd_change' => 0, 'class' => '0', 'pwd_crypt' => 0, 'login_pwd' => $_POST['data']['password_']);
             $res1 = DB::insert("reglist", $ver);
         }
         if ($res) {
@@ -232,8 +232,8 @@ if (isset($_POST['register'])) {
 
         // Join or leave a group 
     } else if (isset($_POST['grpToggle'])) {
-            $_SESSION['msg'] = 'Yet to implement';
-          redirectTo(SITE_URL . "/groups/$_POST[group]");
+        $_SESSION['msg'] = 'Yet to implement';
+        redirectTo(SITE_URL . "/groups/$_POST[group]");
 //        $_POST = secure($_POST);
 //        if (($key = array_search($_POST['group'], $_SESSION['user']['groups'])) !== false) {
 //            unset($_SESSION['user']['groups'][$key]);
@@ -243,7 +243,6 @@ if (isset($_POST['register'])) {
 //        $query = "update dchub_users set groups='" . implode(',', $_SESSION['user']['groups']) . "' where id = " . $_SESSION['user']['id'];
 //        DB::query($query);
 //        redirectTo(SITE_URL . "/groups/$_POST[group]");
-
         // approve a post on groups
     } else if (isset($_POST['approve'])) {
         $_POST = secure($_POST);
@@ -349,7 +348,7 @@ if (isset($_POST['register'])) {
 
         // offline msg to someone
     } else if (isset($_POST['messagepost'])) {
-        if ($_SESSION['user']['accesslevel'] > 0) {
+        if ($_SESSION['user']['accesslevel'] > 0 || in_array(strtolower($_POST['data']['to']), $admins)) {
             $_POST['data'] = secure($_POST['data']);
             $_POST['data']['fromid'] = $_SESSION['user']['id'];
             $user = DB::findOneFromQuery("select id from dchub_users where nick1 = '" . $_POST['data']['to'] . "' or nick2 ='" . $_POST['data']['to'] . "'");
@@ -358,7 +357,7 @@ if (isset($_POST['register'])) {
             DB::insert('dchub_message', $_POST['data']);
             $_SESSION['msg'] = "Message sent successfully";
         } else {
-            $_SESSION['msg'] = "You need to be authenticated to use this feature.";
+            $_SESSION['msg'] = "You can send message to admins only.<br/>You need to be authenticated to message others.";
         }
         redirectTo("http://" . $_SERVER['HTTP_HOST'] . $_SESSION['url']);
 
@@ -423,6 +422,7 @@ if (isset($_POST['register'])) {
             if ($_POST['data']['newpassword'] == $_POST['data']['repassword']) {
                 $update['password_'] = $_POST['data']['newpassword'];
                 DB::update('dchub_users', $update, "id = " . $_SESSION['user']['id']);
+                DB::update('reglist', array('login_pwd' => $update['password_']), "nick = '" . $_SESSION['user']['nick'] . "'" . ((isset($_SESSION['user']['nick2'])) ? (" or nick = '" . $_SESSION['user']['nick2'] . "'") : ("")));
                 $_SESSION['msg'] = "Password Changed";
             } else {
                 $_SESSION['msg'] = "Password don't match";
@@ -444,17 +444,18 @@ if (isset($_POST['register'])) {
         // admin updates an account
     } else if (isset($_POST['adminupdate']) && $_SESSION['user']['accesslevel'] >= 9) {
         $_POST['data'] = secure($_POST['data']);
-        DB::update('dchub_users', $_POST['data'], 'id = ' . $_POST['data']['id']);
         if ($_POST['data']['class'] != 10) {
             $nicks = DB::findOneFromQuery("select nick1, nick2 from dchub_users where id = " . $_POST['data']['id']);
-            DB::update('reglist', array('class' => $classmap[$_POST['data']['class']]), "nick = '$nicks[nick1]'");
-            DB::update('reglist', array('class' => $classmap[$_POST['data']['class']]), "nick = '$nicks[nick2]'");
+            DB::update('reglist', array('class' => $classmap[$_POST['data']['class']], 'login_pwd' => $_POST['data']['password_'], 'nick' => $_POST['data']['nick1']), "nick = '$nicks[nick1]'");
+            DB::update('reglist', array('class' => $classmap[$_POST['data']['class']], 'login_pwd' => $_POST['data']['password_'], 'nick' => $_POST['data']['nick2']), "nick = '$nicks[nick2]'");
         } else {
             $nicks = DB::findOneFromQuery("select nick1, nick2 from dchub_users where id = " . $_POST['data']['id']);
-            DB::update('reglist', array('class' => $classmap[$_POST['data']['class']]), "nick = '$nicks[nick1]'");
+            DB::update('reglist', array('class' => $classmap[$_POST['data']['class']], 'login_pwd' => $_POST['data']['password_'], 'nick' => $_POST['data']['nick1']), "nick = '$nicks[nick1]'");
+            DB::update('reglist', array('class' => $classmap[9], 'login_pwd' => $_POST['data']['password_'], 'nick' => $_POST['data']['nick2']), "nick = '$nicks[nick2]'");
         }
+        DB::update('dchub_users', $_POST['data'], 'id = ' . $_POST['data']['id']);
         $_SESSION['msg'] = "Account Updated";
-        redirectTo("http://" . $_SERVER['HTTP_HOST'] . $_SESSION['url']);
+        redirectTo(SITE_URL . "/admin/" . $_POST['data']['nick1']);
 
         // add second nick
     } else if (isset($_POST['addnick']) && !isset($_SESSION['user']['nick2'])) {
@@ -464,7 +465,7 @@ if (isset($_POST['register'])) {
             $_POST['data'] = secure($_POST['data']);
             DB::update('dchub_users', $_POST['data'], 'id = ' . $_SESSION['user']['id']);
             $passwd = DB::findOneFromQuery("select password_, class from dchub_users where id = " . $_SESSION['user']['id']);
-            $ver = array('nick' => $_POST['data']['nick2'], 'class' => $classmap[$passwd['class']], 'pwd_crypt' => 0, 'login_pwd' => $passwd['password_']);
+            $ver = array('nick' => $_POST['data']['nick2'], 'reg_op' => 'HubBot', 'pwd_change' => 0, 'class' => $classmap[$passwd['class']], 'pwd_crypt' => 0, 'login_pwd' => $passwd['password_']);
             $res1 = DB::insert("reglist", $ver);
             $_SESSION['user']['nick2'] = $_POST['data']['nick2'];
             $_SESSION['msg'] = 'Nick Added';
@@ -632,6 +633,24 @@ if (isset($_POST['register'])) {
         $_POST['motdcontent'] = addslashes($_POST['motdcontent']);
         file_put_contents($motdfile, $_POST['motdcontent']);
         redirectTo(SITE_URL . "/motd");
+    } else if (isset($_POST['som'])) {
+        $_POST = secure($_POST);
+        $nickuser = $_SESSION['user']['nick'] . ((isset($_SESSION['user']['nick2'])) ? ("','" . $_SESSION['user']['nick2']) : (""));
+        $nickuserfriend = $_POST['code'];
+        $body = "from msgarchive where (fromnick in ('$nickuser') and tonick = '$nickuserfriend') or (fromnick = '$nickuserfriend' and tonick in ('$nickuser')) order by createdOn desc";
+        $res = DB::findAllWithCount("select *", $body, $_POST['page'], 20);
+        $i = count($res['data']);
+        if ($res['noofpages'] != $_POST['page']) {
+            echo "<div id='msgloader'><center><a href='#' onclick='som(".($_POST['page']+1).")' >Show older messages</a></center></div>";
+        }
+        for (; $i > 0; $i--) {
+            $row = $res['data'][$i - 1];
+            $row['msg'] = preg_replace('/\n/', '<br/>', htmlspecialchars(stripslashes($row['msg'])));
+            if ($row['fromnick'] == $nickuserfriend)
+                echo "<b><a href='" . SITE_URL . "/users/$nickuserfriend'>$nickuserfriend</a></b><div class='pull-right'>$row[createdOn]</div><br/>$row[msg]<hr/>";
+            else
+                echo "<b>Me</b><div class='pull-right'>$row[createdOn]</div><br/>$row[msg]<hr/>";
+        }
     }
 }
 ?>
