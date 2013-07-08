@@ -1,8 +1,8 @@
 <?php
 include 'config.php';
 $_SESSION['url'] = $_SERVER['REQUEST_URI'];
-if(isset($_SESSION['loggedin']) && $_SESSION['user']['accesslevel'] == 0){
-    $update = DB::findOneFromQuery("select class, friend from dchub_users where id=".$_SESSION['user']['id']);
+if (isset($_SESSION['loggedin']) && $_SESSION['user']['accesslevel'] == 0) {
+    $update = DB::findOneFromQuery("select class, friend from dchub_users where id=" . $_SESSION['user']['id']);
     $_SESSION['user']['accesslevel'] = $update['class'];
 }
 ?>
@@ -28,21 +28,30 @@ if(isset($_SESSION['loggedin']) && $_SESSION['user']['accesslevel'] == 0){
                     <?php
                     $query = "SELECT * FROM dchub_content where deleted = 0 order by timestamp desc LIMIT 0 , 10";
                     $result = DB::findAllFromQuery($query);
-					if($result){
-						foreach ($result as $row) {
-							$row['title'] = stripcslashes($row['title']);
-							$user = DB::findOneFromQuery("select nick1  from dchub_users where id = $row[uid]");
-							echo "<div class='newondc'><span class='head'>" . (($row['magnetlink'] != "") ? ("<a href='$row[magnetlink]'>$row[title]</a>") : ($row['title'])) . "</span><br/>by <a href='" . SITE_URL . "/users/$user[nick1]'>$user[nick1]</a></div>";
-						}
-					} else {
-						echo "<br/><br/><br/><center><h1>No Shares Till now :(</h1></center><br/><br/><br/>";
-					}
+                    if ($result) {
+                        foreach ($result as $row) {
+                            $row['title'] = stripcslashes($row['title']);
+                            $user = DB::findOneFromQuery("select nick1  from dchub_users where id = $row[uid]");
+                            echo "<div class='newondc'><span class='head'>" . (($row['magnetlink'] != "") ? ("<a href='$row[magnetlink]'>$row[title]</a>") : ($row['title'])) . "</span><br/>by <a href='" . SITE_URL . "/users/$user[nick1]'>$user[nick1]</a></div>";
+                        }
+                    } else {
+                        echo "<br/><br/><br/><center><h1>No Shares Till now :(</h1></center><br/><br/><br/>";
+                    }
                     ?>
                 </div>
 
                 <hr>
                 <h3>New Features</h3>
-                <h5>Fill this area</h5>
+                <ul>
+                    <li>Want something downloaded? Post on our <b>Request Page</b>.</li>
+                    <li>Get the Schedule of your favorite TV Shows with our <b>TV Scheduler</b>.</li>
+                    <li>Watched some new movie? Liked it? Recommend others to watch it using our <b>Recommendations Page</b>.</li>
+                    <li>Now join the Hub with <b>0 GB Share</b> and start downloading and sharing.</li>
+                    <li>Having trouble with your internet connection? Need to change your ip? No Problem as there is <b>No IP Restriction</b>.</li>
+                    <li>Have to share your room? How do you register from same IP? No Problem. You can <b>Register from any IP</b>.</li>
+                    <li>We take into consideration <b>Your Comments and Suggestions</b> and thus the Hub is continuously evolving.</li> 
+                    <li>You were having a conversation and user went offline? Leave an <b>Offline Message</b>.</li>
+                </ul>
                 <?php
             } else if (isset($_SESSION['loggedin']) && (!isset($_GET['tab']) || $_GET['tab'] == '')) {
                 require_once 'files/home.php';

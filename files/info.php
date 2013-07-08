@@ -47,14 +47,14 @@
     <b>Commands Available</b>:
     <table class='table table-hover'>
         <tr><th>Command</th><th>Description</th></tr>
+        <tr><td>+hot</td><td>Shows top 10 recommended content.</td></tr>
         <tr><td>+help</td><td>Displays a list of all commands available to you.</td></tr>
         <tr><td>+notice</td><td>Displays the Message of the Day Notifications containing Club Notices, Lost&Found etc.</td></tr>
         <tr><td>+latest</td><td>Displays the Top 10 latest shared content.</td></tr>
-        <tr><td>+report &lt;user&gt; &lt;reason&gt;</td><td>Report a user to OpChat for breaking the rules.</td></tr>
         <tr><td>+myinfo</td><td>Shows you information about yourself.</td></tr>
         <tr><td>+password &lt;old-password&gt; &lt;new-password&gt;</td><td>Allows you to update your password.</td></tr>
-        <tr><td>+share &lt;content&gt; &amp;M &lt;magnet-link&gt; &amp;D &lt;description&gt;</td><td>Lets you share new content. The special words "&M" and "&D" are used to indicate that what follows is the magnet-link or description. Both are optional and order does not matter.</td></tr>
-        <tr><td>+share &lt;magnet-link&gt;</td><td>This is an alternate way to use the +share command, that extracts and uses the file name as the item name.</td></tr>
+        <tr><td>+share &lt;content&gt; &amp;M &lt;magnet-link&gt; &lt;comma separated tag&gt;</td><td>Lets you share new content. The special words "&M" is used to indicate that what follows is the magnet-link. It is optional.</td></tr>
+        <tr><td>+share &lt;magnet-link&gt; &lt;comma separated tag&gt;</td><td>This is an alternate way to use the +share command, that extracts and uses the file name as the item name.</td></tr>
     </table>   
 </div>
 
@@ -64,6 +64,7 @@
     <br/><br/><b>Additional Commands Available</b><br/>
     <table class='table table-hover'>
         <tr><th>Command</th><th>Description</th></tr>
+        
         <tr><td>+authenticate &lt;nick&gt;</td><td>Allows you to authenticate a friend who has sent you a request.</td></tr>
         <tr><td>+me &lt;message&gt;</td><td>Lets you 'flash' a message on the Main Chat.</td></tr>
         <tr><td>+notify &lt;message&gt;</td><td>Allows you to broadcast message to all users, subject to Admin approval.</td></tr>
@@ -78,6 +79,8 @@
     <h4>Access Level 2 : Famous</h4><hr/>
     Users are upgraded to Level 2 when they share more than 500GB OR occasionally download New Content. 
     <br/>Level-2 Users are granted privileges to manage the Request and Recommendation Pages via the Web Interface.
+    <br/>
+    <br/>
 </div>
 
 <div class='accesslevel'>
@@ -101,7 +104,8 @@
     <table class='table table-hover'>
         <tr><th>Command</th><th>Description</th></tr>
         <tr><td>+view</td><td>Displays pending broadcast messages.</td></tr>
-        <tr><td>+send</td><td>Approves and broadcast all pending messages.</td></tr>
+        <tr><td>+send &lt;ID&gt;</td><td>Approves and broadcast specified pending messages.</td></tr>
+        <tr><td>+send decline &lt;ID&gt;</td><td>Denies specified pending messages.</td></tr>
     </table>
 </div>
 <br/>
