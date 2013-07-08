@@ -53,7 +53,12 @@ if (isset($_SESSION['loggedin'])) {
                     $("#mobile").val(JSON.data[0].phone);
                     $("#nick1").val($('#nick').val());
                     $('#myModal').modal('hide');
-                    alert('Fill in the remaining details');
+                    $("#branch").closest('div.control-group').css({'background-color': '#dff0d8', 'padding':'10px'});
+                    $("#optionsRadios1").closest('div.control-group').css({'background-color': '#dff0d8', 'padding':'10px'});
+                    $("#hostel").closest('div.control-group').css({'background-color': '#dff0d8', 'padding':'10px'});
+                    $("#pass1").closest('div.control-group').css({'background-color': '#dff0d8', 'padding':'10px'});
+                    $("#repass1").closest('div.control-group').css({'background-color': '#dff0d8', 'padding':'10px'});
+                    alert('Fill in the highlighted fields');
                 } else {
                     alert(data);
                 }

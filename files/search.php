@@ -16,27 +16,27 @@ if (isset($_GET['code'])) {
     $msc = microtime(true);
     $res = DB::findAllWithCount("select *", $body, $page, 20);
     $msc = microtime(true) - $msc;
-      
+
     $data = $res['data'];
     ?>
     <script type='text/javascript'>
         $(document).ready(function() {
             $('form').submit(function(event) {
-            if (event.target.id == "searchform") {
-                $(location).attr('href', '<?php echo SITE_URL; ?>/search/' + $('#search').val());
-                return false;
-            } else {
-                return true;
-            }
-        });
+                if (event.target.id == "searchform") {
+                    $(location).attr('href', '<?php echo SITE_URL; ?>/search/' + $('#search').val());
+                    return false;
+                } else {
+                    return true;
+                }
+            });
         });
     </script>
-    <form class='pull-right' style='margin-top: 10px;' method='post' action='<?php echo SITE_URL; ?>/process.php'>
+    <form id="searchform" class='pull-right' style='margin-top: 10px;' method='post' action='<?php echo SITE_URL; ?>/process.php'>
         <input id='search' name='search' type='text' class='search-query' placeholder='Search' value='<?php echo $_GET['code']; ?>'  required/>
     </form>
     <h1>Search Results</h1>
     <?php
-    echo '('.$res['total'].' total, Query took '.number_format($msc, 3, '.', ','). ' seconds)<br/><br/>'; // in second  
+    echo '(' . $res['total'] . ' total, Query took ' . number_format($msc, 3, '.', ',') . ' seconds)<br/><br/>'; // in second  
     contentshow($data, $_GET['code']);
     ?>
 

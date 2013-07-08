@@ -1,6 +1,6 @@
 <?php
 
-if (isset($_GET['code'])) {
+if (isset($_SESSION['loggedin']) && isset($_GET['code'])) {
     if (isset($_GET['page']) && $_GET['page'] > 0) {
         $page = $_GET['page'];
     } else {

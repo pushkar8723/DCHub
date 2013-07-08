@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jul 07, 2013 at 10:11 PM
+-- Generation Time: Jul 08, 2013 at 08:36 AM
 -- Server version: 5.5.31-0ubuntu0.13.04.1
 -- PHP Version: 5.4.9-4ubuntu2.1
 
@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS `dchub_branch` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `branch` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=19 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -121,7 +121,7 @@ CREATE TABLE IF NOT EXISTS `dchub_content` (
   `createdOn` datetime NOT NULL,
   `priority` int(11) NOT NULL,
   PRIMARY KEY (`cid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=8905 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -133,12 +133,13 @@ CREATE TABLE IF NOT EXISTS `dchub_groups` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` tinytext NOT NULL,
   `description` text NOT NULL,
+  `identifier` tinytext NOT NULL,
   `moderators` text NOT NULL,
   `deleted` int(11) NOT NULL DEFAULT '0',
   `createdOn` datetime NOT NULL,
   `updatedOn` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=178 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -183,7 +184,7 @@ CREATE TABLE IF NOT EXISTS `dchub_importedusers` (
   `deleted` tinyint(1) DEFAULT NULL,
   `note` tinytext CHARACTER SET latin1,
   PRIMARY KEY (`uid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3813 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -216,7 +217,7 @@ CREATE TABLE IF NOT EXISTS `dchub_log` (
   `message` text,
   `flag` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=37 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -233,7 +234,7 @@ CREATE TABLE IF NOT EXISTS `dchub_message` (
   `createdOn` datetime NOT NULL,
   `updatedOn` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=14 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -252,7 +253,7 @@ CREATE TABLE IF NOT EXISTS `dchub_post` (
   `updatedOn` datetime NOT NULL,
   `deleted` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=33 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -271,7 +272,7 @@ CREATE TABLE IF NOT EXISTS `dchub_rc` (
   `updatedOn` datetime NOT NULL,
   `createdOn` datetime NOT NULL,
   PRIMARY KEY (`cid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -301,7 +302,7 @@ CREATE TABLE IF NOT EXISTS `dchub_recommend` (
   `uid` int(11) NOT NULL,
   `type` tinytext NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=75 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -318,7 +319,7 @@ CREATE TABLE IF NOT EXISTS `dchub_request` (
   `createdOn` datetime NOT NULL,
   `updatedOn` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=17 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -354,7 +355,7 @@ CREATE TABLE IF NOT EXISTS `dchub_users` (
   `createdOn` datetime NOT NULL,
   `updatedOn` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=34 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -414,6 +415,17 @@ CREATE TABLE IF NOT EXISTS `kicklist` (
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `msgarchive`
+--
+CREATE TABLE IF NOT EXISTS `msgarchive` (
+`tonick` tinytext
+,`fromnick` tinytext
+,`msg` text
+,`createdOn` datetime
+);
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `pi_iplog`
 --
 
@@ -427,7 +439,7 @@ CREATE TABLE IF NOT EXISTS `pi_iplog` (
   PRIMARY KEY (`id`),
   KEY `ind_ip` (`ip`),
   KEY `ind_nick` (`nick`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=2455 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -648,6 +660,15 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`verlihub`@`localhost` SQL SECURITY DEFINER V
 DROP TABLE IF EXISTS `dchub_rcview`;
 
 CREATE ALGORITHM=UNDEFINED DEFINER=`verlihub`@`localhost` SQL SECURITY DEFINER VIEW `dchub_rcview` AS select `rec`.`cid` AS `cid`,count(`rec`.`cid`) AS `votes`,`rec`.`type` AS `type`,`cont`.`timestamp` AS `time`,`cont`.`title` AS `name`,`cont`.`tag` AS `tag`,`cont`.`uid` AS `uid`,`cont`.`magnetlink` AS `magnetlink`,`cont`.`deleted` AS `deleted` from (`dchub_recommend` `rec` join `dchub_rc` `cont`) where ((`rec`.`cid` = `cont`.`cid`) and (`rec`.`type` = 'rc')) group by `rec`.`cid`;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `msgarchive`
+--
+DROP TABLE IF EXISTS `msgarchive`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `msgarchive` AS select `touser`.`nick1` AS `tonick`,`fromuser`.`nick1` AS `fromnick`,`dchub_message`.`msg` AS `msg`,`dchub_message`.`createdOn` AS `createdOn` from ((`dchub_message` join `dchub_users` `touser`) join `dchub_users` `fromuser`) where ((`dchub_message`.`toid` = `touser`.`id`) and (`dchub_message`.`fromid` = `fromuser`.`id`) and (`dchub_message`.`deleted` = 0)) union select `dchub_log`.`nick_to` AS `tonick`,`dchub_log`.`nick` AS `fromnick`,`dchub_log`.`message` AS `msg`,`dchub_log`.`timedate` AS `createdOn` from `dchub_log` where (`dchub_log`.`logtype` = 'PM');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

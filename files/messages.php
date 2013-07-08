@@ -1,3 +1,4 @@
+
 <script type='text/javascript'>
     $(document).ready(function() {
         $('#msgnav').removeClass('active');
@@ -14,7 +15,7 @@
             $('#sendtomany').hide();
         });
         $('#composemsg').click(function() {
-            if($('#composemsg').html() == 'Compose Message')
+            if ($('#composemsg').html() == 'Compose Message')
                 $('#composemsg').html('Discart Message');
             else
                 $('#composemsg').html('Compose Message');

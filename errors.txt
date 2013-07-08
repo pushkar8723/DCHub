@@ -36,3 +36,117 @@ select nick1 from dchub_users where id=
 Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
 /host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
 ======================================================================
+[2013-07-08 03:58:07]
+Query error:
+select * from dchub_message where id > '1' and (fromid =  and toid = 1) or (fromid = 1 and toid = )
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'and toid = 1) or (fromid = 1 and toid = )' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-08 03:59:30]
+Query error:
+select * from dchub_message where id > '1' and (fromid =  and toid = 1) or (fromid = 1 and toid = )
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'and toid = 1) or (fromid = 1 and toid = )' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-08 04:00:04]
+Query error:
+select * from dchub_message where id > '1' and (fromid =  and toid = 1) or (fromid = 1 and toid = )
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'and toid = 1) or (fromid = 1 and toid = )' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-08 04:00:57]
+Query error:
+select distinct(fromnick) as fromnick from msgarchive where tonick = 'DeathEater' '
+            union
+            select distinct(tonick) as fromnick from msgarchive where fromid = 1' '
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-08 04:01:17]
+Query error:
+select distinct(fromnick) as fromnick from msgarchive where tonick = 'DeathEater' '
+            union
+            select distinct(tonick) as fromnick from msgarchive where fromid = 1' '
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-08 04:02:03]
+Query error:
+select distinct(fromnick) as fromnick from msgarchive where tonick = 'DeathEater' '
+            union
+            select distinct(tonick) as fromnick from msgarchive where fromid = 1' '
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-08 04:03:39]
+Query error:
+select distinct(fromnick) as fromnick from msgarchive where tonick = 'DeathEater' '
+            union
+            select distinct(tonick) as fromnick from msgarchive where fromid = 1' '
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-08 04:04:41]
+Query error:
+select distinct(fromnick) as fromnick from msgarchive where tonick = 'DeathEater' '
+            union
+            select distinct(tonick) as fromnick from msgarchive where fromid = '1''
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '1''' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-08 04:05:22]
+Query error:
+select distinct(fromnick) as fromnick from msgarchive where tonick = 'DeathEater' 
+            union
+            select distinct(tonick) as fromnick from msgarchive where fromid = '1'
+Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'fromid' in 'where clause'
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-08 04:05:56]
+Query error:
+select nick1 from dchub_users where id = 
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-08 04:05:56]
+Query error:
+select nick1 from dchub_users where id = 
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-08 04:06:40]
+Query error:
+select nick1 from dchub_users where id = 
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-08 04:06:40]
+Query error:
+select nick1 from dchub_users where id = 
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-08 04:09:17]
+Query error:
+select * from msgarchive where fromnick in ('DeathEater') and tonick = 'DeathEater') or (fromnick = 'DeathEater' and tonick in ('DeathEater')) order by createdOn desc
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ') or (fromnick = 'DeathEater' and tonick in ('DeathEater')) order by createdOn d' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-08 04:09:18]
+Query error:
+select * from msgarchive where fromnick in ('DeathEater') and tonick = 'DJ_test') or (fromnick = 'DJ_test' and tonick in ('DeathEater')) order by createdOn desc
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ') or (fromnick = 'DJ_test' and tonick in ('DeathEater')) order by createdOn desc' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-08 04:09:19]
+Query error:
+select * from msgarchive where fromnick in ('DeathEater') and tonick = 'DeathEater') or (fromnick = 'DeathEater' and tonick in ('DeathEater')) order by createdOn desc
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ') or (fromnick = 'DeathEater' and tonick in ('DeathEater')) order by createdOn d' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
+[2013-07-08 04:10:21]
+Query error:
+select * from msgarchive where fromnick in ('DeathEater') and tonick = 'DJ_test') or (fromnick = 'DJ_test' and tonick in ('DeathEater')) order by createdOn desc
+Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ') or (fromnick = 'DJ_test' and tonick in ('DeathEater')) order by createdOn desc' at line 1
+/host/Program Files (x86)/EasyPHP-5.3.5.0/www/dchub/functions.php
+======================================================================
