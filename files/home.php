@@ -109,12 +109,12 @@ if (isset($_SESSION['loggedin'])) {
             </form>
         </div>
     </div>
-    <h3>Latest Content</h3>
+    <h3>Shared Content</h3>
     <?php
-    $body = "from dchub_content where deleted = 0 order by timestamp desc";
+    $body = "from dchub_content where deleted = 0 and uid =".$_SESSION['user']['id']." order by timestamp desc";
     $res = DB::findAllWithCount("select *", $body, $page, 10);
     $data = $res['data'];
-    contentshow($data);
+    contentshow($data, '', FALSE, TRUE);
     pagination($res['noofpages'], SITE_URL . "/", $page, 10);
     ?>
     <?php

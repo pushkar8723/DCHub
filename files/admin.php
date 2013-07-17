@@ -8,7 +8,7 @@ $_GET = secure($_GET);
 <script type='text/javascript'>
 $(document).ready(function(){
     $('#nick').change(function(){
-        $(location).attr('href', '<?php echo SITE_URL; ?>/admin/' + $('#nick').val());
+        $(location).attr('href', '<?php echo SITE_URL; ?>/admin/' + escape($('#nick').val()));
     });
 });
 </script>
@@ -22,11 +22,11 @@ $(document).ready(function(){
     if(!isset($_GET['code']))
         echo "<option>Select a nick</option>";
     foreach($res as $row){
-        echo "<option value='$row[nick]' ".((isset($_GET['code']) && $_GET['code'] == $row['nick'])?("selected"):("")).">$row[nick]</option>";
+        echo "<option value='".urlencode($row['nick'])."' ".((isset($_GET['code']) && $_GET['code'] == $row['nick'])?("selected"):("")).">$row[nick]</option>";
     }
     echo "</select></div></div></div>";
     if(isset($_GET['code'])){
-        $query = "select id, class, nick1, nick2, password_, fullname, roll_course, roll_number, roll_year, hostel, room, branch, phone  from dchub_users where nick1 = '$_GET[code]' or nick2 = '$_GET[code]'";
+        $query = "select ipaddress, id, class, nick1, nick2, groups, password_, fullname, roll_course, roll_number, roll_year, hostel, room, branch, phone, friend, deleted  from dchub_users where nick1 = '$_GET[code]' or nick2 = '$_GET[code]'";
         $user = DB::findOneFromQuery($query);
         $fields = array();
         foreach ($user as $key => $value){
@@ -40,7 +40,7 @@ $(document).ready(function(){
                 $cstr = implode(',', $cstr);
                 $fields['data['.$key."]"] = array($key, 'select', $cstr, $value);
             }else if($key == 'roll_course'){
-                $fields['data['.$key."]"] = array($key, 'select', "BE:BE,ME:ME,MCA:MCA,MBA:MBA,MBI:MBI,BPH:BPH,BPH:BPH,BT:BT,MT:MT,MSC:MSC,BARCH:BARCH,BHMCT:BHMCT,BMI:BMI,MUP:MUP,IMH:IMH,PHD:PHD,EMP:EMP", $value);
+                $fields['data['.$key."]"] = array($key, 'select', "BE:BE,ME:ME,MEEE:MEEE,MESE:MESE,MESER:MESER,MCA:MCA,MBA:MBA,MBI:MBI,BPH:BPH,BPH:BPH,BT:BT,MT/CS:MT/CS,MT/IS:MT/IS,MT/RS:MT/RS,MSC:MSC,BARCH:BARCH,BHMCT:BHMCT,BMI:BMI,MUP:MUP,IMH:IMH,PHD:PHD,EMP:EMP", $value);
             } else if($key == 'roll_year'){
                 $fields['data['.$key."]"] = array($key, 'select', "2013:2013,2012:2012,2011:2011,2010:2010,2009:2009,2008:2008,2007:2007,2006:2006,2005:2005", $value);
             } else if($key == 'branch'){

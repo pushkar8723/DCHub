@@ -79,7 +79,17 @@ function navbar() {
                             <!--<li><a href="<?php echo SITE_URL; ?>/hof">Hall of Fame</a></li>-->
                         </ul>
                     </li>
-                    <li><a href="<?php echo SITE_URL; ?>/info">Hub Info</a></li>
+                    <li>
+                        <a href="#">
+                            Help
+                        </a>
+                        <ul>
+                            <li><a href="<?php echo SITE_URL; ?>/info">Hub Info</a></li>
+                            <li><a href="<?php echo SITE_URL; ?>/bitinfo">BIT Info</a></li>
+                            <li><a href="<?php echo SITE_URL; ?>/complaints">Complaints</a></li>
+                            <li><a href="<?php echo SITE_URL; ?>/frequent">Frequent Problems</a></li>
+                        </ul>
+                    </li>
                     <?php if (isset($_SESSION['loggedin']) && $_SESSION['user']['accesslevel'] >= 2) { ?>
                         <li><a href="#">Manage</a>
                             <ul>
@@ -108,11 +118,11 @@ function navbar() {
                 </ul>
                 <?php
                 if (isset($_SESSION['loggedin'])) {
-                    $query = "select * from dchub_users where class = 0 and (friend = '" . $_SESSION['user']['nick'] . "' " . ((isset($_SESSION['user']['nick2'])) ? ("OR friend = '" . $_SESSION['user']['nick2'] . "'") : ('')) . ")";
+                    $query = "select * from dchub_users where deleted=0 and class = 0 and (friend = '" . $_SESSION['user']['nick'] . "' " . ((isset($_SESSION['user']['nick2'])) ? ("OR friend = '" . $_SESSION['user']['nick2'] . "'") : ('')) . ")";
                     $res = DB::findAllFromQuery($query);
-                    $query = "select distinct(fromid) as fromid from dchub_message where id > '" . $_SESSION['user']['msgid'] . "' and toid = " . $_SESSION['user']['id'] . "
+                    $query = "select distinct(fromid) as fromid from dchub_message where deleted=0 and id > '" . $_SESSION['user']['msgid'] . "' and toid = " . $_SESSION['user']['id'] . "
             union
-            select distinct(toid) as fromid from dchub_message where id > '" . $_SESSION['user']['msgid'] . "' and fromid = " . $_SESSION['user']['id'];
+            select distinct(toid) as fromid from dchub_message where deleted=0 and id > '" . $_SESSION['user']['msgid'] . "' and fromid = " . $_SESSION['user']['id'];
                     $resmsg = DB::findAllFromQuery($query);
                     $usrgrp = implode(",", $_SESSION['user']['groups']);
                     $query = "select id from dchub_post where deleted=0 and approvedby!=0 and id > '" . $_SESSION['user']['notificationid'] . "' and gid in ($usrgrp)    
@@ -203,7 +213,29 @@ function check($var) {
     return $flag;
 }
 
-function contentshow($data, $highlight = '', $sharedby = true) {
+function contentshow($data, $highlight = '', $sharedby = true, $edit = FALSE) {
+    ?>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.tagupdate').click(function(event) {
+                id = event.target.id;
+                $(this).html('Processing...');
+                $.post("<?php echo SITE_URL; ?>/process.php", {
+                    "tagupdate": "",
+                    "cid": id,
+                    "data[tag]": $('#tag_' + id).val()
+                }, function(result) {
+                    if (result === '1') {
+                        $('#' + id).html('Update');
+                    }
+                    else {
+                        $('#' + id).html(result);
+                    }
+                });
+            });
+        });
+    </script>
+    <?php
     echo "<table class='table table-hover'>
                     <tr><th>File Name</th><th>Tags</th>" . (($sharedby) ? ("<th>Shared By</th>") : ("")) . "<th style='width:170px; text-align:center;'>Recommendations</th></tr>";
     foreach ($data as $row) {
@@ -219,10 +251,22 @@ function contentshow($data, $highlight = '', $sharedby = true) {
             $user = DB::findOneFromQuery($query);
         }
         // Tags Manipulation
-        $splittag = explode(',', $row['tag']);
         $tagstr = '';
-        foreach ($splittag as $tag)
-            $tagstr .= "<a href='" . SITE_URL . "/latest/$tag'>$tag</a> ";
+        $splittag = explode(',', stripslashes($row['tag']));
+        if ($edit) {
+            if (isset($_SESSION['loggedin']) && $row['uid'] == $_SESSION['user']['id']) {
+                $tagstr .= "<input name='data[tag]' id='tag_$row[cid]' name='data[tag]' class='tagsinput' value='$row[tag]'/>
+                    <a href='#' id='$row[cid]' class='btn tagupdate'>Update</a><br/><br/>";
+            } else {
+                foreach ($splittag as $tag) {
+                    $tagstr .= "<a href='" . SITE_URL . "/latest/$tag'>$tag</a> ";
+                }
+            }
+        } else {
+            foreach ($splittag as $tag) {
+                $tagstr .= "<a href='" . SITE_URL . "/latest/$tag'>$tag</a> ";
+            }
+        }
         // recommend button
         $query = "select count(cid) as recommendations from dchub_recommend where cid = $row[cid] and type='lc'";
         $rec = DB::findOneFromQuery($query);

@@ -58,19 +58,19 @@ if (isset($_POST['register'])) {
         $_SESSION['msg'] .= "Password mismatch<br/>";
         $error = 1;
     }
-    $res = DB::findOneFromQuery("select count(email) as count from dchub_users where nick1 = '" . $_POST['data']['nick1'] . "' or nick2 = '" . $_POST['data']['nick1'] . "'");
+    $res = DB::findOneFromQuery("select count(email) as count from dchub_users where deleted = 0 and nick1 = '" . $_POST['data']['nick1'] . "' or nick2 = '" . $_POST['data']['nick1'] . "'");
     if ($res['count'] > 0) {
         $_SESSION['msg'] .= "Nick already registered!<br/>";
         $error = 1;
     }
-    $res = DB::findOneFromQuery("select count(email) count from dchub_users where nick1 = '" . $_POST['data']['nick2'] . "' or nick2 = '" . $_POST['data']['nick2'] . "'");
+    $res = DB::findOneFromQuery("select count(email) count from dchub_users where deleted = 0 and nick1 = '" . $_POST['data']['nick2'] . "' or nick2 = '" . $_POST['data']['nick2'] . "'");
     if ($_POST['data']['nick2'] != '' && $res['count'] > 0) {
         $_SESSION['msg'] .= "Second Nick is  already registered!<br/>";
         $error = 1;
     }
-    $res = DB::findOneFromQuery("select count(email) as count from dchub_users where roll_course = '" . $_POST['data']['roll_course'] . "' and roll_number = '" . $_POST['data']['roll_number'] . "' and roll_year = '" . $_POST['data']['roll_year'] . "'");
+    $res = DB::findOneFromQuery("select count(email) as count from dchub_users where roll_course = '" . $_POST['data']['roll_course'] . "' and roll_number = '" . $_POST['data']['roll_number'] . "' and roll_year = '" . $_POST['data']['roll_year'] . "' and branch = '" . $_POST['data']['branch'] . "'");
     if ($res['count'] > 0) {
-        $_SESSION['msg'] .= "Roll number is already registered. contact the Admins if you haven't registered.<br/>";
+        $_SESSION['msg'] .= "Roll number in your branch already registered. contact the Admins if you haven't registered.<br/>";
         $error = 1;
     }
     if ($error == 1) {
@@ -286,8 +286,13 @@ if (isset($_POST['register'])) {
         // recommend a content on latest content page
     } else if (isset($_POST['recommend'])) {
         $_POST = secure($_POST);
-        $res = DB::query("insert into dchub_recommend (cid, uid, type) values($_POST[cid], " . $_SESSION['user']['id'] . ", 'lc')");
-        echo $res ? "1" : "0";
+        $res = DB::findOneFromQuery("select count(id) as voted from dchub_recommend where cid = $_POST[cid] and uid=" . $_SESSION['user']['id'] . " and type='lc'");
+        if ($res['voted'] == 0) {
+            $res = DB::query("insert into dchub_recommend (cid, uid, type) values($_POST[cid], " . $_SESSION['user']['id'] . ", 'lc')");
+            echo $res ? "1" : "0";
+        } else {
+            echo "Discourage";
+        }
 
         // discourage a content on latest content page
     } else if (isset($_POST['discourage'])) {
@@ -300,10 +305,14 @@ if (isset($_POST['register'])) {
         $_POST = secure($_POST);
         $vol = DB::findOneFromQuery("select volunteer from dchub_request where id = $_POST[cid]");
         $vol = explode(',', $vol['volunteer']);
-        array_push($vol, $_SESSION['user']['nick']);
-        $vol = implode(',', $vol);
-        $res = DB::query("update dchub_request set volunteer = '$vol' where id=$_POST[cid]");
-        echo $res ? "1" : "0";
+        if (!in_array($_SESSION['user']['nick'], $vol)) {
+            array_push($vol, $_SESSION['user']['nick']);
+            $vol = implode(',', $vol);
+            $res = DB::query("update dchub_request set volunteer = '$vol' where id=$_POST[cid]");
+            echo $res ? "1" : "0";
+        } else {
+            echo "Chicken Out";
+        }
 
         // chicken out on request page
     } else if (isset($_POST['chickenout'])) {
@@ -363,27 +372,31 @@ if (isset($_POST['register'])) {
 
         // authtication via cyberoam password
     } else if (isset($_POST['cyberauth'])) {
-        $url = 'https://172.16.1.1:8090/login.xml';
-        $roll = implode('', explode('/', $_SESSION['user']['roll']));
-        $data = array('mode' => '191', 'username' => $roll, 'password' => $_POST['cyberpass'], 'a' => (string) (time() * 1000));
-        $options = array(
-            'http' => array(
-                'header' => "Content-type: application/x-www-form-urlencoded\r\n",
-                'method' => 'POST',
-                'content' => http_build_query($data),
-            ),
-        );
-        $context = stream_context_create($options);
-        $result = file_get_contents($url, false, $context);
-        $xml = simplexml_load_string($result) or $_SESSION['msg'] = 'Error! contact the Admins';
-        $opt = array("You have successfully logged in", "You are not allowed to login at this time", "You have reached Maximum Login Limit.");
-        if (isset($xml->message) && in_array($xml->message, $opt)) {
-            $_SESSION['msg'] = 'Authentication Successful!';
-            $_SESSION['user']['accesslevel'] = 1;
-            DB::update('dchub_users', array('class' => 1, 'friend' => 'HubBot'), "id = " . $_SESSION['user']['id']);
-            DB::update('reglist', array('class' => 1), "nick='" . $_SESSION['user']['nick'] . "'");
-            if (isset($_SESSION['user']['nick2'])) {
-                DB::update('reglist', array('class' => 1), "nick='" . $_SESSION['user']['nick2'] . "'");
+        $roll = explode('/', $_SESSION['user']['roll']);
+        if (strpos($_POST['cyberid'], substr($roll[1], -3)) && strpos($_POST['cyberid'], $roll[2])) {
+            $url = 'https://172.16.1.1:8090/login.xml';
+            $data = array('mode' => '191', 'username' => $_POST['cyberid'], 'password' => $_POST['cyberpass'], 'a' => (string) (time() * 1000));
+            $options = array(
+                'http' => array(
+                    'header' => "Content-type: application/x-www-form-urlencoded\r\n",
+                    'method' => 'POST',
+                    'content' => http_build_query($data),
+                ),
+            );
+            $context = stream_context_create($options);
+            $result = file_get_contents($url, false, $context);
+            $xml = simplexml_load_string($result) or $_SESSION['msg'] = 'Error! contact the Admins';
+            $opt = array("You have successfully logged in", "You are not allowed to login at this time", "Your data transfer has been exceeded, Please contact the administrator", "You have reached Maximum Login Limit.");
+            if (isset($xml->message) && in_array($xml->message, $opt)) {
+                $_SESSION['msg'] = 'Authentication Successful!';
+                $_SESSION['user']['accesslevel'] = 1;
+                DB::update('dchub_users', array('class' => 1, 'friend' => "HubBot:" . addslashes($_POST['cyberid'])), "id = " . $_SESSION['user']['id']);
+                DB::update('reglist', array('class' => 1), "nick='" . $_SESSION['user']['nick'] . "'");
+                if (isset($_SESSION['user']['nick2'])) {
+                    DB::update('reglist', array('class' => 1), "nick='" . $_SESSION['user']['nick2'] . "'");
+                }
+            } else {
+                $_SESSION['msg'] = 'Authentication Failed! If you are sure about your password contact the Admins.';
             }
             $url = 'https://172.16.1.1:8090/login.xml';
             $roll = implode('', explode('/', $_SESSION['user']['roll']));
@@ -398,7 +411,7 @@ if (isset($_POST['register'])) {
             $context = stream_context_create($options);
             $result = file_get_contents($url, false, $context);
         } else {
-            $_SESSION['msg'] = 'Authentication Failed! If you are sure about your password contact the Admins.';
+            $_SESSION['msg'] = "Your Cyberoam id is not similar to your roll no. <br/> To authenticate by this method your roll no and cyberoam id should be similar.";
         }
         redirectTo("http://" . $_SERVER['HTTP_HOST'] . $_SESSION['url']);
 
@@ -475,8 +488,14 @@ if (isset($_POST['register'])) {
         // recommend a content on recommend page
     } else if (isset($_POST['rec_recommend'])) {
         $_POST = secure($_POST);
-        $res = DB::query("insert into dchub_recommend (cid, uid, type) values($_POST[cid], " . $_SESSION['user']['id'] . ", 'rc')");
-        echo $res ? "1" : "0";
+        $res = DB::findOneFromQuery("select count(id) as voted from dchub_recommend where cid = $_POST[cid] and uid=" . $_SESSION['user']['id'] . " and type='lc'");
+        if ($res['voted'] == 0) {
+            $res = DB::query("insert into dchub_recommend (cid, uid, type) values($_POST[cid], " . $_SESSION['user']['id'] . ", 'rc')");
+            echo $res ? "1" : "0";
+        } else {
+            echo "Discourage";
+        }
+
 
         // discourage a content on content page
     } else if (isset($_POST['rec_discourage'])) {
@@ -638,10 +657,10 @@ if (isset($_POST['register'])) {
         $nickuser = $_SESSION['user']['nick'] . ((isset($_SESSION['user']['nick2'])) ? ("','" . $_SESSION['user']['nick2']) : (""));
         $nickuserfriend = $_POST['code'];
         $body = "from msgarchive where (fromnick in ('$nickuser') and tonick = '$nickuserfriend') or (fromnick = '$nickuserfriend' and tonick in ('$nickuser')) order by createdOn desc";
-        $res = DB::findAllWithCount("select *", $body, $_POST['page'], 20);
+        $res = DB::findAllWithCount("select *", $body, $_POST['page'], 5);
         $i = count($res['data']);
         if ($res['noofpages'] != $_POST['page']) {
-            echo "<div id='msgloader'><center><a href='#' onclick='som(".($_POST['page']+1).")' >Show older messages</a></center></div>";
+            echo "<div id='msgloader'><center><a href='#' onclick='som(" . ($_POST['page'] + 1) . ")' >Show older messages</a></center></div>";
         }
         for (; $i > 0; $i--) {
             $row = $res['data'][$i - 1];
@@ -651,6 +670,21 @@ if (isset($_POST['register'])) {
             else
                 echo "<b>Me</b><div class='pull-right'>$row[createdOn]</div><br/>$row[msg]<hr/>";
         }
+    } else if (isset($_POST['complaints'])) {
+        if ($_POST['msg'] != "") {
+            $_POST = secure($_POST);
+            DB::insert('dchub_message', array('toid' => 1, 'fromid' => $_SESSION['user']['id'], 'msg' => $_POST['msg']));
+            DB::insert('dchub_message', array('toid' => 2, 'fromid' => $_SESSION['user']['id'], 'msg' => $_POST['msg']));
+            DB::insert('dchub_message', array('toid' => 3, 'fromid' => $_SESSION['user']['id'], 'msg' => $_POST['msg']));
+            $_SESSION['msg'] = "We will reply as soon as we can.";
+        } else {
+            $_SESSION['msg'] = "Message cannot be empty.";
+        }
+        redirectTo(SITE_URL . "/complaints");
+    } else if (isset($_POST['tagupdate'])) {
+        $_POST['data'] = secure($_POST['data']);
+        $res = DB::update('dchub_content', $_POST['data'], "cid = $_POST[cid] and uid = " . $_SESSION['user']['id']);
+        echo ($res) ? ('1') : ('0');
     }
 }
 ?>

@@ -10,8 +10,9 @@
     </li>
     <li>
         Download and install a DC client from the Internet, or from one of the following links:<br/>
-        <b>Windows:</b> <a href='download/ApexDC++_1.5.6_Setup.exe'>ApexDC++ 1.5.6</a> (Recommended), <a href='download/StrongDC-2.42.exe'>StrongDC++ 2.42</a>, <a href='download/DCPlusPlus-0.825.exe'>DC++ 0.825</a>, <a href='download/EiskaltDC++-2.2.8-x86.exe'>EiskaltDC++ 2.2.8</a>
+        <b>Windows:</b> <a href='download/ApexDC++_1.5.6_Setup.exe'>ApexDC++ 1.5.6</a> (Recommended), <a href='download/sdc242-32.exe'>StrongDC++ 2.42</a> (32 bit), <a href="download/sdc242-64.exe">StrongDC++ 2.42</a> (64 bit), <a href='download/DCPlusPlus-0.825.exe'>DC++ 0.825</a>, <a href='download/EiskaltDC++-2.2.6-x86.exe'>EiskaltDC++ 2.2.8</a>
         <br/><b>Linux:</b> Install from your Software Center (Recommended), <a href='download/linuxdcpp-1.1.0.tar.bz2'>Linux DC++ 1.1.0</a>, <a href='download/eiskaltdcpp-2.2.8.tar.xz'>EiskaltDC++</a>
+	<br/><b>Mac:</b> <a href="download/eiskaltdcpp-2.2.8.tar.xz">EiskaltDC++</a>
     </li>
     <li>After installation, go to <span>File -> Settings</span>, and under the "Personal Information" section (possibly under the "General" section), enter the Nickname which you registered above. If you feel the need, you may go to the "Downloads" section and change the default Downloads Directory.<br/>
         Then go the section titles "Sharing", and select a directories whose contents you wish to share with others. You can login with 0 share but will be given limited functionality. There is a minimum requirement to share at least 20GB of files and folders to attain complete functionality and be able to use all services available on the Hub. Press OK and the window will close.

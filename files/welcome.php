@@ -1,18 +1,20 @@
 <?php
-if (isset($_SESSION['loggedin'])) {
+if (true or isset($_SESSION['loggedin'])) {
     ?>
     <center>
         <h1 style='margin: 30px; color:rgb(26, 188, 156);'>You have successfully Registered!</h1>
-        <h4>You can now log onto the Hub right away with 0 GB share and without authentication.</h4>
-        However your IP and chat facilities will be restricted until you authenticate yourself.
+        <h4>You can now log onto the Hub right away with <u>0GB share</u> and <u>without authenticating yourself</u>.</h4>
         <br/>
     </center>
     <br/>
-    To Authenticate yourself visit : <a href='<?php echo SITE_URL; ?>/account'><?php echo SITE_URL; ?>/account</a><br/>
+    However your IP and chat facilities will be restricted until you: <br /><br />
+    1) Authenticate yourself. To do that, visit <a href='<?php echo SITE_URL; ?>/account'><?php echo SITE_URL; ?>/account</a><br/>
+    2) AND have a minimum share of 20GB.
+<br /><br />
     <b>New to DC?</b>
     Follow our step-by-step setup guide : <a href='<?php echo SITE_URL; ?>/info'>Hub Info</a><br/>
     <br/>
-    Having difficulties connecting to DC HUB. You may find your solution <a href='<?php echo SITE_URL; ?>/complaints'>here</a>.<br/>
+    Having difficulties connecting to DC HUB. You may find a solution <a href='<?php echo SITE_URL; ?>/complaints'>here</a>.<br/>
     <br/>
     <b>Enjoy the new features introduced this year :</b><br/>
     <ol>

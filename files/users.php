@@ -44,7 +44,7 @@ if (isset($_GET['code'])) {
     $query = "select * from dchub_users where deleted=0 and (nick1 = '$_GET[code]' OR nick2 = '$_GET[code]')";
     $user = DB::findOneFromQuery($query);
     if ($user) {
-        echo "<center><h1>User : $_GET[code]</h1><h4>User Class : " . $class[$user['class']] . "</h4></center>";
+        echo "<center><h1>User : $_GET[code]</h1><h4>User Class : " . $class[$user['class']] . "</h4><h4>Total Share : $user[lastShared] GB</h4></center>";
         if (isset($_SESSION['loggedin'])) {
             ?>
             <h3>Leave a Message</h3>

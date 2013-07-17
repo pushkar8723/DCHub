@@ -6,9 +6,9 @@ if (isset($_SESSION['loggedin'])) {
         $page = 1;
     }
     $_GET = secure($_GET);
-    $query = "select distinct(fromnick) as fromnick from msgarchive where tonick in ('" . $_SESSION['user']['nick'] . "' " . ((isset($_SESSION['user']['nick2'])) ? (" or tonick = '" . $_SESSION['user']['nick2'] . "'") : ("")) . ")
-            union
-            select distinct(tonick) as fromnick from msgarchive where fromnick in ('" . $_SESSION['user']['nick'] . "'" . ((isset($_SESSION['user']['nick2'])) ? (" or fromnick = '" . $_SESSION['user']['nick2'] . "'") : ("")) . ")";
+    $query = "select * from (SELECT distinct(fromnick) as nick FROM `msgarchive` where (tonick ='".$_SESSION['user']['nick']."'".((isset($_SESSION['user']['nick2']))?(" or tonick ='".$_SESSION['user']['nick2']."'"):(""))." )
+                union
+              SELECT distinct(tonick) as nick FROM `msgarchive` where (fromnick ='".$_SESSION['user']['nick']."'".((isset($_SESSION['user']['nick2']))?(" or fromnick ='".$_SESSION['user']['nick2']."'"):(""))." ))t order by nick";
     ?>
     <script type="text/javascript">
         function som(page) {
@@ -28,7 +28,7 @@ if (isset($_SESSION['loggedin'])) {
                 <?php
                 $res = DB::findAllFromQuery($query);
                 foreach ($res as $row) {
-                    echo "<li " . ((isset($_GET['code']) && $_GET['code'] == "$row[fromnick]") ? ("class='active'") : ("")) . "><a href='" . SITE_URL . "/msgarchive/$row[fromnick]'>$row[fromnick]</a></li>";
+                    echo "<li " . ((isset($_GET['code']) && $_GET['code'] == "$row[nick]") ? ("class='active'") : ("")) . "><a href='" . SITE_URL . "/msgarchive/".  urlencode(urlencode($row['nick']))."'>$row[nick]</a></li>";
                 }
                 ?>
             </ul>
@@ -39,7 +39,7 @@ if (isset($_SESSION['loggedin'])) {
                 $nickuser = $_SESSION['user']['nick'] . ((isset($_SESSION['user']['nick2'])) ? ("','" . $_SESSION['user']['nick2']) : (""));
                 $nickuserfriend = $_GET['code'];
                 $body = "from msgarchive where (fromnick in ('$nickuser') and tonick = '$nickuserfriend') or (fromnick = '$nickuserfriend' and tonick in ('$nickuser')) order by createdOn desc";
-                $res = DB::findAllWithCount("select *", $body, $page, 20);
+                $res = DB::findAllWithCount("select *", $body, $page, 5);
                 $i = count($res['data']);
                 if ($res['noofpages'] > 1) {
                     echo "<div id='msgloader'><center><a href='#' onclick='som(2)' >Show older messages</a></center></div>";

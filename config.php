@@ -22,10 +22,11 @@ define("IMAGE_URL", PUBLIC_URL . "/images");
 
 session_set_cookie_params (0, substr(SITE_URL, strlen("http://" . $_SERVER['HTTP_HOST'])));
 session_start();
+ini_set('session.gc_maxlifetime', 60*60*48); // 48 hours
 clearstatcache();
 
 define("SQL_USER", "verlihub");     
-define("SQL_PASS", "verlihub");      
+define("SQL_PASS", "tr3a5ur3");      
 define("SQL_DB", "verlihub");
 define("SQL_HOST", "localhost");
 define("SQL_PORT", "3306");
@@ -41,12 +42,12 @@ define("ERROR_LOG", dirname(__FILE__) . "/errors.txt");
 
 date_default_timezone_set("Asia/Kolkata");
 $admins = array('deatheater', 'sdh', 'red_devil');
-$motdfile = '/home/administrator/Documents/motd';
+$motdfile = '/etc/verlihub/datafiles/notice';
 $classmap = array(0 => 0, 1 => 1, 2 => 1, 3 => 1, 4 => 1, 7 => 1, 8 => 1, 9 => 3, 10 => 10);
 $restrictednicks = array('hubbot', 'opchat', 'dj', 'sourcecode');
 $class = array(0 => 'Novice', 1 => 'Experienced', 2 => 'Famous', 3 => 'Moderator', 4 => 'Pseudo-Admin', 8=> 'Master', 9 => 'Cheef', 10 => 'Admin');
 $defaultGroup = array('2010' => '2k10', '2011' => '2k11', '2012' => '2k12', '2013' => '2k13');
-$categories = array('Everything' => '', "Movies" => 'movie', "TV Series" => 'tv', "Books" => 'book', 'Games' => 'game');
+$categories = array('Everything' => '', "Movies" => 'movie', "TV Series" => 'tv', "Books" => 'book', 'Games' => 'game', 'Music' => 'music', 'Software' => 'software', "Anime" => 'anime');
 require_once 'functions.php';
 require_once 'components.php';
 ?>

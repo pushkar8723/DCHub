@@ -15,7 +15,10 @@ if (!isset($_SESSION['loggedin'])) {
                 <b>Method 1:</b> Instant authentication using Cyberoam Password<br/>
                 <b>We will not store your password. Pinky swear.</b><br/><br/>
                 <?php
-                    $fields = array("cyberpass" => array("Cyberoam Password", "password"));
+                    $fields = array(
+                        "cyberid" => array("Cyberoam ID", "text"),
+                        "cyberpass" => array("Cyberoam Password", "password")
+                        );
                     createForm('cyberauth', $fields, 'Authenticate');
                 ?>
             </div>

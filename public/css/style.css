@@ -69,9 +69,9 @@ th{
     width:400px;
 }
 .popover-title{
-   font-weight: bold;
-   font-size: 25px;
-   padding: 10px;
+    font-weight: bold;
+    font-size: 25px;
+    padding: 10px;
 }
 .highlight{
     font-size: 15px;
@@ -103,4 +103,17 @@ th{
     padding: 10px;
     background: #dff0d8;
     margin: 10px 0;
+}
+.tagsinput{
+    overflow-y: visible;
+    margin-bottom: 5px;
+}
+.wrapword{
+    white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    white-space: pre-wrap;       /* css-3 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    word-break: break-all;
+    white-space: normal;
 }

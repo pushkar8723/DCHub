@@ -118,7 +118,7 @@ if (isset($_SESSION['loggedin'])) {
                     <label class="control-label" for="roll_number">Roll No <span class='req'>*</span></label>
                     <div class="controls">
                         <select id="roll_course" name='data[roll_course]' style="width: 90px;">
-                            <option>BE</option><option>ME</option><option>MCA</option><option>MBA</option><option>MBI</option><option>BPH</option><option>MPH</option><option>BT</option><option>MT</option><option>MSC</option><option>BARCH</option><option>BHMCT</option><option>BMI</option><option>MUP</option><option>IMH</option><option>PHD</option><option>EMP</option>
+                            <option>BE</option><option>ME</option><option>MEEE</option><option>MESE</option><option>MESER</option><option>MCA</option><option>MBA</option><option>MBI</option><option>BPH</option><option>MPH</option><option>BT</option><option>MT/CS</option><option>MT/IS</option><option>MT/RS</option><option>MSC</option><option>BARCH</option><option>BHMCT</option><option>BMI</option><option>MUP</option><option>IMH</option><option>PHD</option><option>EMP</option>
                         </select>
                         <input id="roll_number" name='data[roll_number]' type='text' style="width: 100px;"  required <?php if (isset($_SESSION['data'])) echo "value='" . $_SESSION['data']['roll_number'] . "'"; ?>>
                         <select id="roll_year" name='data[roll_year]' style="width: 70px;">

@@ -63,12 +63,23 @@ if (isset($_GET['page']) && $_GET['page'] > 0) {
 ?>
 <div class='row'>
     <div class='span7' style='min-height: 400px;'>
+        <ul class="nav nav-tabs">
+            <li <?php echo ((isset($_GET['code']))?(""):("class='active'")); ?>><a href="<?php echo SITE_URL; ?>/request">Pending</a></li>
+            <li <?php echo ((isset($_GET['code']))?("class='active'"):("")); ?>><a href="<?php echo SITE_URL; ?>/request/completed">Completed</a></li>
+        </ul>
         <?php
-        $body = "from dchub_request where deleted = 0 order by id desc";
+        $body = "from dchub_request";
+        if(!isset($_GET['code'])){
+            $body .= " where deleted=0";
+        } else {
+            $body .= " where deleted=1";
+        }
+        $body .= " order by id desc";
         $res = DB::findAllWithCount("select *", $body, $page, 10);
         $data = $res['data'];
 		if($data){
 			foreach ($data as $row) {
+                            $row['request_file'] = stripslashes($row['request_file']);
 				echo "<div class='accesslevel'>";
 				$row['request_file'] = preg_replace('/\n/', '<br/>', htmlspecialchars($row['request_file']));
 				$user = DB::findOneFromQuery("select nick1 from dchub_users where id = $row[uid]");
@@ -82,7 +93,7 @@ if (isset($_GET['page']) && $_GET['page'] > 0) {
 				} else if (isset($_SESSION['loggedin']) && in_array($_SESSION['user']['nick'], $vol)) {
 					echo "<a id='$row[id]' class='chickenout' href='#'>Chicken Out</a><br/>";
 				} else {
-					echo "<a href='" . SITE_URL . "'>Login to Volunteer</a><br/>";
+					echo "<a href='#' onclick=\"$('#signinbox').modal('show');\">Login to Volunteer</a><br/>";
 				}
 				echo "</div>";
 				echo "<div style='padding:10px; margin: 5px;'>
@@ -100,7 +111,7 @@ if (isset($_GET['page']) && $_GET['page'] > 0) {
 				echo "</span> has volunteered</div>
 					</div>";
 			}
-			pagination($res['noofpages'], SITE_URL."/request", $page, 10);
+			pagination($res['noofpages'], SITE_URL."/request".((isset($_GET['code'])?("/completed"):(""))), $page, 10);
 		} else {
 			echo "<br/><br/><br/><br/><h1>No request till now.</h1><h3>Go ahead make one.</h3><br/><br/><br/><br/>";
 		}

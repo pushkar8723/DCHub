@@ -84,7 +84,7 @@ $data = $rec['data'];
             <input type='text' value='$row[title]' id='$row[cid]_filename'/>
         </td>
         <td>
-            <input type='text' id='$row[cid]_tag' value='$row[tag]'/>
+            <input type='text' id='$row[cid]_tag' class='tagsinput' value='$row[tag]'/>
         </td>
         <td>
             $user[nick1]
