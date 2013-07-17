@@ -12,9 +12,10 @@ import traceback
 basepath = "/etc/verlihub/"
 datafiles = basepath + "datafiles/"
 logpath = basepath + "logs/"
-rooturl = "http://192.168.222.109/DCHub/"
+rooturl = "http://172.16.32.222/dchub/"
 
 config = {"hubbot": "HubBot",
+          "admins": ['Red_Devil','DeathEater','sdh'],
         "blockcommand": 0,
         "allowcommand": 1,
         "authclass":3,
@@ -23,7 +24,7 @@ config = {"hubbot": "HubBot",
         "logs": True,
         "sharesize":20,
         "mainchat": 10,
-        "clock":0,"authremind":60 * 5,"saveuserlist":60 * 10,"messages":60 * 15,"displayips":60 * 1, "clockcountreset": 60 * 60 * 24,
+        "clock":0,"authremind":60 * 14,"saveuserlist":60 * 10,"messages":60 * 15, "notifications": 60*16 ,"displayips":60 * 1, "clockcountreset": 60 * 60 * 24,
         "generalpath":logpath,
         "userlistpath": logpath + "UserLists/",
         "pmpath": logpath + "PM/",
@@ -32,19 +33,22 @@ config = {"hubbot": "HubBot",
         "tvschedule": datafiles + "tvschedule",
         "latest": datafiles + "latest",
         "regurl": rooturl + "register",
-        "faqurl": rooturl + "faq",
+        "faqurl": rooturl + "info",
+        "hoturl": rooturl + "hot",
+        "requesturl": rooturl + "request",
         "authurl": rooturl + "friends",
         "latesturl": rooturl + "latest",
-        "tables": {"users":"dchub_users","dcusers":"reglist","branches":"dchub_branch","log":"dchub_log","content":"dchub_content","tvschedule":"dchub_tvschedule","messages":"dchub_message","posts":"dchub_post"},
-        "classmap":{0:0,1:1,2:1,3:1,4:1,7:1,8:1,9:3,10:10},
+        "tables": {"users":"dchub_users","dcusers":"reglist","branches":"dchub_branch","log":"dchub_log","content":"dchub_content","tvschedule":"dchub_tvschedule","messages":"dchub_message","posts":"dchub_post","request":"dchub_request","hot":"dchub_hot"},
+        "classmap":{0:0,1:1,2:1,3:1,4:1,8:1,9:3,10:10},
         "levelcommands":{0:{"help":{"+help <command>":"Shows help for a particular command"},
-                            "share":{"+share <content> &M <magnet-link>":"Lets you share new content. The special words '&M' indicates that what follows is the magnet-link",
-                                     "+share <magnet-link>":"This is an alternate way to use the +share command, that extracts and uses the file name as the item name"},
+                            "share":{"+share <content> <tags>":"Lets you share new content by title and comma separated tags without space.",
+                                     "+share <magnet-link> <tags>":"Lets you share new content using magnet links. The title is extracted from the magnet link filename. Tags should be comma separated without spaces"},
                             "latest":{"+latest":"Displays the latest shared content"},
                             "notice":{"+notice":"Displays the notices"},
                             "myinfo":{"+myinfo":"Shows you information about yourself"},
                             "password":{"+password <old password> <new password>":"Allows you to update your password"},
-                            "hubinfo":{"+hubinfo":"Gives you the link for the DC Hub Info"}
+                            "hubinfo":{"+hubinfo":"Gives you the link for the DC Hub Info",},
+                            "hot":{"+hot":"See recommended contents"}
                             },
                         1:{ "schedule":{"+schedule":"Shows the TV Schedule","+schedule <show name>":"Shows schedule for the given show. You can type in partial name (eg: how met, big bang)"},
                             "offline":{"+offline <nick> <message>":"Allows you to send an offline message to the specified user"},
@@ -58,20 +62,19 @@ config = {"hubbot": "HubBot",
                         3:{ "unshare":{"+unshare <id>":"Allows you to delete content from Latest Content page."},
                             "clear":{"+clear":"Allows you to clear the mainchat"}
                             },
-                        4:{},
-                        7:{},
+                        4:{ "send":{"+send":"Approves and Broadcasts a message that was posted on Notifications page using +notify"},
+                            "view":{"+view":"Displays pending Broadcast messages"}
+                          },
                         8:{ "info":{"+info <nick>":"Shows details of the specified user"},
                             "infoip":{"+infoip <ip-address>":"Shows the registered users from the given address"},
                             "authlist":{"+authlist <nick>":"Lists the users authenticated by the specified user"}
                            },
                         9:{"multicast":{"!multicast <starting-ip> <ending-ip> <message>":""},
-                           "send":{"+send":"Approves and Broadcasts a message that was posted on Notifications page using +notify"},
-                           "view":{"+view":"Displays pending Broadcast messages"},
                            "regnew":{"!regnew <nickname> <password> [<access-level> <ip>]":""},
                            "regpasswd":{"!regpasswd <nickname>":"See current password",
                                         "!regpasswd <nickname> <new-password>":"Set new password"},
                            "regdelete":{"!regdelete <nickname>":""},
-                           "regclass":{"!reglevel <nickname> <access-level>":""}
+                           "regclass":{"!regclass <nickname> <access-level>":""}
                            },
                         10:{"generatelatest":{"+generatelatest":"Generates latest content file"},
                             "generateschedule":{"+generateschedule":"Generates schedule file"},
@@ -237,6 +240,19 @@ def mainChat(nick):
     if len(mainchatlog)!=0:
         vh.usermc("\nLast few posts on the Main Chat: \n\n%s\n" % ("\n".join(mainchatlog)),nick)
 
+def getHotContent():
+    st = ""
+    (result,sqldata) = vh.SQL("SELECT * FROM %s WHERE deleted=0 ORDER BY votes desc, time DESC LIMIT 0,10;" % config["tables"]["hot"])
+    if len(sqldata)==0:
+        st = ""
+    else:
+        out = []
+        for row in sqldata:
+            data = dict(zip(config["hot_fields"], row))
+            out.append("   %s" % data["magnetlink"] if len(data["magnetlink"])>0 and data["magnetlink"]!="NULL" else data["name"])
+        st = "The current HOT content are:\n\n%s\n\nSee more and recommend content yourself at %s\n" % ("\n".join(out), config['hoturl'])
+    return st
+
 def getLatest():
     st = ""
     (result,sqldata) = vh.SQL("SELECT cid,title,magnetlink,(SELECT nick1 FROM %s WHERE id=%s.uid) as nickname FROM %s WHERE deleted=0 ORDER BY priority desc, timestamp DESC LIMIT 0,10;" % (config["tables"]["users"],config["tables"]["content"],config["tables"]["content"]))
@@ -256,7 +272,7 @@ def latest(nick="all:?"):
     data = getLatest()
     data = "\nLatest Content: %s\n%s\n%s\n%s\n" % (config["latesturl"], "="*70 ,data, "="*70)
     if nick=="all:?":
-        vh.SendDataToAll("<%s>%s" % (config['hubbot'], data),0,10)
+        vh.SendDataToAll("<%s>%s|" % (config['hubbot'], data),0,10)
     else:
         vh.usermc(data,nick)
         
@@ -274,6 +290,35 @@ def sendOfflineMessages():
         out.append("'%s'" % escape(nick))
     nicks = ",".join(out)
     sql = "select dut.nick1 nto,duf.nick1 nfrom,msg,dm.createdOn,dm.id from %s dm,%s dut,%s duf where dm.deleted=0 and dut.deleted=0 and duf.deleted=0 and dm.fromid=duf.id and dm.toid=dut.id and dm.id > dut.lastmsgid and (dut.nick1 in (%s) or dut.nick2  in (%s)) order by nto,nfrom,createdOn" % (config["tables"]["messages"],config["tables"]["users"],config["tables"]["users"],nicks,nicks)
+    (r, d) = vh.SQL(sql)
+    if r==0 or len(d)==0: return
+    data = dict()
+    msgids = []
+    for row in d:
+        if row[0] in data:
+            data[row[0]].append([row[1],row[2],row[3]])
+        else:
+            data[row[0]]=[[row[1],row[2],row[3]]]
+        msgids.append(int(row[4]))
+    for nick in data:
+        out = "You have received the following offline messages:\n\n"
+        for msg in data[nick]:
+            out += "[%s] <%s> %s\n\n" % (msg[2], msg[0], msg[1])
+        out += "To send offline messages, see '+help offline'"
+        vh.pm(out,nick)
+    out = []
+    for nick in data.keys():
+        out.append("'%s'" % escape(nick))
+    nicks = ",".join(out)
+    updateTable(config["tables"]["users"],{"lastmsgid":max(msgids)},"(nick1 in (%s) or nick2  in (%s))" % (nicks, nicks))
+
+def sendNotifications():
+    return
+    out = []
+    for nick in vh.GetNickList():
+        out.append("'%s'" % escape(nick))
+    nicks = ",".join(out)
+    sql = "select nick1 nto,dp.postby nfrom,post,dp.createdOn,dp.id from %s dp,%s du where du.deleted=0 and dp.deleted=0 and (du.nick1 in (%s) or du.nick2  in (%s)) and dp.id > du.lastnotificationid and (du.groups like concat('%,',dp.gid,',%') or du.groups like concat(dp.gid,',%') or du.groups like concat('%,',dp.gid)) order by nto,nfrom,createdOn" % (config["tables"]["posts"],config["tables"]["users"],nicks,nicks)
     (r, d) = vh.SQL(sql)
     if r==0 or len(d)==0: return
     data = dict()
@@ -337,6 +382,7 @@ def OnUserLogin (nick):
     try:
         (result, userdata) = getUserDetailfromTable(nick)
         if result==0 or len(userdata)==0:
+            notice(nick)
             vh.usermc("Error: Nickname '%s' not found in Database. Please register yourself at %s" % (nick, config["regurl"]),nick)
             vh.CloseConnection(nick)
             return config["blockcommand"]
@@ -355,11 +401,13 @@ def OnUserLogin (nick):
             vh.pm("WARNING: %s. You cannot talk in Main Chat or send Private Messages.\nTo remove this restriction: \n    1) Authenticate you account at %s\n    2) Share %dGB.\n" % ("You have not authenticated your account" if notauthenticated else "You have shared less than %dGB" % config["sharesize"], config["authurl"], config["sharesize"]),nick)
         
         log("Login","%s,%sGB" % (ip, share),nick)
-        if int(userdata['class'])>=config['displayipauth']:
+        updateTable(config['tables']['users'],{"lastShared":getUserShareinGB(nick),"lastLogin":getDateTimeInFormat("%Y-%m-%d %H:%M:%S")},"id='%s'",[userdata['id']])
+	if int(userdata['class'])>=config['displayipauth']:
             sendIPDetails(nick)
         notice(nick)
         latest(nick)
         mainChat(nick)
+	vh.usermc("Type '+help' to see all commands available to you.",nick)
         return config["allowcommand"]
     except Exception, e:
         handleError(e,nick,"Error on user login")
@@ -368,6 +416,7 @@ def OnUserLogin (nick):
 
 def OnTimer():
     global config
+    config['clock']+=1
     if config["clock"]%config["authremind"]==0:
         for nick in vh.GetNickList():
             data = getAuthenticateRequestsData(nick)
@@ -379,10 +428,8 @@ def OnTimer():
         sendIPDetails()
     if config["clock"]%config["messages"]==0:
         sendOfflineMessages()
-    if config['clock']==config['clockcountreset']:
-        config["clock"]=0
-    else:
-        config["clock"]+=1
+    if config["clock"]%config["notification"]==0:
+        sendNotifications()
 
 def OnUserCommand(nick,command):
     global config
@@ -531,20 +578,42 @@ def OnUserCommand(nick,command):
                 vh.usermc("Error: Nickname not found in Database.",nick)
                 return config["blockcommand"]
             if nickname in vh.GetNickList():
-                vh.usermc("Warning: User '%s' is online now. You should send a PM directly as this message will not be delivered immediately", nick)
+                vh.usermc("Warning: User '%s' is online now. You should send a PM directly as this message will not be delivered immediately" % nickname, nick)
             result = insertIntoTable(config["tables"]["messages"],{"toid":data['id'],"fromid":userdata['id'],"msg":message})
             if result==0:
                 vh.usermc("Error: There was some error",nick)
                 return config["blockcommand"]
             vh.usermc("Success: Offline message to '%s' will be eventually delivered." % nickname, nick)
         
+        elif command[0]=="hot":
+            data = getHotContent()
+            if data=="":
+                vh.usermc("Sorry, no HOT content retrieved",nick)
+            else:
+                vh.pm(data,nick)
+                vh.usermc("Results sent as PM", nick)
+                
         elif command[0]=="request":
-            #TODO
-            vh.usermc("Command not yet implemented",nick)
-        
+            if len(command)<2:
+                vh.usermc("Error: Incorrect Format. Please see '+help %s'" % command[0],nick)
+                return config["blockcommand"]
+            request = " ".join(command[1:])
+            result = insertIntoTable(config["tables"]["request"],{"uid":userdata['id'],"request_file":request})
+            if result==0:
+                vh.usermc("Error: There was some error",nick)
+                return config["blockcommand"]
+            vh.usermc("Success. Your request was successfully posted at %s" % config['requesturl'], nick)
+	            
         elif command[0]=="notify":
-            #TODO
-            vh.usermc("Command not yet implemented",nick)
+            if len(command)<2:
+                vh.usermc("Error: Incorrect Format. Please see '+help %s'" % command[0],nick)
+                return config["blockcommand"]
+            message = " ".join(command[1:])
+            result = insertIntoTable(config["tables"]["posts"],{"gid":1,"postby":nick,"post":message})
+            if result==0:
+                vh.usermc("Error: There was some error",nick)
+                return config["blockcommand"]
+            vh.usermc("Success: This message will be eventually delivered after Admin approval.", nick)
         
         elif command[0]=="authenticate":
             if len(command) not in [1,2,3] and (len(command)==3 and command[1]!="decline"):
@@ -599,8 +668,7 @@ def OnUserCommand(nick,command):
             if len(command)<2:
                 vh.usermc("Error: Incorrect format due to missing message. Please see '+help %s'" % command[0],nick)
                 return config["blockcommand"]
-            config["allowcommand"]
-            vh.SendDataToAll("[%s] %s" % (nick," ".join(command[1:])),1,10)
+            vh.SendDataToAll("[%s] %s|" % (nick," ".join(command[1:])),1,10)
         
         elif command[0]=="unshare":
             if len(command)!=2:
@@ -849,7 +917,7 @@ def OnParsedMsgPM(nick,data,receiver):
             return config["blockcommand"]    
         
         (notauthenticated, notshared, ipnotmatching) = checkStatus(nick, userdata)
-        if notauthenticated or notshared:
+        if (notauthenticated or notshared) and receiver not in config['admins']:
             vh.pm("Error: Your message to %s was blocked because %s.\nTo remove this restriction: \n    1) Authenticate you account at %s\n    2) Share %dGB.\n" % (receiver, "you have not autheticated your account" if notauthenticated else "your share is less than %dGB" % config["sharesize"], config["authurl"], config["sharesize"]), nick)
             log("MC", data, nick, "", 1)
             return config["blockcommand"]
@@ -867,7 +935,7 @@ def OnParsedMsgSearch (nick,data):
         return config["allowcommand"]
     except Exception, e:
         handleError(e,nick,"Error parsing search")
-    return config["blockcommand"]
+    return config["allowcommand"]
     
 def OnUserLogout(nick):
     global config
@@ -875,8 +943,8 @@ def OnUserLogout(nick):
         log("Logout", "%s,%sGB" % (vh.GetUserIP(nick), getUserShareinGB(nick)), nick)
         return config["allowcommand"]
     except Exception, e:
-        handleError(e,nick,"Error parsing search")
-    return config["blockcommand"]
+        handleError(e,nick,"Error parsing logout")
+    return config["allowcommand"]
     
 '''
 !pyreload /etc/verlihub/scripts/verlihub.py
