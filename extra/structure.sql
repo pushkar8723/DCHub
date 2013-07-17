@@ -1,32 +1,43 @@
--- phpMyAdmin SQL Dump
--- version 3.5.8.1deb1
--- http://www.phpmyadmin.net
+-- MySQL dump 10.14  Distrib 5.5.31-MariaDB, for Linux (x86_64)
 --
--- Host: localhost
--- Generation Time: Jul 08, 2013 at 08:36 AM
--- Server version: 5.5.31-0ubuntu0.13.04.1
--- PHP Version: 5.4.9-4ubuntu2.1
-
-SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
-
+-- Host: localhost    Database: verlihub
+-- ------------------------------------------------------
+-- Server version	5.5.31-MariaDB-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Database: `verlihub`
+-- Table structure for table `SetupList`
 --
 
--- --------------------------------------------------------
+DROP TABLE IF EXISTS `SetupList`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `SetupList` (
+  `file` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
+  `var` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+  `val` text COLLATE utf8_unicode_ci,
+  PRIMARY KEY (`file`,`var`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `banlist`
 --
 
-CREATE TABLE IF NOT EXISTS `banlist` (
+DROP TABLE IF EXISTS `banlist`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `banlist` (
   `ip` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
   `nick` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ban_type` tinyint(4) DEFAULT '0',
@@ -43,14 +54,16 @@ CREATE TABLE IF NOT EXISTS `banlist` (
   KEY `date_index` (`date_limit`),
   KEY `range_index` (`range_fr`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- --------------------------------------------------------
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `conn_types`
 --
 
-CREATE TABLE IF NOT EXISTS `conn_types` (
+DROP TABLE IF EXISTS `conn_types`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `conn_types` (
   `identifier` varchar(16) COLLATE utf8_unicode_ci NOT NULL,
   `description` varchar(64) COLLATE utf8_unicode_ci DEFAULT 'no description',
   `tag_min_slots` int(4) DEFAULT '0',
@@ -59,57 +72,63 @@ CREATE TABLE IF NOT EXISTS `conn_types` (
   `tag_min_ls_ratio` double DEFAULT '-1',
   PRIMARY KEY (`identifier`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `content_backup`
---
-
-CREATE TABLE IF NOT EXISTS `content_backup` (
-  `cid` int(11) NOT NULL DEFAULT '0',
-  `deleted` tinyint(1) DEFAULT '0',
-  `uid` int(11) DEFAULT NULL,
-  `timestamp` int(11) DEFAULT NULL,
-  `title` tinytext,
-  `magnetlink` tinytext,
-  `tag` text NOT NULL,
-  `updatedOn` datetime NOT NULL,
-  `createdOn` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `custom_redirects`
 --
 
-CREATE TABLE IF NOT EXISTS `custom_redirects` (
+DROP TABLE IF EXISTS `custom_redirects`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `custom_redirects` (
   `address` varchar(125) COLLATE utf8_unicode_ci NOT NULL,
   `flag` tinyint(2) NOT NULL,
   `enable` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`address`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- --------------------------------------------------------
+--
+-- Table structure for table `dc_clients`
+--
+
+DROP TABLE IF EXISTS `dc_clients`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `dc_clients` (
+  `name` varchar(125) COLLATE utf8_unicode_ci NOT NULL,
+  `tag_id` varchar(125) COLLATE utf8_unicode_ci NOT NULL,
+  `min_version` decimal(4,4) NOT NULL DEFAULT '-0.9999',
+  `max_version` decimal(4,4) NOT NULL DEFAULT '-0.9999',
+  `ban` tinyint(1) NOT NULL DEFAULT '0',
+  `enable` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `dchub_branch`
 --
 
-CREATE TABLE IF NOT EXISTS `dchub_branch` (
+DROP TABLE IF EXISTS `dchub_branch`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `dchub_branch` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `branch` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `dchub_content`
 --
 
-CREATE TABLE IF NOT EXISTS `dchub_content` (
+DROP TABLE IF EXISTS `dchub_content`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `dchub_content` (
   `cid` int(11) NOT NULL AUTO_INCREMENT,
   `deleted` tinyint(1) DEFAULT '0',
   `uid` int(11) DEFAULT NULL,
@@ -121,15 +140,17 @@ CREATE TABLE IF NOT EXISTS `dchub_content` (
   `createdOn` datetime NOT NULL,
   `priority` int(11) NOT NULL,
   PRIMARY KEY (`cid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
+) ENGINE=MyISAM AUTO_INCREMENT=469 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `dchub_groups`
 --
 
-CREATE TABLE IF NOT EXISTS `dchub_groups` (
+DROP TABLE IF EXISTS `dchub_groups`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `dchub_groups` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` tinytext NOT NULL,
   `description` text NOT NULL,
@@ -139,76 +160,90 @@ CREATE TABLE IF NOT EXISTS `dchub_groups` (
   `createdOn` datetime NOT NULL,
   `updatedOn` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
+) ENGINE=InnoDB AUTO_INCREMENT=178 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Stand-in structure for view `dchub_hot`
+-- Temporary table structure for view `dchub_hot`
 --
-CREATE TABLE IF NOT EXISTS `dchub_hot` (
-`cid` int(11)
-,`votes` bigint(21)
-,`type` tinytext
-,`time` int(11)
-,`name` tinytext
-,`tag` text
-,`uid` int(11)
-,`magnetlink` tinytext
-,`deleted` tinyint(4)
-);
--- --------------------------------------------------------
+
+DROP TABLE IF EXISTS `dchub_hot`;
+/*!50001 DROP VIEW IF EXISTS `dchub_hot`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE TABLE `dchub_hot` (
+  `cid` tinyint NOT NULL,
+  `votes` tinyint NOT NULL,
+  `type` tinyint NOT NULL,
+  `time` tinyint NOT NULL,
+  `name` tinyint NOT NULL,
+  `tag` tinyint NOT NULL,
+  `uid` tinyint NOT NULL,
+  `magnetlink` tinyint NOT NULL,
+  `deleted` tinyint NOT NULL
+) ENGINE=MyISAM */;
+SET character_set_client = @saved_cs_client;
 
 --
 -- Table structure for table `dchub_importedusers`
 --
 
-CREATE TABLE IF NOT EXISTS `dchub_importedusers` (
+DROP TABLE IF EXISTS `dchub_importedusers`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `dchub_importedusers` (
   `uid` int(11) NOT NULL AUTO_INCREMENT,
-  `nickname` tinytext CHARACTER SET latin1,
-  `password_` tinytext CHARACTER SET latin1,
-  `email` tinytext CHARACTER SET latin1,
-  `ipaddress` tinytext CHARACTER SET latin1,
-  `fullname` tinytext CHARACTER SET latin1,
-  `roll_course` tinytext CHARACTER SET latin1,
+  `nickname` tinytext,
+  `password_` tinytext,
+  `email` tinytext,
+  `ipaddress` tinytext,
+  `fullname` tinytext,
+  `roll_course` tinytext,
   `roll_number` int(11) DEFAULT NULL,
   `roll_year` int(11) DEFAULT NULL,
-  `branch` tinytext CHARACTER SET latin1,
-  `hostel` tinytext CHARACTER SET latin1,
-  `room` tinytext CHARACTER SET latin1,
-  `phone` tinytext CHARACTER SET latin1,
-  `question` tinytext CHARACTER SET latin1,
-  `answer` tinytext CHARACTER SET latin1,
+  `branch` tinytext,
+  `hostel` tinytext,
+  `room` tinytext,
+  `phone` tinytext,
+  `question` tinytext,
+  `answer` tinytext,
   `friend` int(11) DEFAULT NULL,
   `class` int(11) DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT NULL,
-  `note` tinytext CHARACTER SET latin1,
+  `note` tinytext,
   PRIMARY KEY (`uid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
+) ENGINE=InnoDB AUTO_INCREMENT=4045 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Stand-in structure for view `dchub_lcvotes`
+-- Temporary table structure for view `dchub_lcvotes`
 --
-CREATE TABLE IF NOT EXISTS `dchub_lcvotes` (
-`cid` int(11)
-,`votes` bigint(21)
-,`type` tinytext
-,`time` int(11)
-,`name` tinytext
-,`tag` text
-,`uid` int(11)
-,`magnetlink` tinytext
-,`deleted` tinyint(1)
-);
--- --------------------------------------------------------
+
+DROP TABLE IF EXISTS `dchub_lcvotes`;
+/*!50001 DROP VIEW IF EXISTS `dchub_lcvotes`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE TABLE `dchub_lcvotes` (
+  `cid` tinyint NOT NULL,
+  `votes` tinyint NOT NULL,
+  `type` tinyint NOT NULL,
+  `time` tinyint NOT NULL,
+  `name` tinyint NOT NULL,
+  `tag` tinyint NOT NULL,
+  `uid` tinyint NOT NULL,
+  `magnetlink` tinyint NOT NULL,
+  `deleted` tinyint NOT NULL
+) ENGINE=MyISAM */;
+SET character_set_client = @saved_cs_client;
 
 --
 -- Table structure for table `dchub_log`
 --
 
-CREATE TABLE IF NOT EXISTS `dchub_log` (
+DROP TABLE IF EXISTS `dchub_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `dchub_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `timedate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `logtype` tinytext,
@@ -216,16 +251,20 @@ CREATE TABLE IF NOT EXISTS `dchub_log` (
   `nick_to` tinytext,
   `message` text,
   `flag` tinyint(1) DEFAULT '0',
+  `createdOn` datetime NOT NULL,
+  `updatedOn` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
+) ENGINE=InnoDB AUTO_INCREMENT=394196 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `dchub_message`
 --
 
-CREATE TABLE IF NOT EXISTS `dchub_message` (
+DROP TABLE IF EXISTS `dchub_message`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `dchub_message` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `toid` int(11) NOT NULL,
   `fromid` int(11) NOT NULL,
@@ -234,15 +273,17 @@ CREATE TABLE IF NOT EXISTS `dchub_message` (
   `createdOn` datetime NOT NULL,
   `updatedOn` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
+) ENGINE=InnoDB AUTO_INCREMENT=296 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `dchub_post`
 --
 
-CREATE TABLE IF NOT EXISTS `dchub_post` (
+DROP TABLE IF EXISTS `dchub_post`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `dchub_post` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `gid` int(11) NOT NULL,
   `postby` text NOT NULL,
@@ -253,15 +294,17 @@ CREATE TABLE IF NOT EXISTS `dchub_post` (
   `updatedOn` datetime NOT NULL,
   `deleted` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `dchub_rc`
 --
 
-CREATE TABLE IF NOT EXISTS `dchub_rc` (
+DROP TABLE IF EXISTS `dchub_rc`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `dchub_rc` (
   `cid` int(11) NOT NULL AUTO_INCREMENT,
   `deleted` tinyint(1) DEFAULT '0',
   `uid` int(11) DEFAULT NULL,
@@ -272,45 +315,54 @@ CREATE TABLE IF NOT EXISTS `dchub_rc` (
   `updatedOn` datetime NOT NULL,
   `createdOn` datetime NOT NULL,
   PRIMARY KEY (`cid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Stand-in structure for view `dchub_rcview`
+-- Temporary table structure for view `dchub_rcview`
 --
-CREATE TABLE IF NOT EXISTS `dchub_rcview` (
-`cid` int(11)
-,`votes` bigint(21)
-,`type` tinytext
-,`time` int(11)
-,`name` tinytext
-,`tag` text
-,`uid` int(11)
-,`magnetlink` tinytext
-,`deleted` tinyint(1)
-);
--- --------------------------------------------------------
+
+DROP TABLE IF EXISTS `dchub_rcview`;
+/*!50001 DROP VIEW IF EXISTS `dchub_rcview`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE TABLE `dchub_rcview` (
+  `cid` tinyint NOT NULL,
+  `votes` tinyint NOT NULL,
+  `type` tinyint NOT NULL,
+  `time` tinyint NOT NULL,
+  `name` tinyint NOT NULL,
+  `tag` tinyint NOT NULL,
+  `uid` tinyint NOT NULL,
+  `magnetlink` tinyint NOT NULL,
+  `deleted` tinyint NOT NULL
+) ENGINE=MyISAM */;
+SET character_set_client = @saved_cs_client;
 
 --
 -- Table structure for table `dchub_recommend`
 --
 
-CREATE TABLE IF NOT EXISTS `dchub_recommend` (
+DROP TABLE IF EXISTS `dchub_recommend`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `dchub_recommend` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `cid` int(11) NOT NULL,
   `uid` int(11) NOT NULL,
   `type` tinytext NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
+) ENGINE=InnoDB AUTO_INCREMENT=15332 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `dchub_request`
 --
 
-CREATE TABLE IF NOT EXISTS `dchub_request` (
+DROP TABLE IF EXISTS `dchub_request`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `dchub_request` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `uid` int(11) NOT NULL,
   `request_file` text NOT NULL,
@@ -319,15 +371,34 @@ CREATE TABLE IF NOT EXISTS `dchub_request` (
   `createdOn` datetime NOT NULL,
   `updatedOn` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=85 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- --------------------------------------------------------
+--
+-- Table structure for table `dchub_tvschedule`
+--
+
+DROP TABLE IF EXISTS `dchub_tvschedule`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `dchub_tvschedule` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `date` tinytext NOT NULL,
+  `showname` tinytext NOT NULL,
+  `showtitle` tinytext NOT NULL,
+  `time` tinytext NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=108 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `dchub_users`
 --
 
-CREATE TABLE IF NOT EXISTS `dchub_users` (
+DROP TABLE IF EXISTS `dchub_users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `dchub_users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nick1` tinytext,
   `nick2` tinytext,
@@ -343,10 +414,9 @@ CREATE TABLE IF NOT EXISTS `dchub_users` (
   `room` tinytext,
   `phone` tinytext,
   `gender` tinytext NOT NULL,
-  `security_ques` tinytext NOT NULL,
-  `security_ans` tinytext NOT NULL,
   `friend` tinytext NOT NULL,
   `class` int(11) DEFAULT '0',
+  `lastShared` decimal(10,3) NOT NULL DEFAULT '0.000',
   `deleted` tinyint(1) DEFAULT '0',
   `note` tinytext,
   `groups` text NOT NULL,
@@ -354,32 +424,19 @@ CREATE TABLE IF NOT EXISTS `dchub_users` (
   `lastmsgid` int(11) NOT NULL,
   `createdOn` datetime NOT NULL,
   `updatedOn` datetime NOT NULL,
+  `lastLogin` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `dc_clients`
---
-
-CREATE TABLE IF NOT EXISTS `dc_clients` (
-  `name` varchar(125) COLLATE utf8_unicode_ci NOT NULL,
-  `tag_id` varchar(125) COLLATE utf8_unicode_ci NOT NULL,
-  `min_version` decimal(4,4) NOT NULL DEFAULT '-0.9999',
-  `max_version` decimal(4,4) NOT NULL DEFAULT '-0.9999',
-  `ban` tinyint(1) NOT NULL DEFAULT '0',
-  `enable` tinyint(1) NOT NULL DEFAULT '1',
-  PRIMARY KEY (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- --------------------------------------------------------
+) ENGINE=InnoDB AUTO_INCREMENT=1495 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `file_trigger`
 --
 
-CREATE TABLE IF NOT EXISTS `file_trigger` (
+DROP TABLE IF EXISTS `file_trigger`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `file_trigger` (
   `command` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
   `send_as` varchar(25) COLLATE utf8_unicode_ci DEFAULT 'hub-security',
   `def` text COLLATE utf8_unicode_ci,
@@ -390,14 +447,16 @@ CREATE TABLE IF NOT EXISTS `file_trigger` (
   `seconds` int(15) DEFAULT '0',
   PRIMARY KEY (`command`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- --------------------------------------------------------
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `kicklist`
 --
 
-CREATE TABLE IF NOT EXISTS `kicklist` (
+DROP TABLE IF EXISTS `kicklist`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `kicklist` (
   `nick` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
   `time` int(11) NOT NULL,
   `ip` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -411,87 +470,32 @@ CREATE TABLE IF NOT EXISTS `kicklist` (
   KEY `ip_index` (`ip`),
   KEY `drop_index` (`is_drop`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Stand-in structure for view `msgarchive`
---
-CREATE TABLE IF NOT EXISTS `msgarchive` (
-`tonick` tinytext
-,`fromnick` tinytext
-,`msg` text
-,`createdOn` datetime
-);
--- --------------------------------------------------------
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `pi_iplog`
+-- Temporary table structure for view `msgarchive`
 --
 
-CREATE TABLE IF NOT EXISTS `pi_iplog` (
-  `date` int(11) DEFAULT NULL,
-  `action` smallint(6) DEFAULT '0',
-  `ip` bigint(20) DEFAULT NULL,
-  `nick` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `info` int(11) DEFAULT NULL,
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`id`),
-  KEY `ind_ip` (`ip`),
-  KEY `ind_nick` (`nick`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `pi_isp`
---
-
-CREATE TABLE IF NOT EXISTS `pi_isp` (
-  `ipmin` bigint(20) NOT NULL DEFAULT '0',
-  `ipmax` bigint(20) NOT NULL DEFAULT '0',
-  `cc` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `name` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `descprefix` varchar(16) COLLATE utf8_unicode_ci DEFAULT '[???]',
-  `nickpattern` varchar(64) COLLATE utf8_unicode_ci DEFAULT '\\[---\\]',
-  `errmsg` varchar(128) COLLATE utf8_unicode_ci DEFAULT 'Your nick must be like this patern %[pattern]',
-  `conntype` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `connmsg` varchar(128) COLLATE utf8_unicode_ci DEFAULT 'Your connection type does not match %[pattern]',
-  `minshare` int(11) DEFAULT '-1',
-  `minsharereg` int(11) DEFAULT '-1',
-  `minsharevip` int(11) DEFAULT '-1',
-  `minshareop` int(11) DEFAULT '-1',
-  `maxshare` int(11) DEFAULT '-1',
-  `maxsharereg` int(11) DEFAULT '-1',
-  `maxsharevip` int(11) DEFAULT '-1',
-  `maxshareop` int(11) DEFAULT '-1',
-  PRIMARY KEY (`ipmin`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `pi_messages`
---
-
-CREATE TABLE IF NOT EXISTS `pi_messages` (
-  `sender` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-  `date_sent` int(11) NOT NULL,
-  `sender_ip` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `receiver` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-  `date_expires` int(11) DEFAULT '0',
-  `subject` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `body` text COLLATE utf8_unicode_ci,
-  PRIMARY KEY (`sender`,`date_sent`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- --------------------------------------------------------
+DROP TABLE IF EXISTS `msgarchive`;
+/*!50001 DROP VIEW IF EXISTS `msgarchive`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE TABLE `msgarchive` (
+  `tonick` tinyint NOT NULL,
+  `fromnick` tinyint NOT NULL,
+  `msg` tinyint NOT NULL,
+  `createdOn` tinyint NOT NULL
+) ENGINE=MyISAM */;
+SET character_set_client = @saved_cs_client;
 
 --
 -- Table structure for table `pi_plug`
 --
 
-CREATE TABLE IF NOT EXISTS `pi_plug` (
+DROP TABLE IF EXISTS `pi_plug`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pi_plug` (
   `nick` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
   `path` varchar(128) COLLATE utf8_unicode_ci NOT NULL,
   `dest` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -503,47 +507,16 @@ CREATE TABLE IF NOT EXISTS `pi_plug` (
   `lastload` int(11) DEFAULT NULL,
   PRIMARY KEY (`nick`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `pi_stats`
---
-
-CREATE TABLE IF NOT EXISTS `pi_stats` (
-  `realtime` int(11) NOT NULL,
-  `uptime` int(11) DEFAULT NULL,
-  `users_total` int(11) DEFAULT '0',
-  `users_zone0` int(11) DEFAULT '0',
-  `users_zone1` int(11) DEFAULT '0',
-  `users_zone2` int(11) DEFAULT '0',
-  `users_zone3` int(11) DEFAULT '0',
-  `users_zone4` int(11) DEFAULT '0',
-  `users_zone5` int(11) DEFAULT '0',
-  `users_zone6` int(11) DEFAULT '0',
-  `upload_total` double DEFAULT '0',
-  `upload_zone0` double DEFAULT '0',
-  `upload_zone1` double DEFAULT '0',
-  `upload_zone2` double DEFAULT '0',
-  `upload_zone3` double DEFAULT '0',
-  `upload_zone4` double DEFAULT '0',
-  `upload_zone5` double DEFAULT '0',
-  `upload_zone6` double DEFAULT '0',
-  `share_total_gb` int(11) DEFAULT '0',
-  `freq_search_active` double DEFAULT '0',
-  `freq_search_passive` double DEFAULT '0',
-  `freq_user_login` double DEFAULT '0',
-  `freq_user_logout` double DEFAULT '0',
-  PRIMARY KEY (`realtime`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- --------------------------------------------------------
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `reglist`
 --
 
-CREATE TABLE IF NOT EXISTS `reglist` (
+DROP TABLE IF EXISTS `reglist`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `reglist` (
   `nick` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
   `class` int(2) DEFAULT '1',
   `class_protect` int(2) DEFAULT '0',
@@ -575,27 +548,16 @@ CREATE TABLE IF NOT EXISTS `reglist` (
   KEY `login_index` (`login_last`),
   KEY `logout_index` (`logout_last`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `SetupList`
---
-
-CREATE TABLE IF NOT EXISTS `SetupList` (
-  `file` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
-  `var` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-  `val` text COLLATE utf8_unicode_ci,
-  PRIMARY KEY (`file`,`var`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- --------------------------------------------------------
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `temp_rights`
 --
 
-CREATE TABLE IF NOT EXISTS `temp_rights` (
+DROP TABLE IF EXISTS `temp_rights`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `temp_rights` (
   `nick` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
   `op` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
   `since` int(11) DEFAULT NULL,
@@ -609,14 +571,16 @@ CREATE TABLE IF NOT EXISTS `temp_rights` (
   `st_opchat` int(11) DEFAULT '1',
   KEY `creation_index` (`since`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- --------------------------------------------------------
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `unbanlist`
 --
 
-CREATE TABLE IF NOT EXISTS `unbanlist` (
+DROP TABLE IF EXISTS `unbanlist`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `unbanlist` (
   `ip` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
   `nick` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ban_type` tinyint(4) DEFAULT '0',
@@ -633,43 +597,91 @@ CREATE TABLE IF NOT EXISTS `unbanlist` (
   `unban_reason` text COLLATE utf8_unicode_ci,
   UNIQUE KEY `ip` (`ip`,`nick`,`date_unban`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Structure for view `dchub_hot`
---
-DROP TABLE IF EXISTS `dchub_hot`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`verlihub`@`localhost` SQL SECURITY DEFINER VIEW `dchub_hot` AS select `dchub_lcvotes`.`cid` AS `cid`,`dchub_lcvotes`.`votes` AS `votes`,`dchub_lcvotes`.`type` AS `type`,`dchub_lcvotes`.`time` AS `time`,`dchub_lcvotes`.`name` AS `name`,`dchub_lcvotes`.`tag` AS `tag`,`dchub_lcvotes`.`uid` AS `uid`,`dchub_lcvotes`.`magnetlink` AS `magnetlink`,`dchub_lcvotes`.`deleted` AS `deleted` from `dchub_lcvotes` union select `dchub_rcview`.`cid` AS `cid`,`dchub_rcview`.`votes` AS `votes`,`dchub_rcview`.`type` AS `type`,`dchub_rcview`.`time` AS `time`,`dchub_rcview`.`name` AS `name`,`dchub_rcview`.`tag` AS `tag`,`dchub_rcview`.`uid` AS `uid`,`dchub_rcview`.`magnetlink` AS `magnetlink`,`dchub_rcview`.`deleted` AS `deleted` from `dchub_rcview` where (`dchub_rcview`.`deleted` = 0) order by `votes` desc;
-
--- --------------------------------------------------------
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Structure for view `dchub_lcvotes`
+-- Final view structure for view `dchub_hot`
 --
-DROP TABLE IF EXISTS `dchub_lcvotes`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`verlihub`@`localhost` SQL SECURITY DEFINER VIEW `dchub_lcvotes` AS select `rec`.`cid` AS `cid`,count(`rec`.`cid`) AS `votes`,`rec`.`type` AS `type`,`cont`.`timestamp` AS `time`,`cont`.`title` AS `name`,`cont`.`tag` AS `tag`,`cont`.`uid` AS `uid`,`cont`.`magnetlink` AS `magnetlink`,`cont`.`deleted` AS `deleted` from (`dchub_recommend` `rec` join `dchub_content` `cont`) where ((`rec`.`cid` = `cont`.`cid`) and (`rec`.`type` = 'lc')) group by `rec`.`cid`;
-
--- --------------------------------------------------------
+/*!50001 DROP TABLE IF EXISTS `dchub_hot`*/;
+/*!50001 DROP VIEW IF EXISTS `dchub_hot`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8 */;
+/*!50001 SET character_set_results     = utf8 */;
+/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`verlihub`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `dchub_hot` AS select `dchub_lcvotes`.`cid` AS `cid`,`dchub_lcvotes`.`votes` AS `votes`,`dchub_lcvotes`.`type` AS `type`,`dchub_lcvotes`.`time` AS `time`,`dchub_lcvotes`.`name` AS `name`,`dchub_lcvotes`.`tag` AS `tag`,`dchub_lcvotes`.`uid` AS `uid`,`dchub_lcvotes`.`magnetlink` AS `magnetlink`,`dchub_lcvotes`.`deleted` AS `deleted` from `dchub_lcvotes` union select `dchub_rcview`.`cid` AS `cid`,`dchub_rcview`.`votes` AS `votes`,`dchub_rcview`.`type` AS `type`,`dchub_rcview`.`time` AS `time`,`dchub_rcview`.`name` AS `name`,`dchub_rcview`.`tag` AS `tag`,`dchub_rcview`.`uid` AS `uid`,`dchub_rcview`.`magnetlink` AS `magnetlink`,`dchub_rcview`.`deleted` AS `deleted` from `dchub_rcview` where (`dchub_rcview`.`deleted` = 0) order by `votes` desc */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
 
 --
--- Structure for view `dchub_rcview`
+-- Final view structure for view `dchub_lcvotes`
 --
-DROP TABLE IF EXISTS `dchub_rcview`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`verlihub`@`localhost` SQL SECURITY DEFINER VIEW `dchub_rcview` AS select `rec`.`cid` AS `cid`,count(`rec`.`cid`) AS `votes`,`rec`.`type` AS `type`,`cont`.`timestamp` AS `time`,`cont`.`title` AS `name`,`cont`.`tag` AS `tag`,`cont`.`uid` AS `uid`,`cont`.`magnetlink` AS `magnetlink`,`cont`.`deleted` AS `deleted` from (`dchub_recommend` `rec` join `dchub_rc` `cont`) where ((`rec`.`cid` = `cont`.`cid`) and (`rec`.`type` = 'rc')) group by `rec`.`cid`;
-
--- --------------------------------------------------------
+/*!50001 DROP TABLE IF EXISTS `dchub_lcvotes`*/;
+/*!50001 DROP VIEW IF EXISTS `dchub_lcvotes`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8 */;
+/*!50001 SET character_set_results     = utf8 */;
+/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`verlihub`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `dchub_lcvotes` AS select `rec`.`cid` AS `cid`,count(`rec`.`cid`) AS `votes`,`rec`.`type` AS `type`,`cont`.`timestamp` AS `time`,`cont`.`title` AS `name`,`cont`.`tag` AS `tag`,`cont`.`uid` AS `uid`,`cont`.`magnetlink` AS `magnetlink`,`cont`.`deleted` AS `deleted` from (`dchub_recommend` `rec` join `dchub_content` `cont`) where ((`rec`.`cid` = `cont`.`cid`) and (`rec`.`type` = 'lc')) group by `rec`.`cid` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
 
 --
--- Structure for view `msgarchive`
+-- Final view structure for view `dchub_rcview`
 --
-DROP TABLE IF EXISTS `msgarchive`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `msgarchive` AS select `touser`.`nick1` AS `tonick`,`fromuser`.`nick1` AS `fromnick`,`dchub_message`.`msg` AS `msg`,`dchub_message`.`createdOn` AS `createdOn` from ((`dchub_message` join `dchub_users` `touser`) join `dchub_users` `fromuser`) where ((`dchub_message`.`toid` = `touser`.`id`) and (`dchub_message`.`fromid` = `fromuser`.`id`) and (`dchub_message`.`deleted` = 0)) union select `dchub_log`.`nick_to` AS `tonick`,`dchub_log`.`nick` AS `fromnick`,`dchub_log`.`message` AS `msg`,`dchub_log`.`timedate` AS `createdOn` from `dchub_log` where (`dchub_log`.`logtype` = 'PM');
+/*!50001 DROP TABLE IF EXISTS `dchub_rcview`*/;
+/*!50001 DROP VIEW IF EXISTS `dchub_rcview`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8 */;
+/*!50001 SET character_set_results     = utf8 */;
+/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`verlihub`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `dchub_rcview` AS select `rec`.`cid` AS `cid`,count(`rec`.`cid`) AS `votes`,`rec`.`type` AS `type`,`cont`.`timestamp` AS `time`,`cont`.`title` AS `name`,`cont`.`tag` AS `tag`,`cont`.`uid` AS `uid`,`cont`.`magnetlink` AS `magnetlink`,`cont`.`deleted` AS `deleted` from (`dchub_recommend` `rec` join `dchub_rc` `cont`) where ((`rec`.`cid` = `cont`.`cid`) and (`rec`.`type` = 'rc')) group by `rec`.`cid` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
 
+--
+-- Final view structure for view `msgarchive`
+--
+
+/*!50001 DROP TABLE IF EXISTS `msgarchive`*/;
+/*!50001 DROP VIEW IF EXISTS `msgarchive`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8 */;
+/*!50001 SET character_set_results     = utf8 */;
+/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `msgarchive` AS select `usr1`.`nick1` AS `tonick`,`usr2`.`nick1` AS `fromnick`,`dchub_message`.`msg` AS `msg`,`dchub_message`.`createdOn` AS `createdOn` from ((`dchub_message` join `dchub_users` `usr1`) join `dchub_users` `usr2`) where ((`usr1`.`id` = `dchub_message`.`toid`) and (`usr2`.`id` = `dchub_message`.`fromid`)) union select `dchub_log`.`nick_to` AS `tonick`,`dchub_log`.`nick` AS `fromnick`,`dchub_log`.`message` AS `msg`,`dchub_log`.`createdOn` AS `createdOn` from `dchub_log` where (`dchub_log`.`logtype` = 'PM') */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2013-07-18  2:08:45
