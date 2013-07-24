@@ -74,7 +74,7 @@ if (isset($_GET['page']) && $_GET['page'] > 0) {
         } else {
             $body .= " where deleted=1";
         }
-        $body .= " order by id desc";
+        $body .= " order by updatedOn desc";
         $res = DB::findAllWithCount("select *", $body, $page, 10);
         $data = $res['data'];
 		if($data){

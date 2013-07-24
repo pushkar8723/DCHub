@@ -48,7 +48,15 @@
 <p>Also if you search something and not a single result shows up OR you get error messages like "Minimum Search interval is X seconds".</p>
 <p>To rectify this please follow the following Steps:</p>
 <ol>
-    <li>Create a Firewall Exception for your DC Software (For details contact an Admin)</li>
+    <li>Create a Firewall Exception for your DC Software (For details contact an Admin)
+	<ul> 
+	    <li>Open start menu and type Firewall Exception in Search box.</li>
+	    <li>Open the "Allow application through Firewall".</li>
+	    <li>If your DC Software is already on the list, then No Problem.</li>
+	    <li>Else click on Change Settings (Top Right) and then Allow Another (Bottom Right).</li>
+	    <li>Select Your DC Software and click Ok.</li>
+	</ul>
+    </li>
     <li>If the above does not work, follow these steps:
         <ul>
             <li>Goto settings -- Connection Settings</li>

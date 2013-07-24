@@ -82,7 +82,7 @@ if (isset($_GET['code'])) {
         $res = DB::findAllWithCount("select *", $query, $page, 25);
         $data = $res['data'];
         echo "<table class='table table-hover'>
-                    <tr><th>Site Link</th><th>Tags</th><th>Recommend By</th><th style='width:170px; text-align:center;'>Recommendations</th></tr>";
+                    <tr><th>Site Link</th><th>Tags</th><th style='min-width: 140px;'>Recommend By</th></tr>";
         foreach ($data as $row) {
             // who shared the content
             $query = "select nick1 from dchub_users where id = $row[uid]";
@@ -108,9 +108,10 @@ if (isset($_GET['code'])) {
             }
             $str = preg_replace('/\n/', '<br/>', htmlspecialchars(stripslashes($row['title'])));
             //printing
-            echo "<tr><td><div class='des'>$str</div></td>
-            <td>$tagstr</td><td class='wrapword'><a href='" . SITE_URL . "/users/$user[nick1]'>$user[nick1]</a></td>
-                <td style='text-align:center;'><span id='$row[cid]_count'>$rec[recommendations]</span> recommendation(s)<br/>$btn</td></tr>";
+            echo "<tr><td class='wrapword'><div class='des'>$str</div></td>
+            <td>$tagstr</td><td class='wrapword'><a href='" . SITE_URL . "/users/$user[nick1]'>$user[nick1]</a><br/
+                <span id='$row[cid]_count'>$rec[recommendations]</span> recommendation(s)<br/>$btn</td>
+                </tr>";
         }
         echo "</table>";
         pagination($res['noofpages'], SITE_URL . "/recommend", $page, 10);

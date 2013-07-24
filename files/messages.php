@@ -16,7 +16,7 @@
         });
         $('#composemsg').click(function() {
             if ($('#composemsg').html() == 'Compose Message')
-                $('#composemsg').html('Discart Message');
+                $('#composemsg').html('Discard Message');
             else
                 $('#composemsg').html('Compose Message');
             $('#cmpmsg').slideToggle();

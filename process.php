@@ -1,5 +1,4 @@
 <?php
-
 require_once 'config.php';
 // Registration Code
 if (isset($_POST['register'])) {
@@ -71,6 +70,10 @@ if (isset($_POST['register'])) {
     $res = DB::findOneFromQuery("select count(email) as count from dchub_users where roll_course = '" . $_POST['data']['roll_course'] . "' and roll_number = '" . $_POST['data']['roll_number'] . "' and roll_year = '" . $_POST['data']['roll_year'] . "' and branch = '" . $_POST['data']['branch'] . "'");
     if ($res['count'] > 0) {
         $_SESSION['msg'] .= "Roll number in your branch already registered. contact the Admins if you haven't registered.<br/>";
+        $error = 1;
+    }
+    if (($_POST['roll_year'] < 1000 && $_POST['roll_year'] > 2000) || ($_POST['roll_year'] < 10000 && $_POST['roll_year'] > 20000)) {
+        $_SESSION['msg'] .= "Invalid Roll no.<br/>";
         $error = 1;
     }
     if ($error == 1) {
@@ -457,6 +460,27 @@ if (isset($_POST['register'])) {
         // admin updates an account
     } else if (isset($_POST['adminupdate']) && $_SESSION['user']['accesslevel'] >= 9) {
         $_POST['data'] = secure($_POST['data']);
+        if ($_POST['data']['deleted'] == 1) {
+            $row = DB::findOneFromQuery("select nick1, nick2 from dchub_users where id = " . $_POST['data']['id']);
+            DB::query("delete from reglist where nick = '" . $row['nick1'] . "'");
+            if ($row['nick2'] != '') {
+                DB::query("delete from reglist where nick = '" . $row['nick2'] . "'");
+            }
+        }
+        if ($_POST['data']['nick1'] != "") {
+            $row = DB::findOneFromQuery("select nick1, nick2 from dchub_users where id = " . $_POST['data']['id']);
+            DB::query("update reglist set nick='" . $_POST['data']['nick1'] . "' where nick = '" . $row['nick1'] . "'");
+            if ($row['nick2'] != '') {
+                DB::query("update reglist set nick='" . $_POST['data']['nick2'] . "' where nick = '" . $row['nick2'] . "'");
+            }
+        }
+        if ($_POST['data']['password_'] != "") {
+            $row = DB::findOneFromQuery("select nick1, nick2 from dchub_users where id = " . $_POST['data']['id']);
+            DB::query("update reglist set login_pwd='" . $_POST['data']['password_'] . "' where nick = '" . $row['nick1'] . "'");
+            if ($row['nick2'] != '') {
+                DB::query("update reglist set login_pwd='" . $_POST['data']['password_'] . "' where nick = '" . $row['nick2'] . "'");
+            }
+        }
         if ($_POST['data']['class'] != 10) {
             $nicks = DB::findOneFromQuery("select nick1, nick2 from dchub_users where id = " . $_POST['data']['id']);
             DB::update('reglist', array('class' => $classmap[$_POST['data']['class']], 'login_pwd' => $_POST['data']['password_'], 'nick' => $_POST['data']['nick1']), "nick = '$nicks[nick1]'");
@@ -468,7 +492,7 @@ if (isset($_POST['register'])) {
         }
         DB::update('dchub_users', $_POST['data'], 'id = ' . $_POST['data']['id']);
         $_SESSION['msg'] = "Account Updated";
-        redirectTo(SITE_URL . "/admin/" . $_POST['data']['nick1']);
+        redirectTo("http://" . $_SERVER['HTTP_HOST'] . $_SESSION['url']);
 
         // add second nick
     } else if (isset($_POST['addnick']) && !isset($_SESSION['user']['nick2'])) {
@@ -660,7 +684,7 @@ if (isset($_POST['register'])) {
         $res = DB::findAllWithCount("select *", $body, $_POST['page'], 5);
         $i = count($res['data']);
         if ($res['noofpages'] != $_POST['page']) {
-            echo "<div id='msgloader'><center><a href='#' onclick='som(" . ($_POST['page'] + 1) . ")' >Show older messages</a></center></div>";
+            echo "<div id='msgloader'><center><a href='#' onclick=\"som( '$_POST[code]'," . ($_POST['page'] + 1) . ")\" >Show older messages</a></center></div>";
         }
         for (; $i > 0; $i--) {
             $row = $res['data'][$i - 1];
@@ -685,6 +709,198 @@ if (isset($_POST['register'])) {
         $_POST['data'] = secure($_POST['data']);
         $res = DB::update('dchub_content', $_POST['data'], "cid = $_POST[cid] and uid = " . $_SESSION['user']['id']);
         echo ($res) ? ('1') : ('0');
+    } else if (isset($_POST['adminsearch']) && $_SESSION['user']['accesslevel'] == 10) {
+        $_POST['data'] = secure($_POST['data']);
+        $condition = array();
+        if ($_POST['data']['nick'] != "")
+            array_push($condition, "nick1 like '%" . $_POST['data']['nick'] . "%' or nick2 like '%" . $_POST['data']['nick'] . "%'");
+        if ($_POST['data']['fullname'] != "")
+            array_push($condition, "fullname like '%" . $_POST['data']['fullname'] . "%'");
+        if ($_POST['data']['ip'] != "")
+            array_push($condition, "ipaddress like '%" . $_POST['data']['ip'] . "%'");
+        if ($_POST['data']['roll'] != "")
+            array_push($condition, " concat(roll_course,roll_number,roll_year) like '%" . $_POST['data']['roll'] . "%'");
+        $query = "select id, fullname, nick1, nick2, roll_course, roll_number, roll_year from dchub_users where ";
+        $query .= implode(' or ', $condition);
+        $res = DB::findAllFromQuery($query);
+        if ($res) {
+            echo "<div class='row'>";
+            foreach ($res as $row) {
+                if ($row['fullname'] == "") {
+                    $row['fullname'] = $row['nick1'];
+                }
+                echo "<div class='span4'><div class='accesslevel'><h4><a href='#' onclick=\"adminselect('$row[id]')\"'>$row[fullname]</a></h4><hr/><b>Nicks : </b>$row[nick1] ][ $row[nick2]<br/><b>Roll No. : </b>$row[roll_course]/$row[roll_number]/$row[roll_year]</div></div>";
+            }
+            echo "</div>";
+        } else {
+            echo "<center><h1>No record found :(</h1></center>";
+        }
+    } else if (isset($_POST['adminselect']) && $_SESSION['user']['accesslevel'] == 10) {
+        $_POST['id'] = addslashes($_POST['id']);
+        $query = "select ipaddress, id, class, nick1, nick2, groups, password_, fullname, roll_course, roll_number, roll_year, hostel, room, branch, phone, friend, deleted  from dchub_users where id = " . $_POST['id'];
+        $user = DB::findOneFromQuery($query);
+        $stat = DB::findOneFromQuery("select logtype from dchub_log where (nick = '$user[nick1]' or nick = '$user[nick2]') and (logtype = 'Login' or logtype='Logout') order by createdOn desc");
+        if($stat && $stat['logtype'] == 'Login'){
+            echo "<h3>$user[fullname] ($user[nick1]) - Online</h3>";
+        } else {
+            echo "<h3>$user[fullname] ($user[nick1]) - Offline</h3>";
+        }
+        ?>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $('#myTab a').click(function(e) {
+                    e.preventDefault();
+                    $(this).tab('show');
+                });
+            });
+            function somadmin(friend, id, page) {
+                if (page !== 1) {
+                    $('#msgloader').html("Loading...");
+                    $.post("<?php echo SITE_URL; ?>/process.php", {
+                        "somadmin": "",
+                        "id": id,
+                        "page": page,
+                        "code": friend
+                    }, function(data) {
+                        $('#msgloader').replaceWith(data);
+                    });
+                } else {
+                    $('#initialLoader').html("Loading...");
+                    $.post("<?php echo SITE_URL; ?>/process.php", {
+                        "somadmin": "",
+                        "id": id,
+                        "page": page,
+                        "code": friend
+                    }, function(data) {
+                        $('#initialLoader').html(data);
+                    });
+                }
+            }
+        </script>
+        <ul class="nav nav-tabs" id="myTab">
+            <li class="active"><a href="#data">Data</a></li>
+            <li><a href="#chat">Chat History</a></li>
+            <li><a href="#search">Search History</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane active" id="data">
+                <?php
+                $fields = array();
+                foreach ($user as $key => $value) {
+                    if ($key == 'id') {
+                        $fields['data[id]'] = array($key, 'hidden', $value);
+                    } else if ($key == 'class') {
+                        $cstr = array();
+                        foreach ($class as $ckey => $cvalue) {
+                            array_push($cstr, "$ckey:$cvalue ($ckey)");
+                        }
+                        $cstr = implode(',', $cstr);
+                        $fields['data[' . $key . "]"] = array($key, 'select', $cstr, $value);
+                    } else if ($key == 'roll_course') {
+                        $fields['data[' . $key . "]"] = array($key, 'select', "BE:BE,ME:ME,MEEE:MEEE,MESE:MESE,MESER:MESER,MCA:MCA,MBA:MBA,MBI:MBI,BPH:BPH,BPH:BPH,BT:BT,MT/CS:MT/CS,MT/IS:MT/IS,MT/RS:MT/RS,MSC:MSC,BARCH:BARCH,BHMCT:BHMCT,BMI:BMI,MUP:MUP,IMH:IMH,PHD:PHD,EMP:EMP", $value);
+                    } else if ($key == 'roll_year') {
+                        $fields['data[' . $key . "]"] = array($key, 'select', "2013:2013,2012:2012,2011:2011,2010:2010,2009:2009,2008:2008,2007:2007,2006:2006,2005:2005", $value);
+                    } else if ($key == 'branch') {
+                        $query = "select * from dchub_branch order by branch";
+                        $res = DB::findAllFromQuery($query);
+                        $str = array();
+                        foreach ($res as $row) {
+                            array_push($str, "$row[id]:$row[branch]");
+                        }
+                        $str = implode(',', $str);
+                        $fields['data[' . $key . "]"] = array($key, 'select', $str, $value);
+                    } else {
+                        $fields['data[' . $key . ']'] = array($key, 'text', $value);
+                    }
+                }
+                createForm('adminupdate', $fields, 'Update Account');
+                ?>
+            </div>
+            <div class="tab-pane" id="chat">
+                <div id = 'offmsg'>
+                    <div style = "width: 30%; height: 450px; float: left; overflow-y: auto; background: #f5f5f5; border-right: 1px solid #eee;">
+                        <ul class = "nav nav-list">
+                            <?php
+                            $query = "select tonick, fromnick from msgarchive where (fromnick ='$user[nick1]'" . (($user['nick2'] != "") ? (" or fromnick ='$user[nick2]'") : ("")) . " ) or (tonick ='$user[nick1]'" . (($user['nick2'] != "") ? (" or tonick ='$user[nick2]'") : ("")) . " )";
+                            $res = DB::findAllFromQuery($query);
+                            $nickarray = array();
+                            foreach ($res as $row) {
+                                array_push($nickarray, $row['tonick']);
+                                array_push($nickarray, $row['fromnick']);
+                            }
+                            $nickarray = array_unique($nickarray);
+                            sort($nickarray);
+                            foreach ($nickarray as $row) {
+                                echo "<li " . ((isset($_GET['code']) && $_GET['code'] == $row) ? ("class='active'") : ("")) . "><a href='#' onclick=\"somadmin('$row', $user[id], 1)\">$row</a></li>";
+                            }
+                            ?>
+                        </ul>
+                    </div>
+                    <div id ='initialLoader' style="width: 69%; height: 450px; margin-left: 30%;  overflow-y: auto; padding-left: 5px;">
+                        <div style='text-align:center;margin-top: 175px;'><h3>Select a user to show messages.</h3></div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="search">
+                <?php
+//                $query = "select nick, group_concat(concat(sr,' (',cnt,')') separator ', ') res from 
+//                (SELECT nick,TRIM(replace(SUBSTRING_INDEX(message, '?', -1),'$',' ')) sr, count(*) cnt
+//                FROM dchub_log
+//                WHERE logtype = 'Search' and message not like '%TTH:%'
+//                group by nick,sr
+//                having sr not like ''
+//                order by timedate desc) s where (nick = '$user[nick1]' or nick='$user[nick2]')";
+//                $res = DB::findOneFromQuery($query);
+//                echo "<b>Search Count :</b><br/>".$res['res']."<hr/><b>Last few searches : </br></b>";
+                $query = "select * from dchub_log where (nick = '$user[nick1]' or nick='$user[nick2]') and logtype='Search' and message not like '%TTH%' order by createdOn desc limit 0, 50";
+                $res = DB::findAllFromQuery($query);
+                echo "<table class='table table-hover'>";
+                foreach ($res as $row) {
+                    $row['message'] = preg_replace('/\$/', ' ', substr($row['message'], strrpos($row['message'], '?') + 1));
+                    echo "<tr><td><div class='pull-right'>$row[createdOn]</div>$row[message]</td></tr>";
+                }
+                echo "</table>";
+                ?>
+            </div>
+        </div>
+        <?php
+    } else if (isset($_POST['somadmin']) && $_SESSION['user']['accesslevel'] == 10) {
+        $_POST = secure($_POST);
+        $query = "select ipaddress, id, class, nick1, nick2, groups, password_, fullname, roll_course, roll_number, roll_year, hostel, room, branch, phone, friend, deleted  from dchub_users where id = " . $_POST['id'];
+        $user = DB::findOneFromQuery($query);
+        $nickuser = $user['nick1'] . (($user['nick2'] != "") ? ("','" . $user['nick2']) : (""));
+        $nickuserfriend = $_POST['code'];
+        $body = "from msgarchive where (fromnick in ('$nickuser') and tonick = '$nickuserfriend') or (fromnick = '$nickuserfriend' and tonick in ('$nickuser')) order by createdOn desc";
+        $res = DB::findAllWithCount("select *", $body, $_POST['page'], 5);
+        $i = count($res['data']);
+        if ($res['noofpages'] != $_POST['page']) {
+            echo "<div id='msgloader'><center><a href='#' onclick=\"somadmin( '$_POST[code]'," . $user['id'] . "," . ($_POST['page'] + 1) . ")\" >Show older messages</a></center></div>";
+        }
+        for (; $i > 0; $i--) {
+            $row = $res['data'][$i - 1];
+            $row['msg'] = preg_replace('/\n/', '<br/>', htmlspecialchars(stripslashes($row['msg'])));
+            if ($row['fromnick'] == $nickuserfriend)
+                echo "<b><a href='" . SITE_URL . "/users/$nickuserfriend'>$nickuserfriend</a></b><div class='pull-right'>$row[createdOn]</div><br/>$row[msg]<hr/>";
+            else
+                echo "<b><a href='" . SITE_URL . "/users/$user[nick1]'>$user[nick1]</a></b><div class='pull-right'>$row[createdOn]</div><br/>$row[msg]<hr/>";
+        }
+    } else if (isset($_POST['courseware']) && $_SESSION['user']['accesslevel'] >= 9) {
+        if ($_FILES['fileadd']['size'] == 0) {
+            $_SESSION['msg'] = "Please select a file";
+        } else if ($_FILES["fileadd"]["error"] > 0) {
+            $_SESSION['msg'] = "File Error : " . $_FILES["fileadd"]["error"];
+        } else {
+            if (file_exists("/srv/http/dchub/course/" . $_FILES["fileadd"]["name"])) {
+                $_SESSION['msg'] = $_FILES["fileadd"]["name"] . " already exists. ";
+            } else {
+                $_SESSION['msg'] = "Uploaded.";
+                move_uploaded_file($_FILES["fileadd"]["tmp_name"], "/srv/http/dchub/course/" . $_FILES["fileadd"]["name"]);
+//                echo "Stored in: " . "upload/" . $_FILES["file"]["name"];
+            }
+        }
+//        print_r($_FILES);
+        redirectTo(SITE_URL . "/courseware");
     }
 }
 ?>

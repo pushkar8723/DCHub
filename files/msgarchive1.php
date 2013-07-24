@@ -10,7 +10,7 @@ if (isset($_SESSION['loggedin'])) {
     ?>
     <script type="text/javascript">
         function som(friend, page) {
-            if(page !== 1){
+            if(page != 1){
                 $('#msgloader').html("Loading...");
                 $.post("<?php echo SITE_URL; ?>/process.php", {
                     "som":"",

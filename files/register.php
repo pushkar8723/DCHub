@@ -175,6 +175,7 @@ if (isset($_SESSION['loggedin'])) {
                     </div>
                 </div>
                 <hr/>
+		<p>Characters like -,#,? or empty spaces  are Not Allowed in Nicknames.</p>
                 <div class="control-group">
                     <label class="control-label" for="nick1">Public Nick <span class='req'>*</span></label>
                     <div class="controls">

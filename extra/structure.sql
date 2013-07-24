@@ -1,8 +1,8 @@
--- MySQL dump 10.14  Distrib 5.5.31-MariaDB, for Linux (x86_64)
+-- MySQL dump 10.14  Distrib 5.5.32-MariaDB, for Linux (x86_64)
 --
 -- Host: localhost    Database: verlihub
 -- ------------------------------------------------------
--- Server version	5.5.31-MariaDB-log
+-- Server version	5.5.32-MariaDB-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -118,7 +118,7 @@ CREATE TABLE `dchub_branch` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `branch` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -140,7 +140,24 @@ CREATE TABLE `dchub_content` (
   `createdOn` datetime NOT NULL,
   `priority` int(11) NOT NULL,
   PRIMARY KEY (`cid`)
-) ENGINE=MyISAM AUTO_INCREMENT=469 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=721 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `dchub_download`
+--
+
+DROP TABLE IF EXISTS `dchub_download`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `dchub_download` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `filename` text COLLATE utf8_unicode_ci NOT NULL,
+  `size` int(11) NOT NULL,
+  `createdOn` datetime NOT NULL,
+  `updatedOn` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -254,7 +271,7 @@ CREATE TABLE `dchub_log` (
   `createdOn` datetime NOT NULL,
   `updatedOn` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=394196 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=624424 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -273,7 +290,7 @@ CREATE TABLE `dchub_message` (
   `createdOn` datetime NOT NULL,
   `updatedOn` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=296 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=352 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -294,7 +311,7 @@ CREATE TABLE `dchub_post` (
   `updatedOn` datetime NOT NULL,
   `deleted` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -315,7 +332,7 @@ CREATE TABLE `dchub_rc` (
   `updatedOn` datetime NOT NULL,
   `createdOn` datetime NOT NULL,
   PRIMARY KEY (`cid`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -352,7 +369,7 @@ CREATE TABLE `dchub_recommend` (
   `uid` int(11) NOT NULL,
   `type` tinytext NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15332 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=15468 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -371,7 +388,7 @@ CREATE TABLE `dchub_request` (
   `createdOn` datetime NOT NULL,
   `updatedOn` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=85 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=136 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -388,7 +405,7 @@ CREATE TABLE `dchub_tvschedule` (
   `showtitle` tinytext NOT NULL,
   `time` tinytext NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=108 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=146 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -426,7 +443,7 @@ CREATE TABLE `dchub_users` (
   `updatedOn` datetime NOT NULL,
   `lastLogin` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1495 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1703 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -684,4 +701,4 @@ CREATE TABLE `unbanlist` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2013-07-18  2:08:45
+-- Dump completed on 2013-07-24 19:08:50

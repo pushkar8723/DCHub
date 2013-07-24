@@ -12,7 +12,7 @@ function head() { ?>
     <script src="<?php echo JS_URL; ?>/bootstrap.js"></script>
     <script src="<?php echo JS_URL; ?>/jquery-ui-1.10.0.custom.min.js"></script>
     <?php
-    $list = array('register', 'admin');
+    $list = array('register', 'admin', 'adminpanel');
     if (!isset($_GET['tab']) || !in_array($_GET['tab'], $list)) {
         ?>
         <script src="<?php echo JS_URL; ?>/jquery.dropkick-1.0.0.js"></script>
@@ -110,7 +110,12 @@ function navbar() {
                         <li><a href="#">Admin</a>
                             <ul>
                                 <li><a href="<?php echo SITE_URL; ?>/groups">Groups</a></li>
-                                <li><a href="<?php echo SITE_URL; ?>/admin">Administration</a></li>
+                                <?php
+                                if ($_SESSION['user']['accesslevel'] == 9)
+                                    echo "<li><a href='" . SITE_URL . "/admin'>Administration</a></li>";
+                                else
+                                    echo "<li><a href='" . SITE_URL . "/adminpanel'>Administration</a></li>";
+                                ?>
                                 <li><a href="<?php echo SITE_URL; ?>/motd">MotD</a></li>
                             </ul>
                         </li>
