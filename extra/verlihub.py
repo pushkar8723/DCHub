@@ -410,7 +410,7 @@ def showUserInfo(usernick, nick, flag = 0):
         return config["blockcommand"]
     nicknames = "%s ][ %s" % (userdata['nick1'], userdata['nick2']) if flag==0 else usernick
     st = "Details for '%s':\n\nNicknames: %s\nAccess Level: %s\nIP Address: %s\nFull Name: %s\nGender: %s\nBranch: %s\nRoll Number: %s/%s/%s\nAddress : Hostel %s Room %s\nPhone Number: %s\nEmail Address: %s\nFriend: %s\nLast Login: %s\n" % (usernick, nicknames, userdata['class'], userdata['ipaddress'], userdata['fullname'], userdata['gender'], userdata['branchname'], userdata['roll_course'], userdata['roll_number'], userdata['roll_year'], userdata['hostel'], userdata['room'], userdata['phone'], userdata['email'], userdata['friend'], userdata['lastLogin'])
-    sendMainChatMsgToNick(st,nick)
+    return st
 
 def getAuthenticateRequestsData(nick):
     (result,sqldata) = selectAllFromTable("SELECT * FROM %s WHERE friend='%s' AND class=0 AND deleted=0;", [config["tables"]["users"],nick], "users")
@@ -472,7 +472,7 @@ def OnUserLogin (nick):
         sendMainChatMsgToNick(getFileContents(config['lastmsg']),nick)
         (nick, desc, tag, speed, mail, size) = vh.GetMyINFO(nick)
         if "M:P" in tag:
-            sendMainChatMsgToNick("You have connected in passive mode. Your search and downloads will be very slow. See how to connect in active mode at %s#step5" % config['info'],nick)
+            sendMainChatMsgToNick("You have connected in passive mode. Your search and downloads will be very slow. See how to connect in active mode at %s#step5" % config['faqurl'],nick)
         if (userdata['gender']=="F" or userdata['hostel']=="9") and userdata['roll_course']=="BE" and userdata['roll_year']=="2010":
             for nk in ["sdh"]:
                 sendPMToNick("%s\nName: %s\nBranch: %s\nRoll: %s/%s/%s\nHostel %s Room %s\nIP: %s" % (nick,userdata['fullname'],userdata['branchname'],userdata['roll_course'],userdata['roll_number'],userdata['roll_year'],userdata['hostel'],userdata['room'],ip),nk,config['stalker'])
@@ -600,7 +600,9 @@ def OnUserCommand(nick,command):
             sendMainChatMsgToNick("Results sent as PM", nick)
         
         elif command[0]=="myinfo":
-            showUserInfo(nick, nick, 1)
+            d = showUserInfo(nick, nick, 1)
+            if d == config['blockcommand']: return config['blockcommand']
+            else: sendMainChatMsgToNick(d,nick)
         
         elif command[0]=="password":
             if len(command)!=3:
@@ -796,13 +798,26 @@ def OnUserCommand(nick,command):
             if len(command)<2:
                 sendMainChatMsgToNick("Error: Incorrect format due to missing nickname. Type '+help %s' to see the correct format" % command[0],nick)
                 return config["blockcommand"]
-            showUserInfo(command[1], nick)
+            d = showUserInfo(command[1], nick)
+            if d == config['blockcommand']: return config['blockcommand']
+            else: sendMainChatMsgToNick(d,nick)
             if nick in config['admins'] and len(command)>2:
                 sendMainChatMsgToNick("Retrieving search...",nick)
-                (r,s) = selectAllFromTable("select group_concat(concat(sr,' (',cnt,')') separator ', ') res from  (SELECT nick,TRIM(replace(SUBSTRING_INDEX(message, '?', -1),'$',' ')) sr, count(*) cnt FROM %s WHERE logtype = 'Search' and message not like '%%TTH:%%' group by nick,sr having sr not like '' order by timedate desc) s where nick='%s' group by nick",[config['tables']['log'],command[1]])
-                if r==0 or len(s)==0: dt = "Not data"
-                else: dt = s[0][0]
-                sendMainChatMsgToNick("\n%s\n" % dt,nick)
+                (r,s) = selectAllFromTable("SELECT TRIM(replace(SUBSTRING_INDEX(message, '?', -1),'$',' ')) sr, count(*) cnt FROM %s WHERE nick='%s' and logtype = 'Search' and message not like '%%TTH:%%' group by nick,sr having sr not like '' order by datetime desc",[config['tables']['log'],command[1]])
+                if r==0 or len(s)==0: dt = "No data"
+                else:
+                    dt = ""
+                    for row in s:
+                        dt+= "%s (%s), " % (row[0],row[1])
+                sendMainChatMsgToNick("%s\n" % dt,nick)
+                sendMainChatMsgToNick("Retrieving commands...",nick)
+                (r,s) = selectAllFromTable("SELECT case when message like '!bc%%' or message like '!broadcast%%' or message like '+offline%%' or message like '+notify%%' then SUBSTRING_INDEX(message, ' ', 1) else message end sr, count(*) cnt FROM %s WHERE nick='%s' and (logtype = 'UserCommand' or logtype = 'OperatorCommand') group by nick,sr having sr not like '' order by sr",[config['tables']['log'],command[1]])
+                if r==0 or len(s)==0: dt = "No data"
+                else:
+                    dt = ""
+                    for row in s:
+                        dt+= "%s (%s), " % (row[0],row[1])
+                sendMainChatMsgToNick("%s\n" % dt,nick)
 
         elif command[0]=="infoip":
             if len(command)!=2:
@@ -822,7 +837,7 @@ def OnUserCommand(nick,command):
                 for entry in sqldata:
                     out += "Name: %s, Nick1: %s, Nick2: %s\n" % (entry[2],entry[0],entry[1])
                 sendMainChatMsgToNick(out,nick)
-        
+       
         elif command[0]=="authlist":
             if len(command)!=2:
                 sendMainChatMsgToNick("Error: Incorrect format due to missing nickname. Type '+help %s' to see the correct format" % command[0],nick)
@@ -1075,7 +1090,7 @@ def OnParsedMsgSearch (nick,data):
         log("Search", data, nick)
         (nick, desc, tag, speed, mail, size) = vh.GetMyINFO(nick)
         if "M:P" in tag:
-            sendPMToNick("You have connected in passive mode. Your search and downloads will be very slow. See how to connect in active mode at %s#step5" % config['info'],nick,"DCPassiveWarning")
+            sendPMToNick("You have connected in passive mode. Your search and downloads will be very slow. See how to connect in active mode at %s#step5" % config['faqurl'],nick,"DCPassiveWarning")
         return config["allowcommand"]
     except Exception, e:
         handleError(e,nick,"Error parsing search")
