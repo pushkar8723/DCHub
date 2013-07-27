@@ -44,11 +44,12 @@
 </div>
 <hr/>
 <h2>2. Filelist and Search Related</h2>
-<p>If you cannot open a person's filelist and a Red-Bar appears underneath the user OR the user is indicated with red color and a brick wall on your DC Software. This happens if your firewall is ON then the incoming connection is not accepted and the file list of some users might not open on your system.</p>
-<p>Also if you search something and not a single result shows up OR you get error messages like "Minimum Search interval is X seconds".</p>
-<p>To rectify this please follow the following Steps:</p>
+<p>Issues: <ul><li>If you cannot open a person's filelist</li><li>A Red-Bar appears underneath your username</li><li>You search something and no result shows up</li><li>You 
+get error messages like "Minimum Search interval is X seconds".</li></ul></p>
+<p>You are facing these issues because you are connected to the Hub in <b>Passive User Mode</b>.</p>
+<p>For <b>Active User Mode</b> please follow the following Steps:</p>
 <ol>
-    <li>Create a Firewall Exception for your DC Software (For details contact an Admin)
+    <li>Step 1: Your firewall is ON and the incoming connection might be blocked from DC. Create a Firewall Exception for your DC Software (For details contact an Admin)
 	<ul> 
 	    <li>Open start menu and type Firewall Exception in Search box.</li>
 	    <li>Open the "Allow application through Firewall".</li>
@@ -57,17 +58,18 @@
 	    <li>Select Your DC Software and click Ok.</li>
 	</ul>
     </li>
-    <li>If the above does not work, follow these steps:
+    <li>Step 2:
         <ul>
             <li>Goto settings -- Connection Settings</li>
             <li>If Let "DC determine the best settings" is selected, then deselect it. </li>
             <li>Select the direct connection option.</li>
+	    <li>Also, ensure you have selected 'Active Mode' if such a settings is present</li>
             <li>Close settings and rejoin the Hub.</li>
             <li>If problem persisits ask the other user to do the same.</li>
         </ul>
 
     </li>
-    <li>If none of the above work, then your Software is crappy and thus please install Apex DC and apply the above settings.</li>
+    <li>If none of the above work, then your Software may be crappy. Please install Apex DC and apply the above settings.</li>
 </ol>
 <hr/>
 <h2>3. Slot Related</h2>

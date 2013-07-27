@@ -76,6 +76,7 @@ function navbar() {
                             <li><a href="<?php echo SITE_URL; ?>/hot">HOT Page</a></li>
                             <li><a href="<?php echo SITE_URL; ?>/request">Request Page</a></li>
                             <li><a href="<?php echo SITE_URL; ?>/recommend">Recommendation Page</a></li>
+                            <li><a href="<?php echo SITE_URL; ?>/courseware">Courseware</a></li>
                             <!--<li><a href="<?php echo SITE_URL; ?>/hof">Hall of Fame</a></li>-->
                         </ul>
                     </li>
@@ -87,7 +88,7 @@ function navbar() {
                             <li><a href="<?php echo SITE_URL; ?>/info">Hub Info</a></li>
                             <li><a href="<?php echo SITE_URL; ?>/bitinfo">BIT Info</a></li>
                             <li><a href="<?php echo SITE_URL; ?>/complaints">Complaints</a></li>
-                            <li><a href="<?php echo SITE_URL; ?>/frequent">Frequent Problems</a></li>
+                            <li><a href="<?php echo SITE_URL; ?>/accesslevel">Access Level</a></li>
                         </ul>
                     </li>
                     <?php if (isset($_SESSION['loggedin']) && $_SESSION['user']['accesslevel'] >= 2) { ?>

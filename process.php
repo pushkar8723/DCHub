@@ -72,7 +72,7 @@ if (isset($_POST['register'])) {
         $_SESSION['msg'] .= "Roll number in your branch already registered. contact the Admins if you haven't registered.<br/>";
         $error = 1;
     }
-    if (($_POST['roll_year'] < 1000 && $_POST['roll_year'] > 2000) || ($_POST['roll_year'] < 10000 && $_POST['roll_year'] > 20000)) {
+    if (($_POST['roll_number'] < 1000 && $_POST['roll_number'] > 2000) || ($_POST['roll_number'] < 10000 && $_POST['roll_number'] > 20000)) {
         $_SESSION['msg'] .= "Invalid Roll no.<br/>";
         $error = 1;
     }
@@ -737,7 +737,7 @@ if (isset($_POST['register'])) {
         }
     } else if (isset($_POST['adminselect']) && $_SESSION['user']['accesslevel'] == 10) {
         $_POST['id'] = addslashes($_POST['id']);
-        $query = "select ipaddress, id, class, nick1, nick2, groups, password_, fullname, roll_course, roll_number, roll_year, hostel, room, branch, phone, friend, deleted  from dchub_users where id = " . $_POST['id'];
+        $query = "select ipaddress, id, class, nick1, nick2, groups, password_, fullname, roll_course, roll_number, roll_year, hostel, room, branch, phone, friend, deleted, shareLimitRemoved,IPLimitRemoved  from dchub_users where id = " . $_POST['id'];
         $user = DB::findOneFromQuery($query);
         $stat = DB::findOneFromQuery("select logtype from dchub_log where (nick = '$user[nick1]' or nick = '$user[nick2]') and (logtype = 'Login' or logtype='Logout') order by createdOn desc");
         if($stat && $stat['logtype'] == 'Login'){
@@ -901,6 +901,15 @@ if (isset($_POST['register'])) {
         }
 //        print_r($_FILES);
         redirectTo(SITE_URL . "/courseware");
+    } else if(isset ($_POST['ctagupdate']) && $_SESSION['user']['accesslevel'] >= 9){
+        $_POST['tags'] = addslashes($_POST['tags']);
+        $res = DB::update('dchub_download', array('tags' => $_POST['tags']), "id = $_POST[id]");
+        echo ($res)?('Update'):('0');
+    } else if(isset ($_POST['cdelete']) && $_SESSION['user']['accesslevel'] >= 9){
+        $file = DB::findOneFromQuery("Select filename from dchub_download where id = $_POST[id]");
+        unlink("/srv/http/dchub/course/$file[filename]");
+        $res = DB::query("delete from dchub_download where id = $_POST[id]");
+        echo ($res)?('1'):('0');
     }
 }
 ?>

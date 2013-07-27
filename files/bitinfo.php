@@ -18,6 +18,7 @@
             <li>Gupta Sweets: 08877172690 </li>
 	    <li>Khalsa (BIT More): 8002861907</li>
 	    <li>Cape Town Dhaba: 8002821532</li>
+	    <li>Chao Wella: 9835391176</li>
         </ul>
         <h4>Shops and Stores</h4>
         <ul>

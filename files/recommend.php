@@ -64,6 +64,7 @@ if (isset($_GET['code'])) {
 </div>
 <ul class="nav nav-tabs">
     <?php
+    $categories = array('Everything' => '', "Movies" => 'movie', "TV Series" => 'tv', "Books" => 'book', 'Games' => 'game', 'Documentary' => "documentary", "Anime" => 'anime');
     foreach ($categories as $key => $value) {
         echo "<li " . (($tab == $value) ? ("class='active'") : ('')) . "><a href='" . SITE_URL . "/recommend" . (($value != '') ? ("/$value") : ('')) . "'>$key</a></li>";
     }
@@ -131,7 +132,7 @@ if (isset($_GET['code'])) {
                     foreach ($categories as $key => $value) {
                         if ($value != '') {
                             ?>
-                            <label style="display: inline-block; width: 70px;" class="checkbox" for="<?php echo $value; ?>">
+                            <label style="display: inline-block; " class="checkbox" for="<?php echo $value; ?>">
                                 <input type="checkbox" name='data[<?php echo $value; ?>]' value="<?php echo $value; ?>" id="<?php echo $value; ?>">
                                 <?php echo $key; ?>
                             </label>
