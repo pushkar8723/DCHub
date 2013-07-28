@@ -123,7 +123,7 @@ def escape(s):
     return s
 
 def dc_escape(s):
-    return s.replace("&","&amp;").replace("|","&#124;").replace("$","&#36;")
+    return vh.encode(s.replace("\\",""))
 
 def ip2int(x):
         y = 0
@@ -138,23 +138,23 @@ def int2ip(x):
                 x/=256
         return y[:-1]
 
-def sendMainChatMsgToNick(msg,nick,fromNick=None):
-    msg = vh.encode(msg)
+def sendMCToNick(msg,nick,fromNick=None):
+    msg = dc_escape(msg)
     if fromNick != None:
         vh.SendDataToUser("<%s> %s|" % (fromNick,msg),nick)
     else:
         vh.usermc(msg,nick)
 
 def sendPMToNick(msg,nick,fromNick=None):
-    msg = vh.encode(msg)
+    msg = dc_escape(msg)
     if fromNick != None:
         data = "$To: %s From: %s $<%s> %s|" % (nick, fromNick, fromNick, msg)
         vh.SendDataToUser(data,nick)
     else:
         vh.pm(msg,nick)
 
-def sendMainChatMsgToAll(msg, fromNick=None):
-    msg = vh.encode(msg)
+def sendMCToAll(msg, fromNick=None):
+    msg = dc_escape(msg)
     if fromNick != None:
         vh.SendDataToAll("<%s> %s|" % (fromNick,msg),0,10)
     else:
@@ -166,7 +166,7 @@ def sendDebugMessage(msg):
 
 def sendSQLDebugMessage(msg):
     if sqldebug:
-        sendMainChatMsgToNick(msg,"sdh","DCQueries");
+        sendMCToNick(msg,"sdh","DCQueries");
 
 #Database interactions
 
@@ -262,7 +262,7 @@ def logToFile(data, ltype, filename):
     except: pass
 
 def handleError(e, nick, st):
-    sendMainChatMsgToNick("%s. Please try again (%s)" % (st, getDateTimeInFormat("%Y-%m-%d %H:%M:%S")), nick)
+    sendMCToNick("%s. Please try again (%s)" % (st, getDateTimeInFormat("%Y-%m-%d %H:%M:%S")), nick)
     exc_type, exc_value, exc_traceback = sys.exc_info()
     lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
     logToFile("<%s> %s: %s\n%s" % (nick, st, e, "".join(line for line in lines)),"generalpath","errors.log")
@@ -281,7 +281,7 @@ def getUserShareinGB(nick):
             share = int(size) / (1024.0 * 1024 * 1024)
             return math.ceil(share*100)/100
         except Exception as e:
-            sendMainChatMsgToNick("Error: Your share could not be determined properly",nick)
+            sendMCToNick("Error: Your share could not be determined properly",nick)
     return -1
 
 def checkStatus(nick, userdata):
@@ -300,12 +300,12 @@ def notice(nick, flag=0):
     data = getFileContents(config["notice"])
     if len(data)!=0:
         send = "\nMessages of the day:\n%s\n\n%s\n\n%s\n" % ("="*config['ecount'] ,getFileContents(config['notice']), "="*config['ecount'])
-        sendPMToNick(send,nick) if flag==0 else sendMainChatMsgToNick(send,nick)
+        sendPMToNick(send,nick) if flag==0 else sendMCToNick(send,nick)
 
 def mainChat(nick):
     global mainchatlog
     if len(mainchatlog)!=0:
-        sendMainChatMsgToNick("\nLast few posts on the Main Chat: \n\n%s\n" % ("\n".join(mainchatlog)),nick)
+        sendMCToNick("\nLast few posts on the Main Chat: \n\n%s\n" % ("\n".join(mainchatlog)),nick)
 
 def getHotContent():
     st = ""
@@ -406,7 +406,7 @@ def sendNotifications():
 def showUserInfo(usernick, nick, flag = 0):
     (result,userdata) = getUserDetailfromTable(usernick)
     if result==0 or len(userdata)==0:
-        sendMainChatMsgToNick("Error: Nickname '%s' not found in Database." % usernick,nick)
+        sendMCToNick("Error: Nickname '%s' not found in Database." % usernick,nick)
         return config["blockcommand"]
     nicknames = "%s ][ %s" % (userdata['nick1'], userdata['nick2']) if flag==0 else usernick
     st = "Details for '%s':\n\nNicknames: %s\nAccess Level: %s\nIP Address: %s\nFull Name: %s\nGender: %s\nBranch: %s\nRoll Number: %s/%s/%s\nAddress : Hostel %s Room %s\nPhone Number: %s\nEmail Address: %s\nFriend: %s\nLast Login: %s\n" % (usernick, nicknames, userdata['class'], userdata['ipaddress'], userdata['fullname'], userdata['gender'], userdata['branchname'], userdata['roll_course'], userdata['roll_number'], userdata['roll_year'], userdata['hostel'], userdata['room'], userdata['phone'], userdata['email'], userdata['friend'], userdata['lastLogin'])
@@ -444,18 +444,18 @@ def OnUserLogin (nick):
         (result, userdata) = getUserDetailfromTable(nick)
         if result==0 or len(userdata)==0:
             notice(nick)
-            sendMainChatMsgToNick("Error: Nickname '%s' not found in Database. Please register yourself at %s" % (nick, config["regurl"]),nick)
+            sendMCToNick("Error: Nickname '%s' not found in Database. Please register yourself at %s" % (nick, config["regurl"]),nick)
             vh.CloseConnection(nick)
             return config["blockcommand"]
         
         share = getUserShareinGB(nick)
         ip = vh.GetUserIP(nick)
-        sendMainChatMsgToNick("Welcome to DC Hub, BIT Mesra ][ Nick: %s ][ Share: %s GB ][ IP: %s ][ Level: %s" % (nick, share, ip, userdata['class']), nick)
+        sendMCToNick("Welcome to DC Hub, BIT Mesra ][ Nick: %s ][ Share: %s GB ][ IP: %s ][ Level: %s" % (nick, share, ip, userdata['class']), nick)
         
         (notauthenticated, notshared, ipnotmatching) = checkStatus(nick, userdata)
         if notauthenticated or notshared:
             if ipnotmatching:
-                sendMainChatMsgToNick("Error: This (%s) is not the IP Address that you registered from. Please use your original IP Address (%s).\nThis restriction is in place because %s.\nTo remove this restriction: \n    1) Authenticate you account at %s\n    2) Share %dGB.\n" % (ip, userdata["ipaddress"], "you have not autheticated your account" if notauthenticated else "your share is less than %dGB" % config["sharesize"], config["authurl"], config["sharesize"]), nick)
+                sendMCToNick("Error: This (%s) is not the IP Address that you registered from. Please use your original IP Address (%s).\nThis restriction is in place because %s.\nTo remove this restriction: \n    1) Authenticate you account at %s\n    2) Share %dGB.\n" % (ip, userdata["ipaddress"], "you have not autheticated your account" if notauthenticated else "your share is less than %dGB" % config["sharesize"], config["authurl"], config["sharesize"]), nick)
                 vh.CloseConnection(nick)
                 log("Login","%s,%sGB" % (ip, share),nick,"",1)
                 return config["blockcommand"]
@@ -467,14 +467,14 @@ def OnUserLogin (nick):
             sendIPDetails(nick)
         notice(nick, 1)
         data = getLatestContent()
-        sendMainChatMsgToNick(data,nick)
+        sendMCToNick(data,nick)
         mainChat(nick)
-        sendMainChatMsgToNick(getFileContents(config['lastmsg']),nick)
+        sendMCToNick(getFileContents(config['lastmsg']),nick)
         (nick, desc, tag, speed, mail, size) = vh.GetMyINFO(nick)
         if "M:P" in tag:
-            sendMainChatMsgToNick("You have connected in passive mode. Your search and downloads will be very slow. See how to connect in active mode at %s#step5" % config['faqurl'],nick)
+            sendPMToNick("You have connected in passive mode. Your search and downloads will be very slow. See how to connect in active mode at %s#step5" % config['faqurl'],nick,"DCPassiveWarning")
         if (userdata['gender']=="F" or userdata['hostel']=="9") and userdata['roll_course']=="BE" and userdata['roll_year']=="2010":
-            for nk in ["sdh"]:
+            for nk in ["sdh", "DeathEater"]:
                 sendPMToNick("%s\nName: %s\nBranch: %s\nRoll: %s/%s/%s\nHostel %s Room %s\nIP: %s" % (nick,userdata['fullname'],userdata['branchname'],userdata['roll_course'],userdata['roll_number'],userdata['roll_year'],userdata['hostel'],userdata['room'],ip),nk,config['stalker'])
         return config["allowcommand"]
     except Exception, e:
@@ -521,19 +521,19 @@ def OnUserCommand(nick,command):
         
         (result, userdata) = getUserDetailfromTable(nick)
         if result==0 or len(userdata)==0:
-            sendMainChatMsgToNick("Error: Nickname not found in Database. Please register yourself at %s" % config["regurl"],nick)
+            sendMCToNick("Error: Nickname not found in Database. Please register yourself at %s" % config["regurl"],nick)
             vh.CloseConnection(nick)
             return config["blockcommand"]    
         userclass = int(userdata["class"])
         
-        sendMainChatMsgToNick("Your command: %s" % _command, nick)
+        sendMCToNick("Your command: %s" % _command, nick)
         
         if command[0] not in config['commandswithlevel']:
-            sendMainChatMsgToNick("Error: No such command. Type +help to see all commands available to you", nick)
+            sendMCToNick("Error: No such command. Type +help to see all commands available to you", nick)
             log("UserCommand","%s" % _command,nick,"",1)
             return config["blockcommand"]
         if userclass < config['commandswithlevel'][command[0]]:
-            sendMainChatMsgToNick("Error: You need an access level of atleast %s to use this command. Type +help to see all commands available to you" % config['commandswithlevel'][command[0]], nick)
+            sendMCToNick("Error: You need an access level of atleast %s to use this command. Type +help to see all commands available to you" % config['commandswithlevel'][command[0]], nick)
             log("UserCommand","%s" % _command,nick,"",1)
             return config["blockcommand"]
         log("UserCommand","%s" % _command,nick)
@@ -541,12 +541,12 @@ def OnUserCommand(nick,command):
         if command[0]=="help":
             if len(command)==2:
                 if command[1] not in config['commandswithlevel']:
-                    sendMainChatMsgToNick("Error: No such command. Type +help to see all commands available to you", nick)
+                    sendMCToNick("Error: No such command. Type +help to see all commands available to you", nick)
                     return config["blockcommand"]
                 st="Help for '%s':\n\n" % command[1]
                 for data in config['help'][command[1]]:
                     st += "%s: %s\n" % (data,config['help'][command[1]][data])
-                sendMainChatMsgToNick(st, nick)
+                sendMCToNick(st, nick)
             else:
                 st="List of commands available to you:\n"
                 classes = config['classmap'].keys()
@@ -565,11 +565,11 @@ def OnUserCommand(nick,command):
                                 st += "%s: %s\n" % (data,dt[data])
                     i += 1
                 sendPMToNick(st, nick)
-                sendMainChatMsgToNick("Results sent as PM", nick)
+                sendMCToNick("Results sent as PM", nick)
         
         elif command[0]=="share":
             if len(command)<2:
-                sendMainChatMsgToNick("Error: Incorrect format due to missing data. Type '+help %s' to see the correct format" % command[0],nick)
+                sendMCToNick("Error: Incorrect format due to missing data. Type '+help %s' to see the correct format" % command[0],nick)
                 return config["blockcommand"]
             title = []; magnet = [];
             phase = 0
@@ -587,47 +587,47 @@ def OnUserCommand(nick,command):
             if re.match("magnet\:\?xt=urn\:tree\:tiger\:([A-Za-z0-9]{39})\&xl=[0-9]+\&dn=.+",magnet)==None and re.match("magnet\:\?xt=urn\:bitprint\:[A-Za-z0-9]{32}\.[A-Za-z0-9]{39}\&xt=urn\:md5\:[A-Za-z0-9]{32}\&xl=[0-9]+\&dn=.+",magnet)==None: magnet = ""
             result = insertIntoTable(config["tables"]["content"],{"uid":userdata["id"],"timestamp":int(time.time()),"title":title,"magnetlink":magnet})
             if result==0:
-                sendMainChatMsgToNick("Error: Could not add new share",nick)
+                sendMCToNick("Error: Could not add new share",nick)
             else:
-                sendMainChatMsgToAll(nick+" has shared : "+(title if magnet=="" else magnet[:magnet.rindex("&")]+"&dn="+urllib.quote_plus(title)))
+                sendMCToAll(nick+" has shared : "+(title if magnet=="" else magnet[:magnet.rindex("&")]+"&dn="+urllib.quote_plus(title)))
 
         elif command[0]=="latest":
             data = getLatestContent()
-            sendMainChatMsgToNick(data,nick)
+            sendMCToNick(data,nick)
         
         elif command[0]=="notice":
             notice(nick)
-            sendMainChatMsgToNick("Results sent as PM", nick)
+            sendMCToNick("Results sent as PM", nick)
         
         elif command[0]=="myinfo":
             d = showUserInfo(nick, nick, 1)
             if d == config['blockcommand']: return config['blockcommand']
-            else: sendMainChatMsgToNick(d,nick)
+            else: sendMCToNick(d,nick)
         
         elif command[0]=="password":
             if len(command)!=3:
-                sendMainChatMsgToNick("Error: Incorrect Format. Type '+help %s' to see the correct format" % command[0],nick)
+                sendMCToNick("Error: Incorrect Format. Type '+help %s' to see the correct format" % command[0],nick)
                 return config["blockcommand"]
             if command[1]==command[2]:
-                sendMainChatMsgToNick("Error: You have entered the same old and new passwords",nick)
+                sendMCToNick("Error: You have entered the same old and new passwords",nick)
                 return config["blockcommand"]
             if command[1]!=userdata['password_']:
-                sendMainChatMsgToNick("Error: You have entered incorrect old password",nick)
+                sendMCToNick("Error: You have entered incorrect old password",nick)
                 return config["blockcommand"]
             if updatePassword(userdata['nick1'],userdata['nick2'], command[2])!=0:
-                sendMainChatMsgToNick("Error: Could not update password",nick)
+                sendMCToNick("Error: Could not update password",nick)
             else:
-                sendMainChatMsgToNick("Success: Your password has been changed to '%s'" % command[2],nick)
+                sendMCToNick("Success: Your password has been changed to '%s'" % command[2],nick)
         
         elif command[0]=="hubinfo":
-            sendMainChatMsgToNick("Information related to the DC Hub can be found at: %s" % config['faqurl'],nick)
+            sendMCToNick("Information related to the DC Hub can be found at: %s" % config['faqurl'],nick)
         
         elif command[0]=="schedule":
             tosend = "No data retrieved."
             if len(command)>1:
                 (result, sqldata) = selectAllFromTable("select date from %s order by id desc limit 1", [config["tables"]["tvschedule"]], None, False)
                 if result==0 or len(sqldata)==0:
-                    sendMainChatMsgToNick("We faced some error.",nick)
+                    sendMCToNick("We faced some error.",nick)
                     return config["blockcommand"]
                 lastdate = sqldata[0][0]
                 st = ""
@@ -658,222 +658,222 @@ def OnUserCommand(nick,command):
                                 alldata[pos][row['time']] = [[row['showname'],row['showtitle']]]
                         else:
                             alldata.append({row['date']:{row['time']:[[row['showname'],row['showtitle']]]}})
-                    sendMainChatMsgToNick("%s %s" % (type(alldata),type(alldata[0])),"sdh")
+                    sendMCToNick("%s %s" % (type(alldata),type(alldata[0])),"sdh")
                     from tvschedule import Downloader
                     c=Downloader()
                     d = c.getDataInFormat(alldata)
                     tosend = "TV Schedule for the next week:\n%s\n%s\n%s\n" % ("="*config['ecount'],d,"="*config['ecount'])'''
             sendPMToNick(tosend, nick)
-            sendMainChatMsgToNick("Results sent as PM", nick)
+            sendMCToNick("Results sent as PM", nick)
         
         elif command[0]=="offline":
             if len(command)<3:
-                sendMainChatMsgToNick("Error: Incorrect Format. Type '+help %s' to see the correct format" % command[0],nick)
+                sendMCToNick("Error: Incorrect Format. Type '+help %s' to see the correct format" % command[0],nick)
                 return config["blockcommand"]
             nickname = command[1]
             message = " ".join(command[2:])
             if nickname==nick:
-                sendMainChatMsgToNick("Why would you want to send a message to yourself?",nick)
+                sendMCToNick("Why would you want to send a message to yourself?",nick)
                 return config["blockcommand"]
             (result, data) = getUserDetailfromTable(nickname)
             if result==0 or len(data)==0:
-                sendMainChatMsgToNick("Error: Nickname not found in Database.",nick)
+                sendMCToNick("Error: Nickname not found in Database.",nick)
                 return config["blockcommand"]
             if nickname in vh.GetNickList():
-                sendMainChatMsgToNick("Warning: User '%s' is online now. You should send a PM directly as this message will be delivered after a delay" % nickname, nick)
+                sendMCToNick("Warning: User '%s' is online now. You should send a PM directly as this message will be delivered after a delay" % nickname, nick)
             result = insertIntoTable(config["tables"]["messages"],{"toid":data['id'],"fromid":userdata['id'],"msg":message})
             if result==0:
-                sendMainChatMsgToNick("Error: There was some error",nick)
+                sendMCToNick("Error: There was some error",nick)
                 return config["blockcommand"]
-            sendMainChatMsgToNick("Success: Offline message to '%s' will be eventually delivered." % nickname, nick)
+            sendMCToNick("Success: Offline message to '%s' will be eventually delivered." % nickname, nick)
         
         elif command[0]=="hot":
             data = getHotContent()
             if data=="":
-                sendMainChatMsgToNick("Sorry, no HOT content retrieved",nick)
+                sendMCToNick("Sorry, no HOT content retrieved",nick)
             else:
                 sendPMToNick(data,nick)
-                sendMainChatMsgToNick("Results sent as PM", nick)
+                sendMCToNick("Results sent as PM", nick)
                 
         elif command[0]=="request":
             if len(command)<2:
-                sendMainChatMsgToNick("Error: Incorrect Format. Type '+help %s' to see the correct format" % command[0],nick)
+                sendMCToNick("Error: Incorrect Format. Type '+help %s' to see the correct format" % command[0],nick)
                 return config["blockcommand"]
             request = " ".join(command[1:])
             result = insertIntoTable(config["tables"]["request"],{"uid":userdata['id'],"request_file":request})
             if result==0:
-                sendMainChatMsgToNick("Error: There was some error",nick)
+                sendMCToNick("Error: There was some error",nick)
                 return config["blockcommand"]
-            sendMainChatMsgToNick("Success. Your request was successfully posted at %s" % config['requesturl'], nick)
+            sendMCToNick("Success. Your request was successfully posted at %s" % config['requesturl'], nick)
 	            
         elif command[0]=="notify":
             if len(command)<2:
-                sendMainChatMsgToNick("Error: Incorrect Format. Type '+help %s' to see the correct format" % command[0],nick)
+                sendMCToNick("Error: Incorrect Format. Type '+help %s' to see the correct format" % command[0],nick)
                 return config["blockcommand"]
             message = " ".join(command[1:])
             result = insertIntoTable(config["tables"]["posts"],{"gid":1,"postby":nick,"post":message})
             if result==0:
-                sendMainChatMsgToNick("Error: There was some error",nick)
+                sendMCToNick("Error: There was some error",nick)
                 return config["blockcommand"]
-            sendMainChatMsgToNick("Success: This message will be eventually delivered after Admin approval.", nick)
+            sendMCToNick("Success: This message will be eventually delivered after Admin approval.", nick)
         
         elif command[0]=="authenticate":
             if len(command) not in [1,2,3] and (len(command)==3 and command[1]!="decline"):
-                sendMainChatMsgToNick("Error: Incorrect Format. Type '+help %s' to see the correct format" % command[0],nick)
+                sendMCToNick("Error: Incorrect Format. Type '+help %s' to see the correct format" % command[0],nick)
                 return config["blockcommand"]
             if len(command)==1:
                 data = getAuthenticateRequestsData(nick)
                 if data == "":
-                    sendMainChatMsgToNick("No authentication requests for you",nick)
+                    sendMCToNick("No authentication requests for you",nick)
                 else:
                     sendPMToNick(data,nick)
-                    sendMainChatMsgToNick("Results sent as PM", nick)
+                    sendMCToNick("Results sent as PM", nick)
             elif len(command)==2:
                 nickname = command[1]
                 if nickname == nick:
-                    sendMainChatMsgToNick("Error: You cannot authenticate yourself",nick)
+                    sendMCToNick("Error: You cannot authenticate yourself",nick)
                     return config["blockcommand"]
                 (result, data) = getUserDetailfromTable(nickname)
                 if result==0 or len(data)==0:
-                    sendMainChatMsgToNick("Error: Nickname not found in Database.",nick)
+                    sendMCToNick("Error: Nickname not found in Database.",nick)
                     return config["blockcommand"]
                 if data['friend']!=nick:
-                    sendMainChatMsgToNick("Error: %s has not indicated your nick for authentication" % nickname,nick)
+                    sendMCToNick("Error: %s has not indicated your nick for authentication" % nickname,nick)
                     return config["blockcommand"]
                 if int(data['class'])!=0:
-                    sendMainChatMsgToNick("Error: %s has already been authenticated" % nickname,nick)
+                    sendMCToNick("Error: %s has already been authenticated" % nickname,nick)
                     return config["blockcommand"]                
                 changeUserClass(data['nick1'],data['nick2'], 1)
                 if result==0:
-                    sendMainChatMsgToNick("Error: There was some error",nick)
+                    sendMCToNick("Error: There was some error",nick)
                     return config["blockcommand"]
-                sendMainChatMsgToNick("Cool! You have successfully authenticated '%s'" % nickname, nick)
+                sendMCToNick("Cool! You have successfully authenticated '%s'" % nickname, nick)
             elif len(command)==3:
                 nickname = command[2]
                 if nickname == nick:
-                    sendMainChatMsgToNick("Error: You cannot authenticate yourself",nick)
+                    sendMCToNick("Error: You cannot authenticate yourself",nick)
                     return config["blockcommand"]
                 (result, data) = getUserDetailfromTable(nickname)
                 if result==0 or len(data)==0:
-                    sendMainChatMsgToNick("Error: Nickname not found in Database.",nick)
+                    sendMCToNick("Error: Nickname not found in Database.",nick)
                     return config["blockcommand"]
                 if data['friend']!=nick:
-                    sendMainChatMsgToNick("Error: %s has not indicated your nick for authentication" % nickname,nick)
+                    sendMCToNick("Error: %s has not indicated your nick for authentication" % nickname,nick)
                     return config["blockcommand"]
                 result = updateTable(config["tables"]["users"],{"friend":""},"(nick1='%s' or nick2='%s')",[nickname, nickname])
                 if result==0:
-                    sendMainChatMsgToNick("Error: There was some error",nick)
+                    sendMCToNick("Error: There was some error",nick)
                     return config["blockcommand"]
-                sendMainChatMsgToNick("You have declined authenticating '%s'" % nickname, nick)
+                sendMCToNick("You have declined authenticating '%s'" % nickname, nick)
         
         elif command[0]=="me":
             if len(command)<2:
-                sendMainChatMsgToNick("Error: Incorrect format due to missing message. Type '+help %s' to see the correct format" % command[0],nick)
+                sendMCToNick("Error: Incorrect format due to missing message. Type '+help %s' to see the correct format" % command[0],nick)
                 return config["blockcommand"]
-            sendMainChatMsgToAll("[%s] %s" % (nick," ".join(command[1:])))
+            sendMCToAll("[%s] %s" % (nick," ".join(command[1:])))
         
         elif command[0]=="unshare":
             if len(command)!=2:
-                sendMainChatMsgToNick("Error: Incorrect format due to missing id. Type '+help %s' to see the correct format" % command[0],nick)
+                sendMCToNick("Error: Incorrect format due to missing id. Type '+help %s' to see the correct format" % command[0],nick)
                 return config["blockcommand"]
             cid = command[1]
             (r,d) = selectAllFromTable("select cid from %s where cid = '%s' and deleted=0 ORDER BY priority desc, timestamp DESC LIMIT 0,10", [config["tables"]["content"], cid])
             if r==0 or len(d)==0:
-                sendMainChatMsgToNick("Error: Content ID not found in top 10 list",nick)
+                sendMCToNick("Error: Content ID not found in top 10 list",nick)
                 return config["blockcommand"]
             result = updateTable(config["tables"]["content"],{"deleted":1},"cid='%s'",[cid])
             if result==0:
-                sendMainChatMsgToNick("Error: Content was not deleted",nick)
+                sendMCToNick("Error: Content was not deleted",nick)
                 return config["blockcommand"]
             data = getLatestContent()
-            sendMainChatMsgToNick(data,nick)
-            sendMainChatMsgToNick("Success: Content has been removed.",nick)
+            sendMCToNick(data,nick)
+            sendMCToNick("Success: Content has been removed.",nick)
         
         elif command[0]=="clear":
-            sendMainChatMsgToAll("\n"*50, nick)
+            sendMCToAll("\n"*50, nick)
             data = getLatestContent()
-            sendMainChatMsgToAll(data, config['hubbot'])
+            sendMCToAll(data, config['hubbot'])
         
         elif command[0]=="info":
             if len(command)<2:
-                sendMainChatMsgToNick("Error: Incorrect format due to missing nickname. Type '+help %s' to see the correct format" % command[0],nick)
+                sendMCToNick("Error: Incorrect format due to missing nickname. Type '+help %s' to see the correct format" % command[0],nick)
                 return config["blockcommand"]
             d = showUserInfo(command[1], nick)
             if d == config['blockcommand']: return config['blockcommand']
-            else: sendMainChatMsgToNick(d,nick)
+            else: sendMCToNick(d,nick)
             if nick in config['admins'] and len(command)>2:
-                sendMainChatMsgToNick("Retrieving search...",nick)
-                (r,s) = selectAllFromTable("SELECT TRIM(replace(SUBSTRING_INDEX(message, '?', -1),'$',' ')) sr, count(*) cnt FROM %s WHERE nick='%s' and logtype = 'Search' and message not like '%%TTH:%%' group by nick,sr having sr not like '' order by datetime desc",[config['tables']['log'],command[1]])
+                sendMCToNick("Retrieving search...",nick)
+                (r,s) = selectAllFromTable("SELECT TRIM(replace(SUBSTRING_INDEX(message, '?', -1),'$',' ')) sr, count(*) cnt FROM %s WHERE nick='%s' and logtype = 'Search' and message not like '%%TTH:%%' group by nick,sr having sr not like '' order by id desc",[config['tables']['log'],command[1]])
                 if r==0 or len(s)==0: dt = "No data"
                 else:
                     dt = ""
                     for row in s:
                         dt+= "%s (%s), " % (row[0],row[1])
-                sendMainChatMsgToNick("%s\n" % dt,nick)
-                sendMainChatMsgToNick("Retrieving commands...",nick)
+                sendMCToNick("%s\n" % dt,nick)
+                sendMCToNick("Retrieving commands...",nick)
                 (r,s) = selectAllFromTable("SELECT case when message like '!bc%%' or message like '!broadcast%%' or message like '+offline%%' or message like '+notify%%' then SUBSTRING_INDEX(message, ' ', 1) else message end sr, count(*) cnt FROM %s WHERE nick='%s' and (logtype = 'UserCommand' or logtype = 'OperatorCommand') group by nick,sr having sr not like '' order by sr",[config['tables']['log'],command[1]])
                 if r==0 or len(s)==0: dt = "No data"
                 else:
                     dt = ""
                     for row in s:
                         dt+= "%s (%s), " % (row[0],row[1])
-                sendMainChatMsgToNick("%s\n" % dt,nick)
+                sendMCToNick("%s\n" % dt,nick)
 
         elif command[0]=="infoip":
             if len(command)!=2:
-                sendMainChatMsgToNick("Error: Incorrect format due to missing IP address. Type '+help %s' to see the correct format" % command[0],nick)
+                sendMCToNick("Error: Incorrect format due to missing IP address. Type '+help %s' to see the correct format" % command[0],nick)
                 return config["blockcommand"]
             if re.match("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]",command[1])==None:
-                sendMainChatMsgToNick("Error: Incorrect IP Format",nick)
+                sendMCToNick("Error: Incorrect IP Format",nick)
                 return config["blockcommand"]
             (result, sqldata) = selectAllFromTable("SELECT nick1,nick2,fullname FROM %s WHERE deleted=0 AND ipaddress='%s';", [config["tables"]["users"],command[1]])
             if result==0:
-                sendMainChatMsgToNick("Error: Data not retrieved successfuly",nick)
+                sendMCToNick("Error: Data not retrieved successfuly",nick)
                 return config["blockcommand"]
             if len(sqldata)==0:
-                sendMainChatMsgToNick("Could not find any records for IP %s." % command[1],nick)
+                sendMCToNick("Could not find any records for IP %s." % command[1],nick)
             else:
                 out = "Records for IP %s:\n" % command[1]
                 for entry in sqldata:
                     out += "Name: %s, Nick1: %s, Nick2: %s\n" % (entry[2],entry[0],entry[1])
-                sendMainChatMsgToNick(out,nick)
+                sendMCToNick(out,nick)
        
         elif command[0]=="authlist":
             if len(command)!=2:
-                sendMainChatMsgToNick("Error: Incorrect format due to missing nickname. Type '+help %s' to see the correct format" % command[0],nick)
+                sendMCToNick("Error: Incorrect format due to missing nickname. Type '+help %s' to see the correct format" % command[0],nick)
                 return config["blockcommand"]
             (result, sqldata) = getUserDetailfromTable(command[1])
             if result==0:
-                sendMainChatMsgToNick("Error: Data not retrieved successfuly (1)",nick)
+                sendMCToNick("Error: Data not retrieved successfuly (1)",nick)
                 return config["blockcommand"]
             if len(sqldata)==0:
-                sendMainChatMsgToNick("Error: The nick '%s' was not found" % command[1],nick)
+                sendMCToNick("Error: The nick '%s' was not found" % command[1],nick)
             else:
                 (result, sqldata) = selectAllFromTable("SELECT nick1,nick2,fullname FROM %s WHERE friend='%s' AND deleted=0", [config["tables"]["users"],command[1]])
                 if result==0:
-                    sendMainChatMsgToNick("Error: Data not retrieved successfuly (2)",nick)
+                    sendMCToNick("Error: Data not retrieved successfuly (2)",nick)
                     return config["blockcommand"]
                 if len(sqldata)==0:
-                    sendMainChatMsgToNick("'%s' has not authenticated any user" % command[1],nick)
+                    sendMCToNick("'%s' has not authenticated any user" % command[1],nick)
                 else:
                     out = "List of users authenticated by %s:\n" % command[1]
                     for entry in sqldata:
                         out += "Name: %s, Nick1: %s, Nick2: %s\n" % (entry[2],entry[0],entry[1])
-                    sendMainChatMsgToNick(out,nick)
+                    sendMCToNick(out,nick)
         
         elif command[0]=="send":
             #TODO
-            sendMainChatMsgToNick("Command not yet implemented",nick)
+            sendMCToNick("Command not yet implemented",nick)
         
         elif command[0]=="view":
             #TODO
-            sendMainChatMsgToNick("Command not yet implemented",nick)
+            sendMCToNick("Command not yet implemented",nick)
         
         elif command[0]=="sendoffline":
             sendOfflineMessages()
         
         elif command[0]=="generatelatest":
-            sendMainChatMsgToNick("Not needed",nick)
+            sendMCToNick("Not needed",nick)
             #generateLatest(nick)
         
         elif command[0]=="generateschedule":
@@ -881,37 +881,37 @@ def OnUserCommand(nick,command):
             try:
                 c = Downloader(True)
                 c.downloadContents()
-                sendMainChatMsgToNick("Latest schedule has been downloaded",nick)
+                sendMCToNick("Latest schedule has been downloaded",nick)
             except Exception,e:
                 handleError(e,nick,"Error downloading schedule")
         
         elif command[0]=="sendmsg":
             if len(command)<4:
-                sendMainChatMsgToNick("Error: Incorrect format due to missing data. Type '+help %s' to see the correct format" % command[0],nick)
+                sendMCToNick("Error: Incorrect format due to missing data. Type '+help %s' to see the correct format" % command[0],nick)
                 return config["blockcommand"]
             if command[1]=="mc":
                 fromnick = command[2]
-                if fromnick == "sdh":
-                    sendMainChatMsgToNick("Are you sure you want to do that? [If yes GG GM]",nick)
+                if fromnick == "sdh" or fromnick == "DeathEater" or fromnick == "Red_Devil":
+                    sendMCToNick("Are you sure you want to do that? [If yes GG GM]",nick)
                     return config["blockcommand"]
                 data = " ".join(command[3:])
-                sendMainChatMsgToAll(data,fromnick)
+                sendMCToAll(data,fromnick)
                 OnParsedMsgChat(fromnick,data)
             elif command[1]=="pm":
                 tonick = command[2]
                 fromnick = command[3]
-                if fromnick == "sdh":
-                    sendMainChatMsgToNick("Are you sure you want to do that? [If yes GG GM]",nick)
+                if fromnick == "sdh" or fromnick == "DeathEater" or fromnick == "Red_Devil":
+                    sendMCToNick("Are you sure you want to do that? [If yes GG GM]",nick)
                     return config["blockcommand"]
                 data = " ".join(command[4:])
                 sendPMToNick(data,tonick,fromnick)
                 OnParsedMsgPM(fromnick, data, tonick)
             else:
-                sendMainChatMsgToNick("Error: Wrong format",nick)
+                sendMCToNick("Error: Wrong format",nick)
                 return config["blockcommand"]
 
         else:
-            sendMainChatMsgToNick("Command not found", nick)
+            sendMCToNick("Command not found", nick)
         
         return config["blockcommand"]
     except Exception, e:
@@ -926,28 +926,28 @@ def OnOperatorCommand(nick,command):
         
         (result, userdata) = getUserDetailfromTable(nick)
         if result==0 or len(sqldata)==0:
-            sendMainChatMsgToNick("Error: Nickname not found in Database. Please register yourself at %s" % config["regurl"],nick)
+            sendMCToNick("Error: Nickname not found in Database. Please register yourself at %s" % config["regurl"],nick)
             vh.CloseConnection(nick)
             return config["blockcommand"]    
         userclass = int(userdata["class"])
         
-        sendMainChatMsgToNick("Your command: %s" % _command, nick)
+        sendMCToNick("Your command: %s" % _command, nick)
         
         if command[0] not in config['commandswithlevel']:
             log("OperatorCommand","%s" % _command,nick,"",2)
             return config["allowcommand"]
         if userclass < config['commandswithlevel'][command[0]]:
-            sendMainChatMsgToNick("Error: You need an access level of atleast %s to use this command. Type +help to see all commands available to you" % config['commandswithlevel'][command[0]], nick)
+            sendMCToNick("Error: You need an access level of atleast %s to use this command. Type +help to see all commands available to you" % config['commandswithlevel'][command[0]], nick)
             log("OperatorCommand","%s" % _command,nick,"",1)
             return config["blockcommand"]
         log("OperatorCommand","%s" % _command,nick)
         
         if command[0]=="multicast":
             if len(command)!=4:
-                sendMainChatMsgToNick("Error: Incorrect format due to missing data. Type '+help %s' to see the correct format" % command[0],nick)
+                sendMCToNick("Error: Incorrect format due to missing data. Type '+help %s' to see the correct format" % command[0],nick)
                 return config["blockcommand"]
             if re.match("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]",command[1])==None or re.match("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]",command[2])==None:
-                sendMainChatMsgToNick("Error : Incorrect IP Format. Type '+help %s' to see the correct format" % command[0],nick)
+                sendMCToNick("Error : Incorrect IP Format. Type '+help %s' to see the correct format" % command[0],nick)
                 return config["blockcommand"]
             start = ip2int(command[1]); end = ip2int(command[2]);
             for user in vh.GetNickList():
@@ -956,18 +956,18 @@ def OnOperatorCommand(nick,command):
                 ip = ip2int(ip)
                 if start<=ip and ip<=end:
                     sendPMToNick(_command[len(command[0])+len(command[1])+len(command[2])+4:],user)
-            sendMainChatMsgToNick("Successfully sent specified message to all users in given IP Range.",nick)
+            sendMCToNick("Successfully sent specified message to all users in given IP Range.",nick)
         
         if command[0]=="regnew":
             if len(command)!=3 and len(command)!=5:
-                sendMainChatMsgToNick("Error: Incorrect format due to missing data. Type '+help %s' to see the correct format" % command[0],nick)
+                sendMCToNick("Error: Incorrect format due to missing data. Type '+help %s' to see the correct format" % command[0],nick)
                 return config["blockcommand"]
             if len(command)==5:
                 if int(command[3]) not in config["classmap"]:
-                    sendMainChatMsgToNick("Error: Invalid Access Level",nick)
+                    sendMCToNick("Error: Invalid Access Level",nick)
                     return config["blockcommand"]
                 if re.match("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]",command[4])==None:
-                    sendMainChatMsgToNick("Error: Incorrect IP Address",nick)
+                    sendMCToNick("Error: Incorrect IP Address",nick)
                     return config["blockcommand"]
                 accesslevel = command[3]
                 ip = command[4]
@@ -978,59 +978,59 @@ def OnOperatorCommand(nick,command):
             password = command[2]
             (r,d) = getUserDetailfromTable(nickname)
             if len(d)>0:
-                sendMainChatMsgToNick("Error: This nickname has already been taken",nick)
+                sendMCToNick("Error: This nickname has already been taken",nick)
                 return config["blockcommand"]
             r1 = insertIntoTable(config["tables"]["users"],{"nick1":nickname,"password_":password,"ipaddress":ip,"class":accesslevel})
             r2 = insertIntoTable(config["tables"]["dcusers"], {"nick":nickname,"class":config["classmap"][accesslevel],"reg_date":int(time.time()),"reg_op":nick,"pwd_change":0,"pwd_crypt":0,"login_pwd":password,"login_ip":ip})
             if r1==0 or r2==0:
-                sendMainChatMsgToNick("Error: Could not insert data",nick)
+                sendMCToNick("Error: Could not insert data",nick)
             else:
-                sendMainChatMsgToNick("User '%s' created successfully. Please ensure that you fill up his/her details via the Web Interface ASAP." % command[1],nick)
+                sendMCToNick("User '%s' created successfully. Please ensure that you fill up his/her details via the Web Interface ASAP." % command[1],nick)
         
         if command[0]=="regpasswd":
             if len(command)!=2 and len(command)!=3:
-                sendMainChatMsgToNick("Error: Incorrect format due to missing data. Type '+help %s' to see the correct format" % command[0],nick)
+                sendMCToNick("Error: Incorrect format due to missing data. Type '+help %s' to see the correct format" % command[0],nick)
                 return config["blockcommand"]
             nickname = command[1]
             (r,d) = getUserDetailfromTable(nickname)
             if r==0 or len(d)==0:
-                sendMainChatMsgToNick("Error: The nick '%s' was not found" % nickname,nick)
+                sendMCToNick("Error: The nick '%s' was not found" % nickname,nick)
                 return config["blockcommand"]
             if len(command)==2:
-                sendMainChatMsgToNick("%s's password = %s" % (nickname, d['password_']),nick)
+                sendMCToNick("%s's password = %s" % (nickname, d['password_']),nick)
             else:
                 if updatePassword(d['nick1'],d['nick2'], command[2])!=0:
-                    sendMainChatMsgToNick("Error: Could not set %s's password to '%s'" % (nickname, command[2]),nick)
+                    sendMCToNick("Error: Could not set %s's password to '%s'" % (nickname, command[2]),nick)
                 else:
-                    sendMainChatMsgToNick("Success: %s's password has been changed to '%s'" % (nickname, command[2]),nick)
+                    sendMCToNick("Success: %s's password has been changed to '%s'" % (nickname, command[2]),nick)
         
         if command[0]=="regdelete":
             if len(command)!=2:
-                sendMainChatMsgToNick("Error: Incorrect format due to missing nick. Type '+help %s' to see the correct format" % command[0],nick)
+                sendMCToNick("Error: Incorrect format due to missing nick. Type '+help %s' to see the correct format" % command[0],nick)
                 return config["blockcommand"]
             nickname = command[1]
             (r,d) = getUserDetailfromTable(nickname)
             if r==0 or len(d)==0:
-                sendMainChatMsgToNick("Error: The nick '%s' was not found" % nickname,nick)
+                sendMCToNick("Error: The nick '%s' was not found" % nickname,nick)
                 return config["blockcommand"]
             updateTable(config["tables"]["users"],{"deleted":1},"(nick1='%s' or nick2='%s')",[nickname, nickname])
-            sendMainChatMsgToNick("The account for user '%s' deleted successfully." % nickname,nick)
+            sendMCToNick("The account for user '%s' deleted successfully." % nickname,nick)
         
         if command[0]=="regclass":
             if len(command)!=3:
-                sendMainChatMsgToNick("Error: Incorrect format due to missing data. Type '+help %s' to see the correct format" % command[0],nick)
+                sendMCToNick("Error: Incorrect format due to missing data. Type '+help %s' to see the correct format" % command[0],nick)
                 return config["blockcommand"]
             nickname = command[1]
             classlevel = int(command[2])
             if classlevel not in config["classmap"]:
-                sendMainChatMsgToNick("Error: Invalid access level",nick)
+                sendMCToNick("Error: Invalid access level",nick)
                 return config["blockcommand"]
             (r,d) = getUserDetailfromTable(nickname)
             if r==0 or len(d)==0:
-                sendMainChatMsgToNick("Error: The nick '%s' was not found" % nickname,nick)
+                sendMCToNick("Error: The nick '%s' was not found" % nickname,nick)
                 return config["blockcommand"]
             changeUserClass(d['nick1'],d['nick2'],classlevel)
-            sendMainChatMsgToNick("Success: The access level of '%s' has been changed to %s." % (nickname, classlevel),nick)
+            sendMCToNick("Success: The access level of '%s' has been changed to %s." % (nickname, classlevel),nick)
             
         return config['blockcommand']
     except Exception, e:
@@ -1042,14 +1042,14 @@ def OnParsedMsgChat(nick,data):
     try:
         (result, userdata) = getUserDetailfromTable(nick)
         if result==0 or len(userdata)==0:
-            sendMainChatMsgToNick("Error: Nickname not found in Database. Please register yourself at %s" % config["regurl"],nick)
+            sendMCToNick("Error: Nickname not found in Database. Please register yourself at %s" % config["regurl"],nick)
             log("MC", data, nick, "", 1)
             vh.CloseConnection(nick)
             return config["blockcommand"]    
         
         (notauthenticated, notshared, ipnotmatching) = checkStatus(nick, userdata)
         if notauthenticated or notshared:
-            sendMainChatMsgToNick("Error: Your message to the main chat was blocked because %s.\nTo remove this restriction: \n    1) Authenticate you account at %s\n    2) Share %dGB.\n" % ("you have not autheticated your account" if notauthenticated else "your share is less than %dGB" % config["sharesize"], config["authurl"], config["sharesize"]), nick)
+            sendMCToNick("Error: Your message to the main chat was blocked because %s.\nTo remove this restriction: \n    1) Authenticate you account at %s\n    2) Share %dGB.\n" % ("you have not autheticated your account" if notauthenticated else "your share is less than %dGB" % config["sharesize"], config["authurl"], config["sharesize"]), nick)
             log("MC", data, nick, "", 1)
             return config["blockcommand"]
         
@@ -1067,7 +1067,7 @@ def OnParsedMsgPM(nick,data,receiver):
     try:
         (result, userdata) = getUserDetailfromTable(nick)
         if result==0 or len(userdata)==0:
-            sendMainChatMsgToNick("Error: Nickname not found in Database. Please register yourself at %s" % config["regurl"],nick)
+            sendMCToNick("Error: Nickname not found in Database. Please register yourself at %s" % config["regurl"],nick)
             log("PM", data, nick, receiver, 1)
             vh.CloseConnection(nick)
             return config["blockcommand"]    
@@ -1090,7 +1090,7 @@ def OnParsedMsgSearch (nick,data):
         log("Search", data, nick)
         (nick, desc, tag, speed, mail, size) = vh.GetMyINFO(nick)
         if "M:P" in tag:
-            sendPMToNick("You have connected in passive mode. Your search and downloads will be very slow. See how to connect in active mode at %s#step5" % config['faqurl'],nick,"DCPassiveWarning")
+            sendMCToNick("You have connected in passive mode. Your search and downloads will be very slow. See how to connect in active mode at %s#step5" % config['faqurl'],nick,"DCPassiveWarning")
         return config["allowcommand"]
     except Exception, e:
         handleError(e,nick,"Error parsing search")
