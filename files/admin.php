@@ -40,7 +40,7 @@ $(document).ready(function(){
                 $cstr = implode(',', $cstr);
                 $fields['data['.$key."]"] = array($key, 'select', $cstr, $value);
             }else if($key == 'roll_course'){
-                $fields['data['.$key."]"] = array($key, 'select', "BE:BE,ME:ME,MEEE:MEEE,MESE:MESE,MESER:MESER,MCA:MCA,MBA:MBA,MBI:MBI,BPH:BPH,BPH:BPH,BT:BT,MT/CS:MT/CS,MT/IS:MT/IS,MT/RS:MT/RS,MSC:MSC,BARCH:BARCH,BHMCT:BHMCT,BMI:BMI,MUP:MUP,IMH:IMH,PHD:PHD,EMP:EMP", $value);
+                $fields['data['.$key."]"] = array($key, 'select', "BE:BE,ME:ME,MEEE:MEEE,MESE:MESE,MESER:MESER,MCA:MCA,MBA:MBA,MBI:MBI,BPH:BPH,IPH:IPH,ICH:ICH,MPH:MPH,BT:BT,MT/CS:MT/CS,MT/IS:MT/IS,MT/RS:MT/RS,MSC:MSC,BARCH:BARCH,BHMCT:BHMCT,BMI:BMI,MUP:MUP,IMH:IMH,PHD:PHD,EMP:EMP", $value);
             } else if($key == 'roll_year'){
                 $fields['data['.$key."]"] = array($key, 'select', "2013:2013,2012:2012,2011:2011,2010:2010,2009:2009,2008:2008,2007:2007,2006:2006,2005:2005", $value);
             } else if($key == 'branch'){

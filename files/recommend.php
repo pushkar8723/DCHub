@@ -9,6 +9,11 @@ if (isset($_GET['code'])) {
 } else {
     $tab = '';
 }
+if (isset($_GET['sort'])) {
+    $sort = addslashes($_GET['sort']);
+} else {
+    $sort = 'time';
+}
 ?>
 <script type='text/javascript'>
     function replaceURLWithHTMLLinks(text) {
@@ -62,6 +67,15 @@ if (isset($_GET['code'])) {
     recommendations of different items like <b>TV Shows, Books, Movies</b> 
     etc. Do Contribute!
 </div>
+<div class='pull-right filter'>
+    Sort by : <?php
+    if ($sort == 'time') {
+        echo "<a href='" . SITE_URL . "/recommend" . ((isset($_GET['code'])) ? ("/$tab") : ("")) . "&sort=votes'>Recommendations</a>";
+    } else {
+        echo "<a href='" . SITE_URL . "/recommend" . ((isset($_GET['code'])) ? ("/$tab") : ("")) . "'>Time</a>";
+    }
+    ?>
+</div>
 <ul class="nav nav-tabs">
     <?php
     $categories = array('Everything' => '', "Movies" => 'movie', "TV Series" => 'tv', "Books" => 'book', 'Games' => 'game', 'Documentary' => "documentary", "Anime" => 'anime');
@@ -76,11 +90,19 @@ if (isset($_GET['code'])) {
 <div class="row">
     <div class="span7" style='min-height: 450px;'>
         <?php
-        $query = "from dchub_rc where deleted=0";
-        if ($tab != "")
-            $query .= " and tag like '%$tab%'";
-        $query .= " order by timestamp desc";
-        $res = DB::findAllWithCount("select *", $query, $page, 25);
+        if ($sort == 'time') {
+            $select = "select *";
+            $query = "from dchub_rc where deleted=0";
+            if ($tab != "")
+                $query .= " and tag like '%$tab%'";
+            $query .= " order by timestamp desc";
+        } else {
+            $select = "select cid, name as title, uid, tag";
+            $query = "from dchub_hot where type='rc' and deleted=0";
+            if ($tab != "")
+                $query .= " and tag like '%$tab%'";
+        }
+        $res = DB::findAllWithCount($select, $query, $page, 25);
         $data = $res['data'];
         echo "<table class='table table-hover'>
                     <tr><th>Site Link</th><th>Tags</th><th style='min-width: 140px;'>Recommend By</th></tr>";
@@ -115,7 +137,7 @@ if (isset($_GET['code'])) {
                 </tr>";
         }
         echo "</table>";
-        pagination($res['noofpages'], SITE_URL . "/recommend", $page, 10);
+        pagination($res['noofpages'], SITE_URL . "/recommend" . ((isset($_GET['code'])) ? ("/$tab") : ("")).((isset($_GET['sort']))?("&sort=$sort"):("")), $page, 10);
         ?>
 
 

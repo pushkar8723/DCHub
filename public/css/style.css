@@ -117,3 +117,17 @@ th{
     word-break: break-all;
     white-space: normal;
 }
+.comment{
+    overflow-x: hidden;
+    text-align: left;
+    padding: 10px 5px 5px 5px;
+    background: rgba(220,220,220,0.2);
+    margin-top: 1px;
+}
+.filter{
+    padding: 9px 10px 10px 10px;
+    background: #f7f7f7;
+    border-radius: 5px 5px 0 0;
+    border: 1px solid #ddd;
+    border-bottom: 0px;
+}

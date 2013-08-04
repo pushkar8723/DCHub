@@ -225,6 +225,7 @@ function contentshow($data, $highlight = '', $sharedby = true, $edit = FALSE) {
         $(document).ready(function() {
             $('.tagupdate').click(function(event) {
                 id = event.target.id;
+                id = id.replace('tags_', '');
                 $(this).html('Processing...');
                 $.post("<?php echo SITE_URL; ?>/process.php", {
                     "tagupdate": "",
@@ -232,10 +233,10 @@ function contentshow($data, $highlight = '', $sharedby = true, $edit = FALSE) {
                     "data[tag]": $('#tag_' + id).val()
                 }, function(result) {
                     if (result === '1') {
-                        $('#' + id).html('Update');
+                        $('#tags_' + id).html('Update');
                     }
                     else {
-                        $('#' + id).html(result);
+                        $('#tags_' + id).html(result);
                     }
                 });
             });
@@ -262,7 +263,7 @@ function contentshow($data, $highlight = '', $sharedby = true, $edit = FALSE) {
         if ($edit) {
             if (isset($_SESSION['loggedin']) && $row['uid'] == $_SESSION['user']['id']) {
                 $tagstr .= "<input name='data[tag]' id='tag_$row[cid]' name='data[tag]' class='tagsinput' value='$row[tag]'/>
-                    <a href='#' id='$row[cid]' class='btn tagupdate'>Update</a><br/><br/>";
+                    <a href='#' id='tags_$row[cid]' class='btn tagupdate'>Update</a><br/><br/>";
             } else {
                 foreach ($splittag as $tag) {
                     $tagstr .= "<a href='" . SITE_URL . "/latest/$tag'>$tag</a> ";

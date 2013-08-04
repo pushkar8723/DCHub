@@ -7,14 +7,17 @@ if (true or isset($_SESSION['loggedin'])) {
         <br/>
     </center>
     <br/>
-    However your IP and chat facilities will be restricted until you: <br /><br />
+    Just Press <b>Ctrl+Q</b> on your DC Software and Enter the IP <b>172.16.32.222</b>.<br/>
+   <br/> However your IP and chat facilities will be restricted until you: <br /><br />
     1) Authenticate yourself. To do that, visit <a href='<?php echo SITE_URL; ?>/account'><?php echo SITE_URL; ?>/account</a><br/>
     2) AND have a minimum share of 20GB.
 <br /><br />
-    <b>New to DC?</b>
+    <b>New to DC? (aka If you're a <u>First Year</u>):</b>
     Follow our step-by-step setup guide : <a href='<?php echo SITE_URL; ?>/info'>Hub Info</a><br/>
     <br/>
-    Having difficulties connecting to DC HUB. You may find a solution <a href='<?php echo SITE_URL; ?>/complaints'>here</a>.<br/>
+    Having difficulties connecting to DC Hub? You may find a Solution <a href='<?php echo SITE_URL; ?>/frequent'>here</a>.<br/>
+    <br/>
+     Still cannot figure out what is wrong? <a href='<? php echo SITE_URL; ?>/complaints'>Contact an Admin.</a><br/>
     <br/>
     <b>Enjoy the new features introduced this year :</b><br/>
     <ol>

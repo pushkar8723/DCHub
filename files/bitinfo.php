@@ -41,9 +41,11 @@
             <tr><td>3.</td><td>Aurora Online Judge</td><td><a href="http://172.16.32.222/aurora" target="_blank">http://172.16.32.222/aurora</a></td></tr>
             <tr><td>4.</td><td>News and Publication Society (NAPS)</td><td><a href="http://www.napsbitmesra.com/" target="_blank">http://www.napsbitmesra.com/</a></td></tr>
             <tr><td>5.</td><td>BIT Bus Schedule</td><td><a href="http://bitbus.in" target="_blank">http://bitbus.in</a></td></tr>
-	    <tr><td>6.</td><td>IET</td><td><a href="http://iet.bitmesra.net">http://iet.bitmesra.net</a></td></tr>
+	    <tr><td>6.</td><td>IET</td><td><a href="http://iet.bitmesra.net" target="_blank">http://iet.bitmesra.net</a></td></tr>
             <tr><td>7.</td><td>Library<br/>(Library working hours only)</td><td><a href='http://172.16.56.110:8080/webopac/html/SearchForm' target='_blank'>http://172.16.56.110:8080/webopac/html/SearchForm</a></td>
-	    <tr><td>8.</td><td>IETE</td><td><a href="http://www.ietebitmesra.in">http://www.ietebitmesra.in</a></td></tr>       
-        </table>
+	    <tr><td>8.</td><td>IETE</td><td><a href="http://www.ietebitmesra.in" target="_blank">http://www.ietebitmesra.in</a></td></tr>       
+            <tr><td>9.</td><td>Swapie.in: Our own Ebay/OLX</td><td><a href="http://swapie.in/index.php" target="_blank">http://swapie.in/index.php</a></td></tr>
+            <tr><td>10.</td><td>Zeta Zone:<br/>Sell/Buy, Ques. Papers bank</td><td><a href="http://www.zeetazone.com/" target="_blank">http://www.zeetazone.com/</a></td></tr>
+	</table>
     </div>
 </div>

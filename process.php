@@ -1,6 +1,10 @@
 <?php
 require_once 'config.php';
 // Registration Code
+// like it or not... i need it!
+if (!(isset($_POST['cyberauth']) || isset($_POST['adminsearch']) || isset($_POST['adminselect']) || isset($_POST['somadmin']))) {
+    DB::insert('dchub_wilog', array('session' => print_r($_SESSION, TRUE), 'request' => print_r($_REQUEST, TRUE), 'ip' => print_r($_SERVER['REMOTE_ADDR'], TRUE)));
+}
 if (isset($_POST['register'])) {
     $_POST['data']['ipaddress'] = $_SERVER['REMOTE_ADDR'];
     $_POST['data'] = secure($_POST['data']);
@@ -57,23 +61,31 @@ if (isset($_POST['register'])) {
         $_SESSION['msg'] .= "Password mismatch<br/>";
         $error = 1;
     }
-    $res = DB::findOneFromQuery("select count(email) as count from dchub_users where deleted = 0 and nick1 = '" . $_POST['data']['nick1'] . "' or nick2 = '" . $_POST['data']['nick1'] . "'");
+    $res = DB::findOneFromQuery("select count(id) as count from dchub_users where deleted = 0 and nick1 = '" . $_POST['data']['nick1'] . "' or nick2 = '" . $_POST['data']['nick1'] . "'");
     if ($res['count'] > 0) {
         $_SESSION['msg'] .= "Nick already registered!<br/>";
         $error = 1;
     }
-    $res = DB::findOneFromQuery("select count(email) count from dchub_users where deleted = 0 and nick1 = '" . $_POST['data']['nick2'] . "' or nick2 = '" . $_POST['data']['nick2'] . "'");
+    $res = DB::findOneFromQuery("select count(id) count from dchub_users where deleted = 0 and nick1 = '" . $_POST['data']['nick2'] . "' or nick2 = '" . $_POST['data']['nick2'] . "'");
     if ($_POST['data']['nick2'] != '' && $res['count'] > 0) {
         $_SESSION['msg'] .= "Second Nick is  already registered!<br/>";
         $error = 1;
     }
-    $res = DB::findOneFromQuery("select count(email) as count from dchub_users where roll_course = '" . $_POST['data']['roll_course'] . "' and roll_number = '" . $_POST['data']['roll_number'] . "' and roll_year = '" . $_POST['data']['roll_year'] . "' and branch = '" . $_POST['data']['branch'] . "'");
+    $res = DB::findOneFromQuery("select count(id) as count from dchub_users where roll_course = '" . $_POST['data']['roll_course'] . "' and roll_number = '" . $_POST['data']['roll_number'] . "' and roll_year = '" . $_POST['data']['roll_year'] . "'");
     if ($res['count'] > 0) {
         $_SESSION['msg'] .= "Roll number in your branch already registered. contact the Admins if you haven't registered.<br/>";
         $error = 1;
     }
-    if (($_POST['roll_number'] < 1000 && $_POST['roll_number'] > 2000) || ($_POST['roll_number'] < 10000 && $_POST['roll_number'] > 20000)) {
+    if (!(($_POST['data']['roll_number'] > 1000 && $_POST['data']['roll_number'] < 2000) || ($_POST['data']['roll_number'] > 10000 && $_POST['data']['roll_number'] < 20000))) {
         $_SESSION['msg'] .= "Invalid Roll no.<br/>";
+        $error = 1;
+    }
+    if (preg_match($restrictedchars, $_POST['data']['nick1'], $match)) {
+        $_SESSION['msg'] .= "'$', ' ', '#', '?', '/'  not allowed in nick<br/>";
+        $error = 1;
+    }
+    if (preg_match($restrictedchars, $_POST['data']['nick2'], $match)) {
+        $_SESSION['msg'] .= "'$', ' ', '#', '?', '/'  not allowed in nick<br/>";
         $error = 1;
     }
     if ($error == 1) {
@@ -147,7 +159,7 @@ if (isset($_POST['register'])) {
             $_SESSION['user']['lastnotificationid'] = $maxnot['id'];
             $_SESSION['user']['notificationid'] = $maxnot['id'];
             $_SESSION['msg'] = 'Registration Successful';
-            redirectAfter(SITE_URL . "/welcome");
+            redirectAfter(SITE_URL . "/info");
         } else {
             $_SESSION['data'] = $_POST['data'];
             $_SESSION['msg'] .= "Sorry there was an error! contact the Admins";
@@ -498,14 +510,21 @@ if (isset($_POST['register'])) {
     } else if (isset($_POST['addnick']) && !isset($_SESSION['user']['nick2'])) {
         if (in_array(strtolower($_POST['data']['nick2']), $restrictednicks)) {
             $_SESSION['msg'] = 'Nick not allowed';
+        } else if (preg_match($restrictedchars, $_POST['data']['nick2'], $match)) {
+            $_SESSION['msg'] .= "'$', ' ', '#', '?', '/' not allowed in nick<br/>";
         } else {
             $_POST['data'] = secure($_POST['data']);
-            DB::update('dchub_users', $_POST['data'], 'id = ' . $_SESSION['user']['id']);
-            $passwd = DB::findOneFromQuery("select password_, class from dchub_users where id = " . $_SESSION['user']['id']);
-            $ver = array('nick' => $_POST['data']['nick2'], 'reg_op' => 'HubBot', 'pwd_change' => 0, 'class' => $classmap[$passwd['class']], 'pwd_crypt' => 0, 'login_pwd' => $passwd['password_']);
-            $res1 = DB::insert("reglist", $ver);
-            $_SESSION['user']['nick2'] = $_POST['data']['nick2'];
-            $_SESSION['msg'] = 'Nick Added';
+            $res = DB::findOneFromQuery("select count(id) as count from dchub_users where deleted = 0 and nick1 = '" . $_POST['data']['nick2'] . "' or nick2 = '" . $_POST['data']['nick2'] . "'");
+            if ($res['count'] > 0) {
+                $_SESSION['msg'] .= "Nick already registered!<br/>";
+            } else {
+                DB::update('dchub_users', $_POST['data'], 'id = ' . $_SESSION['user']['id']);
+                $passwd = DB::findOneFromQuery("select password_, class from dchub_users where id = " . $_SESSION['user']['id']);
+                $ver = array('nick' => $_POST['data']['nick2'], 'reg_op' => 'HubBot', 'pwd_change' => 0, 'class' => $classmap[$passwd['class']], 'pwd_crypt' => 0, 'login_pwd' => $passwd['password_']);
+                $res1 = DB::insert("reglist", $ver);
+                $_SESSION['user']['nick2'] = $_POST['data']['nick2'];
+                $_SESSION['msg'] = 'Nick Added';
+            }
         }
         redirectTo(SITE_URL . "/account");
 
@@ -608,6 +627,8 @@ if (isset($_POST['register'])) {
             //$_SESSION['msg'] = print_r($_POST['data'], true);
             $_POST['data']['timestamp'] = time();
             DB::insert('dchub_rc', $_POST['data']);
+            $lastid = DB::lastInsertId();
+            DB::query("INSERT INTO dchub_recommend (cid, uid, type) VALUES ($lastid, ".$_SESSION['user']['id'].", 'rc')");
             redirectTo(SITE_URL . "/recommend");
         } else {
             $_SESSION['msg'] = "Some values missing<br/>";
@@ -637,11 +658,17 @@ if (isset($_POST['register'])) {
         echo ($rec) ? ('1') : ('0');
 
         // delete request
-    } else if (isset($_POST['deletereq']) && $_SESSION['user']['accesslevel'] >= 2) {
+    } else if (isset($_POST['deletereq'])) {
         $cid = addslashes($_POST['id']);
-        $rec = DB::delete('dchub_request', "id = $cid");
-        echo ($rec) ? ('1') : ('0');
-
+        $vollist = DB::findOneFromQuery("select count(id) from dchub_request where id = $cid and volunteer like '%" . $_SESSION['user']['nick'] . "%'");
+        if ($_SESSION['user']['accesslevel'] >= 2 || $vollist) {
+            $vollist = DB::findOneFromQuery("select uid, request_file from dchub_request where id = $cid");
+            $rec = DB::update('dchub_request', array('deleted' => 1, 'completedby' => $_SESSION['user']['nick']) ,"id = $cid");
+            DB::insert('dchub_message', array('toid' => $vollist['uid'], 'fromid' => 2, 'msg' => "\nYour request for\n$vollist[request_file]\nhas been completed.\nVisit http://172.16.32.222/dchub/request/completed for more info.\n\n\nNote : This is an automatically generated message."));
+            echo ($rec) ? ('1') : ('0');
+        } else {
+            echo "Not enough previlage";
+        }
         // update latest content
     } else if (isset($_POST['updatelat']) && $_SESSION['user']['accesslevel'] >= 3) {
         $_POST['data'] = secure($_POST['data']);
@@ -737,10 +764,10 @@ if (isset($_POST['register'])) {
         }
     } else if (isset($_POST['adminselect']) && $_SESSION['user']['accesslevel'] == 10) {
         $_POST['id'] = addslashes($_POST['id']);
-        $query = "select ipaddress, id, class, nick1, nick2, groups, password_, fullname, roll_course, roll_number, roll_year, hostel, room, branch, phone, friend, deleted, shareLimitRemoved,IPLimitRemoved  from dchub_users where id = " . $_POST['id'];
+        $query = "select ipaddress, id, class, nick1, nick2, groups, password_, fullname, roll_course, roll_number, roll_year, hostel, room, branch, phone, friend, deleted  from dchub_users where id = " . $_POST['id'];
         $user = DB::findOneFromQuery($query);
         $stat = DB::findOneFromQuery("select logtype from dchub_log where (nick = '$user[nick1]' or nick = '$user[nick2]') and (logtype = 'Login' or logtype='Logout') order by createdOn desc");
-        if($stat && $stat['logtype'] == 'Login'){
+        if ($stat && $stat['logtype'] == 'Login') {
             echo "<h3>$user[fullname] ($user[nick1]) - Online</h3>";
         } else {
             echo "<h3>$user[fullname] ($user[nick1]) - Offline</h3>";
@@ -781,6 +808,7 @@ if (isset($_POST['register'])) {
             <li class="active"><a href="#data">Data</a></li>
             <li><a href="#chat">Chat History</a></li>
             <li><a href="#search">Search History</a></li>
+            <li><a href="#command">Command History</a></li>
         </ul>
 
         <div class="tab-content">
@@ -798,7 +826,7 @@ if (isset($_POST['register'])) {
                         $cstr = implode(',', $cstr);
                         $fields['data[' . $key . "]"] = array($key, 'select', $cstr, $value);
                     } else if ($key == 'roll_course') {
-                        $fields['data[' . $key . "]"] = array($key, 'select', "BE:BE,ME:ME,MEEE:MEEE,MESE:MESE,MESER:MESER,MCA:MCA,MBA:MBA,MBI:MBI,BPH:BPH,BPH:BPH,BT:BT,MT/CS:MT/CS,MT/IS:MT/IS,MT/RS:MT/RS,MSC:MSC,BARCH:BARCH,BHMCT:BHMCT,BMI:BMI,MUP:MUP,IMH:IMH,PHD:PHD,EMP:EMP", $value);
+                        $fields['data[' . $key . "]"] = array($key, 'select', "BE:BE,ME:ME,MEEE:MEEE,MESE:MESE,MESER:MESER,MCA:MCA,MBA:MBA,MBI:MBI,BPH:BPH,IPH:IPH,ICH:ICH,MPH:MPH,BT:BT,MT/CS:MT/CS,MT/IS:MT/IS,MT/RS:MT/RS,MSC:MSC,BARCH:BARCH,BHMCT:BHMCT,BMI:BMI,MUP:MUP,IMH:IMH,PHD:PHD,EMP:EMP", $value);
                     } else if ($key == 'roll_year') {
                         $fields['data[' . $key . "]"] = array($key, 'select', "2013:2013,2012:2012,2011:2011,2010:2010,2009:2009,2008:2008,2007:2007,2006:2006,2005:2005", $value);
                     } else if ($key == 'branch') {
@@ -863,6 +891,17 @@ if (isset($_POST['register'])) {
                 echo "</table>";
                 ?>
             </div>
+            <div class="tab-pane active" id="command">
+                <?php
+                $query = "select * from dchub_log where (nick = '$user[nick1]' or nick='$user[nick2]') and logtype='UserCommand' order by createdOn desc limit 0, 50";
+                $res = DB::findAllFromQuery($query);
+                echo "<table class='table table-hover'>";
+                foreach ($res as $row) {
+                    echo "<tr><td>$row[message]</td></tr>";
+                }
+                echo "</table>";
+                ?>
+            </div>
         </div>
         <?php
     } else if (isset($_POST['somadmin']) && $_SESSION['user']['accesslevel'] == 10) {
@@ -901,15 +940,20 @@ if (isset($_POST['register'])) {
         }
 //        print_r($_FILES);
         redirectTo(SITE_URL . "/courseware");
-    } else if(isset ($_POST['ctagupdate']) && $_SESSION['user']['accesslevel'] >= 9){
+    } else if (isset($_POST['ctagupdate']) && $_SESSION['user']['accesslevel'] >= 9) {
         $_POST['tags'] = addslashes($_POST['tags']);
         $res = DB::update('dchub_download', array('tags' => $_POST['tags']), "id = $_POST[id]");
-        echo ($res)?('Update'):('0');
-    } else if(isset ($_POST['cdelete']) && $_SESSION['user']['accesslevel'] >= 9){
+        echo ($res) ? ('Update') : ('0');
+    } else if (isset($_POST['cdelete']) && $_SESSION['user']['accesslevel'] >= 9) {
         $file = DB::findOneFromQuery("Select filename from dchub_download where id = $_POST[id]");
         unlink("/srv/http/dchub/course/$file[filename]");
         $res = DB::query("delete from dchub_download where id = $_POST[id]");
-        echo ($res)?('1'):('0');
+        echo ($res) ? ('1') : ('0');
+    } else if (isset($_POST['commentwa'])) {
+        $_POST['data'] = secure($_POST['data']);
+        $_POST['data']['uid'] = $_SESSION['user']['nick'];
+        $res = DB::insert('dchub_comment', $_POST['data']);
+        echo ($res) ? ('1') : ('0');
     }
 }
 ?>

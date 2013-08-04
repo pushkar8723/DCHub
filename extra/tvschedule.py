@@ -20,7 +20,7 @@ class Downloader:
         if email == '' or password == '':
             raise Exception("Please edit config.py with your email, password")
         auth = {"login_name":email,"login_pass":password}
-        self.url = "http://www.tvrage.com/mytvrage.php?page=myschedule"
+        self.url = "http://www.tvrage.com/mytvrage.php?page=myschedule&combine_countries=1"
         self.loginurl = "http://www.tvrage.com/login.php"
         auth["curr_page"]=""
         auth["submit"]="Log In"
@@ -38,15 +38,16 @@ class Downloader:
         return s.replace("'","\\'").replace('"','\\"').encode('ascii','replace')
     
     def getDataInFormat(self, alldata):
-        st = ""
+        fl=[]
         for data in alldata:
+            st = ""
             for date in data:
                 st += date+"\n-------------------------\n"
                 for time in data[date]:
                     for show in data[date][time]:
                         st += "    "+show[0]+" : "+show[1]+"\n"
-                st += "\n"
-        return st
+            fl.append(st)
+        return "\n".join(fl)
 
     def getPageHandle(self):
         #return open("a.html","r")

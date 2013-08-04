@@ -1,3 +1,15 @@
+<script type="text/javascript">
+    function filtertag(tag) {
+        $('#filelist tr').each(function() {
+            var html;
+            html = $(this).html();
+            if(html.search('>'+tag+'<') != -1 || html.search('<th>') != -1)
+                $(this).slideDown();
+            else
+                $(this).slideUp();
+        });
+    }
+</script>
 <h1>Courseware</h1>
 <?php
 if (isset($_SESSION['loggedin']) && $_SESSION['user']['accesslevel'] >= 9) {
@@ -77,24 +89,15 @@ if (sizeof($diff) > 0) {
         DB::insert('dchub_download', array('filename' => $val));
     }
 }
-echo "<div class='alert'>This page contains direct links for various courseware.
-    If you want something to be added here contact admin.</div>";
-echo "<ul class='nav nav-tabs'>";
-foreach ($defaultTags as $key => $val) {
-    echo "<li " . (($val == $tab) ? ("class='active'") : ("")) . "><a href='" . SITE_URL . "/courseware/$val'>$key</a></li>";
-}
-if (!in_array($tab, $defaultTags)) {
-    echo "<li class='active'><a href='#'>$tab</a></li>";
-}
-echo "</ul>";
-echo "<table class='table table-hover'>
-        <tr><th>Filename</th><th>Size</th><th>Tags</th></tr>";
+$tablebody = "";
+$alltags = array();
 $query = "select * from dchub_download where tags " . (($tab == "na") ? ("=''") : ("like '%$tab%'")) . " order by filename";
 $res = DB::findAllFromQuery($query);
 foreach ($res as $row) {
     $tags = explode(',', $row['tags']);
     $tagstr = "";
     foreach ($tags as $tag) {
+        array_push($alltags, $tag);
         $tagstr .= "<a href='" . SITE_URL . "/courseware/$tag'>$tag</a> ";
     }
     if (isset($_SESSION['loggedin']) && $_SESSION['user']['accesslevel'] >= 9) {
@@ -103,7 +106,27 @@ foreach ($res as $row) {
                 <a class='btn update' href='#' id='update_$row[id]'>Update</a> 
                 <a class='btn btn-danger delete' href='#' id='delete_$row[id]'>Delete</a>";
     }
-    echo "<tr><td><a target='_blank' href='" . SITE_URL . "/course/$row[filename]'>$row[filename]</a></td><td>" . round(filesize("/srv/http/dchub/course/$row[filename]") / (1024 * 1024), 2) . " MB</td><td>$tagstr</td></tr>";
+    $tablebody .= "<tr><td><a target='_blank' href='" . SITE_URL . "/course/$row[filename]'>$row[filename]</a></td><td>" . round(filesize("/srv/http/dchub/course/$row[filename]") / (1024 * 1024), 2) . " MB</td><td>$tagstr</td></tr>";
 }
-echo "</table>";
+echo "<div class='alert'>This page contains direct links for various courseware.
+    If you want something to be added here contact admin.</div>";
+$alltags = array_unique($alltags);
+unset($alltags[array_search($tab, $alltags)]);
+echo "<div class='pull-right filter'>Filters : <a href='#' onclick=\"filtertag('$tab')\">All</a> ";
+foreach($alltags as $filter){
+    echo "<a href='#' onclick=\"filtertag('$filter')\">$filter</a> ";
+}
+echo "</div>";
+echo "<ul class='nav nav-tabs'>";
+foreach ($defaultTags as $key => $val) {
+    echo "<li " . (($val == $tab) ? ("class='active'") : ("")) . "><a href='" . SITE_URL . "/courseware/$val'>$key</a></li>";
+}
+if (!in_array($tab, $defaultTags)) {
+    echo "<li class='active'><a href='#'>$tab</a></li>";
+}
+echo "</ul>";
+echo "<table id='filelist' class='table table-hover'>
+        <tr><th>Filename</th><th>Size</th><th>Tags</th></tr>
+        $tablebody
+       </table>";
 ?>

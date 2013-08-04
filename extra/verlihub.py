@@ -18,6 +18,7 @@ logpath = basepath + "logs/"
 config = {"hubbot": "HubBot",
           "offlinebot": "DCOfflineMessages",
           "notifybot": "DCNotifications",
+          "tvbot": "DCTVSchedule",
           "stalker": "DCStalker",
           "admins": ['Red_Devil','DeathEater','sdh'],
           "blockcommand": 0,
@@ -83,7 +84,8 @@ config = {"hubbot": "HubBot",
                              "regdelete":{"!regdelete <nickname>":""},
                              "regclass":{"!regclass <nickname> <access-level>":""}
                              },
-                          10:{"generatelatest":{"+generatelatest":"Generates latest content file"},
+                          10:{"mcschedule":{"+mcschedule":"Shows the TV Schedule to Everyone","+schedule <show name>":"Shows schedule for the given show to All. You can type in partial name (eg: how met, big bang)"},
+                              "generatelatest":{"+generatelatest":"Generates latest content file"},
                               "generateschedule":{"+generateschedule":"Generates schedule file"},
                               "sendoffline":{"+sendoffline":"Send"},
                               "sendmsg":{"+sendmsg (mc|pm to) from msg":"Send"}
@@ -158,7 +160,10 @@ def sendMCToAll(msg, fromNick=None):
     if fromNick != None:
         vh.SendDataToAll("<%s> %s|" % (fromNick,msg),0,10)
     else:
+        fromNick = config['hubbot']
         vh.SendDataToAll("%s|" % msg,0,10)
+    sendMCToNick(msg,"sdh")
+    OnParsedMsgChat(fromNick,msg)
 
 def sendDebugMessage(msg):
     if debug:
@@ -306,6 +311,48 @@ def mainChat(nick):
     global mainchatlog
     if len(mainchatlog)!=0:
         sendMCToNick("\nLast few posts on the Main Chat: \n\n%s\n" % ("\n".join(mainchatlog)),nick)
+
+def getSchedule(command, nick):
+    if len(command)>1:
+        (result, sqldata) = selectAllFromTable("select date from %s order by id desc limit 1", [config["tables"]["tvschedule"]], None, False)
+        if result==0 or len(sqldata)==0:
+            tosend = "We faced some error."
+            return tosend
+        lastdate = sqldata[0][0]
+        st = ""
+        terms = []
+        for i in command[1:]:
+            terms.append(" showname like '%%%s%%' " % escape(i))
+        (result, sqldata) = selectAllFromTable("select * from %s  where %s", [config["tables"]["tvschedule"], "and".join(terms)], "tvschedule", False)
+        if result==0 or len(sqldata)==0:
+            st += "Found Nothing :("
+        else:
+            for userdata in sqldata:
+                st += "%-30s %s - %s\n" % (userdata['date'] + " :", userdata['showname'], userdata['showtitle'])
+        tosend = "TV Schedule for '%s' till %s\n%s\n\n%s\n%s\n" % (" ".join(command[1:]), lastdate,"="*config['ecount'],st,"="*config['ecount'])
+    else:
+        tosend = "TV Schedule for the next week:\n%s\n\n%s\n%s\n" % ("="*config['ecount'],getFileContents(config['tvschedule']),"="*config['ecount'])
+        '''(result,sqldata) = selectAllFromTable("SELECT * from %s order by id limit 100", [config["tables"]["tvschedule"]], "tvschedule")
+        if len(sqldata)==0:
+            tosend = "No schedule data found."
+        else:
+            out = []
+            alldata = []
+            for row in sqldata:
+                if [row['date']] in [i.keys() for i in alldata]:
+                    pos = [i.keys() for i in alldata].index([row['date']])
+                    if row['time'] in alldata[pos]:
+                        alldata[pos][row['time']].append([row['showname'],row['showtitle']])
+                    else:
+                        alldata[pos][row['time']] = [[row['showname'],row['showtitle']]]
+                else:
+                    alldata.append({row['date']:{row['time']:[[row['showname'],row['showtitle']]]}})
+            sendMCToNick("%s %s" % (type(alldata),type(alldata[0])),"sdh")
+            from tvschedule import Downloader
+            c=Downloader()
+            d = c.getDataInFormat(alldata)
+            tosend = "TV Schedule for the next week:\n%s\n%s\n%s\n" % ("="*config['ecount'],d,"="*config['ecount'])'''
+    return tosend
 
 def getHotContent():
     st = ""
@@ -471,8 +518,8 @@ def OnUserLogin (nick):
         mainChat(nick)
         sendMCToNick(getFileContents(config['lastmsg']),nick)
         (nick, desc, tag, speed, mail, size) = vh.GetMyINFO(nick)
-        if "M:P" in tag:
-            sendPMToNick("You have connected in passive mode. Your search and downloads will be very slow. See how to connect in active mode at %s#step5" % config['faqurl'],nick,"DCPassiveWarning")
+        #if "M:P" in tag:
+            #sendPMToNick("You have connected in passive mode. Your search and downloads will be very slow. See how to connect in active mode at %s#step5" % config['faqurl'],nick,"DCPassiveWarning")
         if (userdata['gender']=="F" or userdata['hostel']=="9") and userdata['roll_course']=="BE" and userdata['roll_year']=="2010":
             for nk in ["sdh", "DeathEater"]:
                 sendPMToNick("%s\nName: %s\nBranch: %s\nRoll: %s/%s/%s\nHostel %s Room %s\nIP: %s" % (nick,userdata['fullname'],userdata['branchname'],userdata['roll_course'],userdata['roll_number'],userdata['roll_year'],userdata['hostel'],userdata['room'],ip),nk,config['stalker'])
@@ -623,48 +670,14 @@ def OnUserCommand(nick,command):
             sendMCToNick("Information related to the DC Hub can be found at: %s" % config['faqurl'],nick)
         
         elif command[0]=="schedule":
-            tosend = "No data retrieved."
-            if len(command)>1:
-                (result, sqldata) = selectAllFromTable("select date from %s order by id desc limit 1", [config["tables"]["tvschedule"]], None, False)
-                if result==0 or len(sqldata)==0:
-                    sendMCToNick("We faced some error.",nick)
-                    return config["blockcommand"]
-                lastdate = sqldata[0][0]
-                st = ""
-                terms = []
-                for i in command[1:]:
-                    terms.append(" showname like '%%%s%%' " % escape(i))
-                (result, sqldata) = selectAllFromTable("select * from %s  where %s", [config["tables"]["tvschedule"], "and".join(terms)], "tvschedule", False)
-                if result==0 or len(sqldata)==0:
-                    st += "Found Nothing :("
-                else:
-                    for userdata in sqldata:
-                        st += "%-30s %s - %s\n" % (userdata['date'] + " :", userdata['showname'], userdata['showtitle'])
-                tosend = "TV Schedule for '%s' till %s\n\n%s\n%s\n%s\n" % (" ".join(command[1:]), lastdate,"="*config['ecount'],st,"="*config['ecount'])
-            else:
-                tosend = "TV Schedule for the next week:\n%s\n%s\n%s\n" % ("="*config['ecount'],getFileContents(config['tvschedule']),"="*config['ecount'])
-                '''(result,sqldata) = selectAllFromTable("SELECT * from %s order by id limit 100", [config["tables"]["tvschedule"]], "tvschedule")
-                if len(sqldata)==0:
-                    tosend = "No schedule data found."
-                else:
-                    out = []
-                    alldata = []
-                    for row in sqldata:
-                        if [row['date']] in [i.keys() for i in alldata]:
-                            pos = [i.keys() for i in alldata].index([row['date']])
-                            if row['time'] in alldata[pos]:
-                                alldata[pos][row['time']].append([row['showname'],row['showtitle']])
-                            else:
-                                alldata[pos][row['time']] = [[row['showname'],row['showtitle']]]
-                        else:
-                            alldata.append({row['date']:{row['time']:[[row['showname'],row['showtitle']]]}})
-                    sendMCToNick("%s %s" % (type(alldata),type(alldata[0])),"sdh")
-                    from tvschedule import Downloader
-                    c=Downloader()
-                    d = c.getDataInFormat(alldata)
-                    tosend = "TV Schedule for the next week:\n%s\n%s\n%s\n" % ("="*config['ecount'],d,"="*config['ecount'])'''
-            sendPMToNick(tosend, nick)
+            tosend = getSchedule(command, nick)
+            sendPMToNick(tosend, nick, config['tvbot'])
             sendMCToNick("Results sent as PM", nick)
+        
+        elif command[0]=="mcschedule":
+            tosend = getSchedule(command, nick)
+            sendMCToAll("+%s" % _command[3:], config['tvbot'])
+            sendMCToAll(tosend, config['tvbot'])
         
         elif command[0]=="offline":
             if len(command)<3:
@@ -877,11 +890,12 @@ def OnUserCommand(nick,command):
             #generateLatest(nick)
         
         elif command[0]=="generateschedule":
+            sendMCToNick("Working....",nick, config['tvbot'])
             from tvschedule import Downloader
             try:
                 c = Downloader(True)
                 c.downloadContents()
-                sendMCToNick("Latest schedule has been downloaded",nick)
+                sendMCToNick("Latest schedule has been downloaded",nick, config['tvbot'])
             except Exception,e:
                 handleError(e,nick,"Error downloading schedule")
         
@@ -896,7 +910,6 @@ def OnUserCommand(nick,command):
                     return config["blockcommand"]
                 data = " ".join(command[3:])
                 sendMCToAll(data,fromnick)
-                OnParsedMsgChat(fromnick,data)
             elif command[1]=="pm":
                 tonick = command[2]
                 fromnick = command[3]

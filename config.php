@@ -42,6 +42,7 @@ define("ERROR_LOG", dirname(__FILE__) . "/errors.txt");
 
 date_default_timezone_set("Asia/Kolkata");
 $admins = array('deatheater', 'sdh', 'red_devil');
+$restrictedchars = '/[$ #?\/]+/';
 $motdfile = '/etc/verlihub/datafiles/notice';
 $classmap = array(0 => 0, 1 => 1, 2 => 1, 3 => 1, 4 => 1, 7 => 1, 8 => 1, 9 => 3, 10 => 10);
 $restrictednicks = array('hubbot', 'opchat', 'dj', 'sourcecode');

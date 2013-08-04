@@ -64,11 +64,12 @@
     	<br/><center><img class="img-polaroid" src="<?php echo IMAGE_URL; ?>/Favorite.png"></center><br/>
 		<p id="NoPass">If you are fed up with <b>Entering Password</b> every time you connect to DC Hub or you keep getting error messages like <b>Incorrect Password</b> then make the changes described above. Your Incorrect Passord error will look somewhat like this:</p><br>
 		<center><img class="img-polaroid" src="<?php echo IMAGE_URL; ?>/IncorrectPassword.png"></center><br/> 
-	<p><b>Note:</b> If you <b>Do Not Remember</b> your password contact an Admin by sending an <a href="http://172.16.32.222/dchub/offline">Offline Message</a> or contact us via email at <i><u>admins@dc.bitmesra.net</u></i>. You may also contact us on any other Hub.</p>
+	<p><b>Note:</b> If you <b>Do Not Remember</b> your password contact an Admin by sending an <a href="http://172.16.32.222/dchub/messages">Offline Message</a> or contact us via email at <i><u>admins@dc.bitmesra.net</u></i>. You may also contact us on any other Hub.</p>
 </div>
 <div class='accesslevel'>
     <h4 id="step8">Step-8: Connect to DC Hub [Finally *Whew*]</h4><hr/>
         <p>You can now double-click on the newly created row, in order to connect to the DC Hub. If there is a checkbox for "AutoConnect", tick that, so that the next time you start the program, you are automatially connected to the Hub. A new tab will open for each Hub that you connect to, called the Main-Chat, where you can send messages that can been seen by everyone connected to that Hub.</p>
+	<p>Alternately you can connect to the Hub by just pressing <b>Ctrl+Q</b> on your software and then Entering the IP <b>172.16.32.222</b>.</p>
 </div>
 <div class='accesslevel'>
     <h4 id="step9">Step-9: Search</h4><hr/>
