@@ -663,7 +663,7 @@ if (isset($_POST['register'])) {
         $vollist = DB::findOneFromQuery("select count(id) from dchub_request where id = $cid and volunteer like '%" . $_SESSION['user']['nick'] . "%'");
         if ($_SESSION['user']['accesslevel'] >= 2 || $vollist) {
             $vollist = DB::findOneFromQuery("select uid, request_file from dchub_request where id = $cid");
-            $rec = DB::update('dchub_request', array('deleted' => 1, 'completedby' => $_SESSION['user']['nick']) ,"id = $cid");
+            $rec = DB::update('dchub_request', array('deleted' => 1973, 'completedby' => $_SESSION['user']['nick']) ,"id = $cid");
             DB::insert('dchub_message', array('toid' => $vollist['uid'], 'fromid' => 2, 'msg' => "\nYour request for\n$vollist[request_file]\nhas been completed.\nVisit http://172.16.32.222/dchub/request/completed for more info.\n\n\nNote : This is an automatically generated message."));
             echo ($rec) ? ('1') : ('0');
         } else {

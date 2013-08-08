@@ -159,7 +159,7 @@ if (isset($_GET['q'])) {
                 echo "<h4><a href='" . SITE_URL . "/users/$user[nick1]'>$user[nick1]</a> requested for :</h4>
 				<div class='post'>$row[request_file]";
                 if($row['completedby'] != ''){
-                    echo "<br/> Completed By : <a href='".SITE_URL."/users/$row[completedby]'>$row[completedby]</a>";
+                    echo "<br/>Marked Completed By : <a href='".SITE_URL."/users/$row[completedby]'>$row[completedby]</a>";
                 }
                 echo "</div>";
                 $vol = explode(',', $row['volunteer']);

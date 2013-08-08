@@ -406,7 +406,7 @@ def sendOfflineMessages():
         for nick in data:
             #out = "You have received the following offline messages:\n%s\n" % ("="*config['ecount'],)
             for msg in data[nick]:
-                sendPMToNick(msg[1],nick,msg[0])
+                sendPMToNick("[Offline message %s] %s" % (msg[2], msg[1]),nick,msg[0])
                 #out += "\n[%s] <%s> %s\n\n%s\n" % (msg[2], msg[0], msg[1], "="*config['ecount'])
             #out += "\nTo send offline messages, see the '+help offline' command on main chat"
             #sendPMToNick(out,nick,config['offlinebot'])
